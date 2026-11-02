@@ -1,0 +1,4148 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ (already added)" : {
+      "comment" : "Add to Album: the album holds every selected file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (уже добавлено)"
+          }
+        }
+      }
+    },
+    "%@ (default)" : {
+      "comment" : "Open With: the system's default app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (по умолчанию)"
+          }
+        }
+      }
+    },
+    "%@ (not installed)" : {
+      "comment" : "Open With: a configured app that was removed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (не установлена)"
+          }
+        }
+      }
+    },
+    "%@ (partly added)" : {
+      "comment" : "Add to Album: the album holds some selected files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (добавлено частично)"
+          }
+        }
+      }
+    },
+    "%@ fps" : {
+      "comment" : "Frames per second",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ кадр/с"
+          }
+        }
+      }
+    },
+    "%@ kbit/s" : {
+      "comment" : "Bitrate in kilobits per second",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ кбит/с"
+          }
+        }
+      }
+    },
+    "%@ kHz" : {
+      "comment" : "Sample rate in kilohertz",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ кГц"
+          }
+        }
+      }
+    },
+    "%@ m" : {
+      "comment" : "Altitude in meters",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ м"
+          }
+        }
+      }
+    },
+    "%@ Mbit/s" : {
+      "comment" : "Bitrate in megabits per second",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Мбит/с"
+          }
+        }
+      }
+    },
+    "%@ mm" : {
+      "comment" : "Focal length in millimeters",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ мм"
+          }
+        }
+      }
+    },
+    "%@ s" : {
+      "comment" : "Exposure time in seconds",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ с"
+          }
+        }
+      }
+    },
+    "%lld bit" : {
+      "comment" : "Bits per channel",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld бит"
+          }
+        }
+      }
+    },
+    "%lld channels" : {
+      "comment" : "Audio channels",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каналов: %lld"
+          }
+        }
+      }
+    },
+    "%lld copies · %@" : {
+      "comment" : "Find Duplicates group header; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копий: %1$lld · %2$@"
+          }
+        }
+      }
+    },
+    "%lld files already exist in “%@”." : {
+      "comment" : "Name conflict alert; count and folder name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлов с такими именами в «%2$@»: %1$lld."
+          }
+        }
+      }
+    },
+    "%lld files in %lld folders" : {
+      "comment" : "Adding card: what the scan found so far",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлов: %lld, папок: %lld"
+          }
+        }
+      }
+    },
+    "%lld files still being read; they may hide more copies." : {
+      "comment" : "Find Duplicates: files whose fingerprint is not read yet; the argument is a count",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ещё читается файлов: %lld — среди них могут быть копии."
+          }
+        }
+      }
+    },
+    "%lld groups · %lld extra copies · %@ ticked" : {
+      "comment" : "Find Duplicates summary: groups, copies beyond one per group, size of the ticked copies",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Групп: %1$lld · лишних копий: %2$lld · отмечено %3$@"
+          }
+        }
+      }
+    },
+    "%lld items" : {
+      "comment" : "Status bar: number of files shown",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items"
+                }
+              }
+            }
+          }
+        },
+        "ru" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld файл"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld файла"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld файлов"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld файла"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld of %lld" : {
+      "comment" : "Settings: formats that already open in the app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld из %lld"
+          }
+        }
+      }
+    },
+    "%lld of %lld selected" : {
+      "comment" : "Status bar; first number selected, second shown",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld selected"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрано %1$lld из %2$lld"
+          }
+        }
+      }
+    },
+    "%lld s left" : {
+      "comment" : "Stem progress: time left in seconds",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "осталось %lld с"
+          }
+        }
+      }
+    },
+    "%lld waiting" : {
+      "comment" : "Stem progress: songs queued",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "в очереди: %lld"
+          }
+        }
+      }
+    },
+    "1/%lld s" : {
+      "comment" : "Exposure time as a fraction of a second",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/%lld с"
+          }
+        }
+      }
+    },
+    "4 Stems" : {
+      "comment" : "Split into Stems: vocals, drums, bass, other",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 дорожки"
+          }
+        }
+      }
+    },
+    "4 stems, Compact" : {
+      "comment" : "Settings: a stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 дорожки, компактная"
+          }
+        }
+      }
+    },
+    "4 stems, Full" : {
+      "comment" : "Settings: a stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 дорожки, полная"
+          }
+        }
+      }
+    },
+    "6 Stems" : {
+      "comment" : "Split into Stems: also guitar and piano",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 дорожек"
+          }
+        }
+      }
+    },
+    "6 stems, Compact" : {
+      "comment" : "Settings: a stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 дорожек, компактная"
+          }
+        }
+      }
+    },
+    "6 stems, Full" : {
+      "comment" : "Settings: a stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 дорожек, полная"
+          }
+        }
+      }
+    },
+    "A fast, light media browser for photos, video and music." : {
+      "comment" : "About: what the app is",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Быстрый и лёгкий браузер медиа для фото, видео и музыки."
+          }
+        }
+      }
+    },
+    "A new “… split” folder next to each song" : {
+      "comment" : "Split into Stems: default for several songs",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая папка «… split» рядом с каждой песней"
+          }
+        }
+      }
+    },
+    "About %@" : {
+      "comment" : "App menu: the About panel; the argument is the app's name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "О программе %@"
+          }
+        }
+      }
+    },
+    "Accent Color" : {
+      "comment" : "Flag menu and Settings group: the app's accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цвет акцента"
+          }
+        }
+      }
+    },
+    "Actual Size" : {
+      "comment" : "Zoom to 100 %",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Реальный размер"
+          }
+        }
+      }
+    },
+    "Add" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить"
+          }
+        }
+      },
+      "comment" : "Button of the folder chooser"
+    },
+    "Add a **folder**." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте **папку**."
+          }
+        }
+      },
+      "comment" : "First-run headline; ** marks the accent word"
+    },
+    "Add App…" : {
+      "comment" : "Settings, Open With: adds an app for this kind",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить программу…"
+          }
+        }
+      }
+    },
+    "Add Drive" : {
+      "comment" : "Alert button: add the whole volume",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить диск"
+          }
+        }
+      }
+    },
+    "Add Folder" : {
+      "comment" : "Adds the folder of the viewed file to the library",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить папку"
+          }
+        }
+      }
+    },
+    "Add Folder…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить папку…"
+          }
+        }
+      },
+      "comment" : "Button and menu item that adds a folder to the library"
+    },
+    "Add the whole drive “%@”?" : {
+      "comment" : "Alert before adding a whole volume",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить весь диск «%@»?"
+          }
+        }
+      }
+    },
+    "Add to Album" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить в альбом"
+          }
+        }
+      }
+    },
+    "Adding “%@”" : {
+      "comment" : "Card while a folder is added; the argument is the folder's name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавляется «%@»"
+          }
+        }
+      }
+    },
+    "Albums" : {
+      "comment" : "Sidebar section label; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Альбомы"
+          }
+        }
+      }
+    },
+    "All Files" : {
+      "comment" : "Flag filter: no filtering",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все файлы"
+          }
+        }
+      }
+    },
+    "All Flagged" : {
+      "comment" : "Flag filter: files with any flag",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все отмеченные"
+          }
+        }
+      }
+    },
+    "Altitude" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высота"
+          }
+        }
+      }
+    },
+    "Animate the library grid" : {
+      "comment" : "Settings: tiles glide to new places when size, names or sort change",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анимировать сетку библиотеки"
+          }
+        }
+      }
+    },
+    "Aperture" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Диафрагма"
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "comment" : "Settings section",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Внешний вид"
+          }
+        }
+      }
+    },
+    "Applies the next time jGlancer opens." : {
+      "comment" : "Settings: language change note",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Применится при следующем запуске jGlancer."
+          }
+        }
+      }
+    },
+    "Apps listed first in Open With. The starred one opens with ⌘⌥E." : {
+      "comment" : "Settings: Edit With explanation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эти программы идут первыми в «Открыть в программе». Отмеченная звёздочкой открывается по ⌘⌥E."
+          }
+        }
+      }
+    },
+    "Ascending" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По возрастанию"
+          }
+        }
+      }
+    },
+    "At most" : {
+      "comment" : "Settings: thumbnail cache cap",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не больше"
+          }
+        }
+      }
+    },
+    "Audio" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудио"
+          }
+        }
+      },
+      "comment" : "Media kind"
+    },
+    "Audio Bitrate" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Битрейт аудио"
+          }
+        }
+      }
+    },
+    "Audio waveform" : {
+      "comment" : "Settings: decor, how audio players draw their scrubber",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Волна аудио"
+          }
+        }
+      }
+    },
+    "Automatic" : {
+      "comment" : "Settings: filmstrip appears near the bottom edge",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоматически"
+          }
+        }
+      }
+    },
+    "Bass" : {
+      "comment" : "Stem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бас"
+          }
+        }
+      }
+    },
+    "Beauty" : {
+      "comment" : "Appearance preset: blur and motion",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Красота"
+          }
+        }
+      }
+    },
+    "Bit Depth" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрядность"
+          }
+        }
+      }
+    },
+    "Black" : {
+      "comment" : "Settings: black theme",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чёрная"
+          }
+        }
+      }
+    },
+    "Blue" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синий"
+          }
+        }
+      }
+    },
+    "Blur and smooth motion." : {
+      "comment" : "Appearance preset, one line",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размытие и плавность."
+          }
+        }
+      }
+    },
+    "Blurred cover behind audio" : {
+      "comment" : "Settings: frosted cover art as the background of audio files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размытая обложка за аудио"
+          }
+        }
+      }
+    },
+    "Button" : {
+      "comment" : "Settings: filmstrip shown and hidden by a button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кнопкой"
+          }
+        }
+      }
+    },
+    "Camera" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Камера"
+          }
+        }
+      }
+    },
+    "Camera, codec and other details" : {
+      "comment" : "Preview pane: details button tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Камера, кодек и другие подробности"
+          }
+        }
+      }
+    },
+    "Can't open this photo." : {
+      "comment" : "Viewer state for a corrupt or unsupported image",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удаётся открыть фото."
+          }
+        }
+      }
+    },
+    "Can't play this file." : {
+      "comment" : "Player state for an unsupported or damaged file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удаётся воспроизвести файл."
+          }
+        }
+      }
+    },
+    "Can't save this frame" : {
+      "comment" : "Toast: the video frame could not be read or written",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось сохранить кадр"
+          }
+        }
+      }
+    },
+    "Can't use / : or a leading dot" : {
+      "comment" : "Batch rename problem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нельзя / : и точку в начале"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменить"
+          }
+        }
+      }
+    },
+    "Channels" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каналы"
+          }
+        }
+      }
+    },
+    "Check Now" : {
+      "comment" : "Settings: looks for a newer version at once",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить сейчас"
+          }
+        }
+      }
+    },
+    "Check that the disk with the library folder is connected and can be written to, then open the app again." : {
+      "comment" : "Startup error explanation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверьте, что диск с папкой библиотеки подключён и доступен для записи, и откройте приложение снова."
+          }
+        }
+      }
+    },
+    "Checking…" : {
+      "comment" : "Settings: the update check is running",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка…"
+          }
+        }
+      }
+    },
+    "Choose" : {
+      "comment" : "Folder panel button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать"
+          }
+        }
+      }
+    },
+    "Choose a Look" : {
+      "comment" : "First launch: section label; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите вид"
+          }
+        }
+      }
+    },
+    "Choose Folder…" : {
+      "comment" : "Move to / Copy to: pick any folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать папку…"
+          }
+        }
+      }
+    },
+    "Choose…" : {
+      "comment" : "Split into Stems: picks a folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать…"
+          }
+        }
+      }
+    },
+    "Clear Cache" : {
+      "comment" : "Settings: deletes cached thumbnails",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить кеш"
+          }
+        }
+      }
+    },
+    "Clear Search" : {
+      "comment" : "Search: clears the field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить поиск"
+          }
+        }
+      }
+    },
+    "Click a shortcut, then press the keys. Delete removes it." : {
+      "comment" : "Settings → Shortcuts: how to change",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите на сочетание, затем клавиши. Delete удаляет его."
+          }
+        }
+      }
+    },
+    "Close" : {
+      "comment" : "Mini player: closes the bar",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрыть"
+          }
+        }
+      }
+    },
+    "Codec" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кодек"
+          }
+        }
+      }
+    },
+    "Collapse" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свернуть"
+          }
+        }
+      }
+    },
+    "Color Profile" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цветовой профиль"
+          }
+        }
+      }
+    },
+    "Compact" : {
+      "comment" : "Settings: the stem model with half-precision weights",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Компактная"
+          }
+        }
+      }
+    },
+    "Compare" : {
+      "comment" : "Action: two photos side by side",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сравнить"
+          }
+        }
+      }
+    },
+    "Copied: %lld" : {
+      "comment" : "Toast after copying files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано: %lld"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "comment" : "Action: copies the files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать"
+          }
+        }
+      }
+    },
+    "Copy Frame" : {
+      "comment" : "Player: copies the video frame on screen",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать кадр"
+          }
+        }
+      }
+    },
+    "Copy Here" : {
+      "comment" : "Copy to… panel button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать сюда"
+          }
+        }
+      }
+    },
+    "Copy Path" : {
+      "comment" : "Action: copies the file paths as text",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать путь"
+          }
+        }
+      }
+    },
+    "Copy to…" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать в…"
+          }
+        }
+      }
+    },
+    "Copying %lld of %lld…" : {
+      "comment" : "Toast while copying files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копирование: %lld из %lld…"
+          }
+        }
+      }
+    },
+    "Could not check. Try again later." : {
+      "comment" : "Settings: the update check failed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проверить. Попробуйте позже."
+          }
+        }
+      }
+    },
+    "Create" : {
+      "comment" : "Alert button: makes the new folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать"
+          }
+        }
+      }
+    },
+    "Created" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создано"
+          }
+        }
+      }
+    },
+    "Crosshair marks on selected files" : {
+      "comment" : "Settings: decor",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Крестики у выделенных файлов"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "comment" : "Settings: dark theme",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тёмная"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "comment" : "Batch rename token: capture or modification date",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата"
+          }
+        }
+      }
+    },
+    "Date Modified" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата изменения"
+          }
+        }
+      },
+      "comment" : "Sort key"
+    },
+    "Date Taken" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата съёмки"
+          }
+        }
+      },
+      "comment" : "Sort key: capture date of photos and videos"
+    },
+    "Decor" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Декор"
+          }
+        }
+      }
+    },
+    "Default Viewer" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просмотрщик по умолчанию"
+          }
+        }
+      }
+    },
+    "Delete Album" : {
+      "comment" : "Deletes an album; files stay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить альбом"
+          }
+        }
+      }
+    },
+    "Delete Album…" : {
+      "comment" : "Album menu; files stay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить альбом…"
+          }
+        }
+      }
+    },
+    "Delete the album “%@”?" : {
+      "comment" : "Confirmation; the argument is the album name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить альбом «%@»?"
+          }
+        }
+      }
+    },
+    "Descending" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По убыванию"
+          }
+        }
+      }
+    },
+    "Digits: %lld" : {
+      "comment" : "Batch rename: counter digits",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрядов: %lld"
+          }
+        }
+      }
+    },
+    "Digits: auto" : {
+      "comment" : "Batch rename: counter digits chosen automatically",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрядов: авто"
+          }
+        }
+      }
+    },
+    "Dimensions" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешение"
+          }
+        }
+      }
+    },
+    "Dismiss" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть"
+          }
+        }
+      }
+    },
+    "Download" : {
+      "comment" : "Split into Stems: downloads the model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать"
+          }
+        }
+      }
+    },
+    "Drag to export the segment, click to save it" : {
+      "comment" : "Player: the segment export button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перетащите, чтобы экспортировать отрезок, или нажмите, чтобы сохранить"
+          }
+        }
+      }
+    },
+    "Drums" : {
+      "comment" : "Stem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Барабаны"
+          }
+        }
+      }
+    },
+    "Duration" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Длительность"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "comment" : "Edit In ▸ Other…: the panel's button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать"
+          }
+        }
+      }
+    },
+    "Edit In" : {
+      "comment" : "Segment menu: open the segment in another app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать в"
+          }
+        }
+      }
+    },
+    "Edit in %@" : {
+      "comment" : "Action: opens the files in the primary external app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать в %@"
+          }
+        }
+      }
+    },
+    "Edit in Primary App" : {
+      "comment" : "Settings → Shortcuts: opens files in the primary external app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать в основном приложении"
+          }
+        }
+      }
+    },
+    "Edit With" : {
+      "comment" : "Settings section: external apps per kind",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Редактировать в"
+          }
+        }
+      }
+    },
+    "Effects" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эффекты"
+          }
+        }
+      }
+    },
+    "Every photo, video and audio file on it will be indexed. This can take a while." : {
+      "comment" : "Alert before adding a whole volume: explanation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все фото, видео и аудио на нём попадут в библиотеку. Это может занять время."
+          }
+        }
+      }
+    },
+    "Everywhere" : {
+      "comment" : "Search: the whole library instead of the folder shown",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Везде"
+          }
+        }
+      }
+    },
+    "Exit Full Screen" : {
+      "comment" : "Player: leaves full screen",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выйти из полноэкранного режима"
+          }
+        }
+      }
+    },
+    "Expand" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Развернуть"
+          }
+        }
+      }
+    },
+    "Export to Folder…" : {
+      "comment" : "Album menu: copies the album's files to a folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Экспортировать в папку…"
+          }
+        }
+      }
+    },
+    "Exposure" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выдержка"
+          }
+        }
+      }
+    },
+    "Fade the Ends" : {
+      "comment" : "Player: short fades at both ends of an exported audio segment",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плавные края отрезка"
+          }
+        }
+      }
+    },
+    "Failed: %lld" : {
+      "comment" : "Toast: files that could not be processed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось: %lld"
+          }
+        }
+      }
+    },
+    "Fewer effects, faster." : {
+      "comment" : "Appearance preset, one line",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Меньше эффектов, быстрее."
+          }
+        }
+      }
+    },
+    "Files" : {
+      "comment" : "Settings → Shortcuts group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы"
+          }
+        }
+      }
+    },
+    "Files in This Folder" : {
+      "comment" : "Accessibility label of the viewer's filmstrip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы в этой папке"
+          }
+        }
+      }
+    },
+    "Files stay on disk." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы останутся на диске."
+          }
+        }
+      },
+      "comment" : "Explains that removing a library folder keeps the files"
+    },
+    "Files stay where they are." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы остаются на своих местах."
+          }
+        }
+      },
+      "comment" : "First-run line under the headline"
+    },
+    "Filmstrip" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плёнка"
+          }
+        }
+      }
+    },
+    "Find" : {
+      "comment" : "Menu: focuses the search field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найти"
+          }
+        }
+      }
+    },
+    "Find Duplicates" : {
+      "comment" : "Window title",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск дубликатов"
+          }
+        }
+      }
+    },
+    "Find Duplicates…" : {
+      "comment" : "Edit menu: opens the window of copies of the same file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найти дубликаты…"
+          }
+        }
+      }
+    },
+    "Fit" : {
+      "comment" : "Zoom to fit the window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вписать"
+          }
+        }
+      }
+    },
+    "Flag" : {
+      "comment" : "Menu of flag colors",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Флаг"
+          }
+        }
+      }
+    },
+    "Flag: %@" : {
+      "comment" : "Settings → Shortcuts: sets this flag",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Флаг: %@"
+          }
+        }
+      }
+    },
+    "Flags" : {
+      "comment" : "Settings → Shortcuts group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Флаги"
+          }
+        }
+      }
+    },
+    "Focal Length" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фокусное расстояние"
+          }
+        }
+      }
+    },
+    "Fold numbered frames (render_001…090) into one tile" : {
+      "comment" : "Settings: image sequences in a folder show as one tile",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сворачивать пронумерованные кадры (render_001…090) в одну плитку"
+          }
+        }
+      }
+    },
+    "Folder created" : {
+      "comment" : "Toast after creating a folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка создана"
+          }
+        }
+      }
+    },
+    "Folders" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папки"
+          }
+        }
+      },
+      "comment" : "Sidebar section label; shown in capitals"
+    },
+    "Frame" : {
+      "comment" : "Preview of an image sequence: the frame timeline",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кадр"
+          }
+        }
+      }
+    },
+    "Frame copied" : {
+      "comment" : "Toast: the video frame is on the pasteboard",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кадр скопирован"
+          }
+        }
+      }
+    },
+    "Frame Rate" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частота кадров"
+          }
+        }
+      }
+    },
+    "Free software under the GNU General Public License 3.0." : {
+      "comment" : "About: the licence",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свободное ПО под лицензией GNU General Public License 3.0."
+          }
+        }
+      }
+    },
+    "From github.com/volodya88i/jGlancer-models. Your music never leaves this Mac." : {
+      "comment" : "Split into Stems: model source",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С github.com/volodya88i/jGlancer-models. Ваша музыка не покидает этот Mac."
+          }
+        }
+      }
+    },
+    "Full" : {
+      "comment" : "Settings: the stem model with the original weights",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Полная"
+          }
+        }
+      }
+    },
+    "Full Screen" : {
+      "comment" : "Player: toggles full screen",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Во весь экран"
+          }
+        }
+      }
+    },
+    "General" : {
+      "comment" : "Settings section",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Основные"
+          }
+        }
+      }
+    },
+    "Get Info" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свойства"
+          }
+        }
+      }
+    },
+    "Green" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зелёный"
+          }
+        }
+      }
+    },
+    "Guitar" : {
+      "comment" : "Stem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Гитара"
+          }
+        }
+      }
+    },
+    "Hide Filmstrip" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть плёнку"
+          }
+        }
+      }
+    },
+    "Hide Preview" : {
+      "comment" : "Preview pane: close button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть просмотр"
+          }
+        }
+      }
+    },
+    "Hide Preview (⌥⌘0)" : {
+      "comment" : "Preview pane: close button tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть просмотр (⌥⌘0)"
+          }
+        }
+      }
+    },
+    "Icons" : {
+      "comment" : "Settings: kind filters as icons",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконки"
+          }
+        }
+      }
+    },
+    "image sequence, %lld frames" : {
+      "comment" : "Grid tile accessibility: a folded image sequence",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "последовательность кадров, кадров: %lld"
+          }
+        }
+      }
+    },
+    "Image Sequences" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Последовательности кадров"
+          }
+        }
+      }
+    },
+    "Include Subfolders" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включая подпапки"
+          }
+        }
+      }
+    },
+    "Indexing…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Индексация…"
+          }
+        }
+      },
+      "comment" : "Status bar: scanning folders"
+    },
+    "ISO" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ISO"
+          }
+        }
+      }
+    },
+    "Keep Both" : {
+      "comment" : "Name conflict: keep both files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оставить оба"
+          }
+        }
+      }
+    },
+    "Keep Pitch" : {
+      "comment" : "Player: keep the pitch when the speed changes",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранять тон"
+          }
+        }
+      }
+    },
+    "Keep WAV, AIFF and FLAC segments in their format (otherwise M4A)" : {
+      "comment" : "Settings: exported audio segments keep the lossless format of their file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранять отрезки WAV, AIFF и FLAC в их формате (иначе M4A)"
+          }
+        }
+      }
+    },
+    "Kind" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тип"
+          }
+        }
+      },
+      "comment" : "Sort key"
+    },
+    "Kind Filters" : {
+      "comment" : "Settings group: top bar video/photo/audio filters; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фильтры типов"
+          }
+        }
+      }
+    },
+    "Language" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Язык"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "comment" : "Update offer",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позже"
+          }
+        }
+      }
+    },
+    "Lavender" : {
+      "comment" : "Accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лавандовый"
+          }
+        }
+      }
+    },
+    "Lens" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объектив"
+          }
+        }
+      }
+    },
+    "Library" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека"
+          }
+        }
+      },
+      "comment" : "Library section label (shown in capitals) and the viewer's back button"
+    },
+    "Light" : {
+      "comment" : "Settings: light theme",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Светлая"
+          }
+        }
+      }
+    },
+    "Link Zoom (L)" : {
+      "comment" : "Compare: both photos zoom and pan together",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Связать масштаб (L)"
+          }
+        }
+      }
+    },
+    "Location" : {
+      "comment" : "Get Info label: GPS coordinates",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Место"
+          }
+        }
+      }
+    },
+    "Look" : {
+      "comment" : "Settings: appearance preset; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вид"
+          }
+        }
+      }
+    },
+    "Look for a newer version once a day" : {
+      "comment" : "Settings: the daily update check",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Искать новую версию раз в день"
+          }
+        }
+      }
+    },
+    "Loop" : {
+      "comment" : "Player: repeat the current file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повтор"
+          }
+        }
+      }
+    },
+    "macOS asks once per format." : {
+      "comment" : "Settings: default viewer note",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS спросит подтверждение для каждого формата."
+          }
+        }
+      }
+    },
+    "macOS or the app already uses these keys." : {
+      "comment" : "Settings → Shortcuts: a reserved shortcut",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эти клавиши уже заняты macOS или приложением."
+          }
+        }
+      }
+    },
+    "Modified" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменено"
+          }
+        }
+      }
+    },
+    "Mono" : {
+      "comment" : "Audio channels",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Моно"
+          }
+        }
+      }
+    },
+    "Move" : {
+      "comment" : "Undo menu: the operation to undo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перемещение"
+          }
+        }
+      }
+    },
+    "Move %lld to Trash" : {
+      "comment" : "Find Duplicates: the argument is the number of ticked copies",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В Корзину: %lld"
+          }
+        }
+      }
+    },
+    "Move Here" : {
+      "comment" : "Move to… panel button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить сюда"
+          }
+        }
+      }
+    },
+    "Move to Trash" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить в Корзину"
+          }
+        }
+      }
+    },
+    "Move to…" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить в…"
+          }
+        }
+      }
+    },
+    "Moved %lld to the Trash." : {
+      "comment" : "Find Duplicates: outcome; the argument is a count",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перемещено в Корзину: %lld."
+          }
+        }
+      }
+    },
+    "Moved to Trash: %lld" : {
+      "comment" : "Toast after trashing files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В Корзине: %lld"
+          }
+        }
+      }
+    },
+    "Moved: %lld" : {
+      "comment" : "Toast after moving files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перемещено: %lld"
+          }
+        }
+      }
+    },
+    "Moving %lld of %lld…" : {
+      "comment" : "Toast while moving files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перемещение: %lld из %lld…"
+          }
+        }
+      }
+    },
+    "Moving to Trash %lld of %lld…" : {
+      "comment" : "Toast while trashing files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В Корзину: %lld из %lld…"
+          }
+        }
+      }
+    },
+    "Mute" : {
+      "comment" : "Player",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выключить звук"
+          }
+        }
+      }
+    },
+    "Name" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя"
+          }
+        }
+      },
+      "comment" : "Sort key"
+    },
+    "Name taken" : {
+      "comment" : "Batch rename problem: another file has this name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя занято"
+          }
+        }
+      }
+    },
+    "New Album" : {
+      "comment" : "Default name of a new album",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новый альбом"
+          }
+        }
+      }
+    },
+    "New Album…" : {
+      "comment" : "Add to Album: create an album with the files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новый альбом…"
+          }
+        }
+      }
+    },
+    "New extension (empty keeps each file's own)" : {
+      "comment" : "Batch rename: field for one extension for all files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новое расширение (пусто — у каждого файла своё)"
+          }
+        }
+      }
+    },
+    "New Folder" : {
+      "comment" : "Undo menu: the operation to undo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая папка"
+          }
+        }
+      }
+    },
+    "New Folder…" : {
+      "comment" : "Sidebar folder menu: makes a folder inside",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая папка…"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "comment" : "Player: next file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Следующий"
+          }
+        }
+      }
+    },
+    "Next to the Song" : {
+      "comment" : "Split into Stems: back to the default folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рядом с песней"
+          }
+        }
+      }
+    },
+    "No **copies**." : {
+      "comment" : "Find Duplicates: nothing found; ** marks the accent word",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копий **нет**."
+          }
+        }
+      }
+    },
+    "No files of the selected kinds." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет файлов выбранных типов."
+          }
+        }
+      },
+      "comment" : "Empty folder explanation"
+    },
+    "No name" : {
+      "comment" : "Batch rename problem: the name is empty",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет имени"
+          }
+        }
+      }
+    },
+    "No Selection" : {
+      "comment" : "Preview pane without a selected file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не выбрано"
+          }
+        }
+      }
+    },
+    "No two files have the same contents." : {
+      "comment" : "Find Duplicates: nothing found",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет файлов с одинаковым содержимым."
+          }
+        }
+      }
+    },
+    "Not installed" : {
+      "comment" : "Settings, Open With: the app was removed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не установлена"
+          }
+        }
+      }
+    },
+    "Not the same byte for byte, left alone: %@" : {
+      "comment" : "Find Duplicates: copies whose contents differ; the argument is a list of file names",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не совпали побайтно, оставлены: %@"
+          }
+        }
+      }
+    },
+    "Nothing **here**." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здесь **пусто**."
+          }
+        }
+      },
+      "comment" : "Empty folder headline; ** marks the accent word"
+    },
+    "Number" : {
+      "comment" : "Batch rename token: a counter",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Номер"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "comment" : "View ▸ Split View: one pane",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выкл."
+          }
+        }
+      }
+    },
+    "Offline" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Недоступна"
+          }
+        }
+      },
+      "comment" : "A library folder whose disk is not available"
+    },
+    "Only the name changes: the file is not converted." : {
+      "comment" : "Batch rename: note under the extension field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Меняется только имя: файл не конвертируется."
+          }
+        }
+      }
+    },
+    "Open" : {
+      "comment" : "Action: open the file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть"
+          }
+        }
+      }
+    },
+    "Open in Viewer" : {
+      "comment" : "Quick Preview: opens the file in the full viewer",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в просмотрщике"
+          }
+        }
+      }
+    },
+    "Open Release Page" : {
+      "comment" : "Update offer: opens the release on GitHub",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть страницу релиза"
+          }
+        }
+      }
+    },
+    "Open these files from Finder in %@:" : {
+      "comment" : "Settings: default viewer; the argument is the app's name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открывать из Finder в %@:"
+          }
+        }
+      }
+    },
+    "Open With" : {
+      "comment" : "Menu of other apps that can open the file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть в программе"
+          }
+        }
+      }
+    },
+    "or drop a folder here" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "или перетащите папку сюда"
+          }
+        }
+      },
+      "comment" : "Hint next to the Add Folder button"
+    },
+    "Orange" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оранжевый"
+          }
+        }
+      }
+    },
+    "Other" : {
+      "comment" : "Stem: everything else",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остальное"
+          }
+        }
+      }
+    },
+    "Other Color…" : {
+      "comment" : "Settings: opens the system color panel",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другой цвет…"
+          }
+        }
+      }
+    },
+    "Other…" : {
+      "comment" : "Open With: choose any app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Другая программа…"
+          }
+        }
+      }
+    },
+    "Pause" : {
+      "comment" : "Player",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пауза"
+          }
+        }
+      }
+    },
+    "Performance" : {
+      "comment" : "Appearance preset: fewer effects",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Быстродействие"
+          }
+        }
+      }
+    },
+    "Photo" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото"
+          }
+        }
+      },
+      "comment" : "Media kind"
+    },
+    "Photos" : {
+      "comment" : "Settings: default viewer for photos",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото"
+          }
+        }
+      }
+    },
+    "Piano" : {
+      "comment" : "Stem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пианино"
+          }
+        }
+      }
+    },
+    "Pin to Sidebar" : {
+      "comment" : "Sidebar folder menu: adds the folder to the pinned ones",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрепить в боковой панели"
+          }
+        }
+      }
+    },
+    "Pink" : {
+      "comment" : "Accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розовый"
+          }
+        }
+      }
+    },
+    "Pinned" : {
+      "comment" : "Sidebar section label; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закреплённые"
+          }
+        }
+      }
+    },
+    "Play" : {
+      "comment" : "Player",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Воспроизвести"
+          }
+        }
+      }
+    },
+    "Play in Mini Player" : {
+      "comment" : "Action: songs play in the bar at the bottom",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Играть в мини-плеере"
+          }
+        }
+      }
+    },
+    "Play Next" : {
+      "comment" : "Player: continue with the next file at the end",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Играть следующий"
+          }
+        }
+      }
+    },
+    "Play video and audio in Quick Preview" : {
+      "comment" : "Settings: autoplay in Quick Preview",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включать видео и аудио в быстром просмотре"
+          }
+        }
+      }
+    },
+    "Playback" : {
+      "comment" : "Settings section",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Воспроизведение"
+          }
+        }
+      }
+    },
+    "Position" : {
+      "comment" : "Player scrubber",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позиция"
+          }
+        }
+      }
+    },
+    "Press keys…" : {
+      "comment" : "Settings → Shortcuts: waiting for a key press",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите клавиши…"
+          }
+        }
+      }
+    },
+    "Preview" : {
+      "comment" : "Section label of the preview pane; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просмотр"
+          }
+        }
+      }
+    },
+    "Previous" : {
+      "comment" : "Player: previous file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Предыдущий"
+          }
+        }
+      }
+    },
+    "Primary App" : {
+      "comment" : "Settings, Open With: the app used by Edit in … (⌘⌥E)",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Основная программа"
+          }
+        }
+      }
+    },
+    "Purple" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фиолетовый"
+          }
+        }
+      }
+    },
+    "Quick Preview" : {
+      "comment" : "Accessibility label of the Quick Preview window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Быстрый просмотр"
+          }
+        }
+      }
+    },
+    "Quit" : {
+      "comment" : "Startup error: quits the app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выйти"
+          }
+        }
+      }
+    },
+    "Reading details…" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтение данных…"
+          }
+        }
+      },
+      "comment" : "Status bar: reading dimensions, durations, dates"
+    },
+    "Red" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Красный"
+          }
+        }
+      }
+    },
+    "Redo %@" : {
+      "comment" : "Edit menu; the argument names the operation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторить: %@"
+          }
+        }
+      }
+    },
+    "Redone" : {
+      "comment" : "Toast after redo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторено"
+          }
+        }
+      }
+    },
+    "Reduce motion" : {
+      "comment" : "Settings: no fades and slides",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уменьшить движение"
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "comment" : "Find Duplicates: looks again",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновить"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать"
+          }
+        }
+      },
+      "comment" : "Confirms removing a folder from the library"
+    },
+    "Remove Flag" : {
+      "comment" : "Flag menu: removes the flag",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Снять флаг"
+          }
+        }
+      }
+    },
+    "Remove from Album" : {
+      "comment" : "Action: removes items from the album shown; files stay",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать из альбома"
+          }
+        }
+      }
+    },
+    "Remove from Library" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать из библиотеки"
+          }
+        }
+      },
+      "comment" : "Context menu item; files are not touched"
+    },
+    "Remove “%@” from the library?" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать «%@» из библиотеки?"
+          }
+        }
+      },
+      "comment" : "Confirmation title; the argument is a folder name"
+    },
+    "Rename" : {
+      "comment" : "Undo menu: the operation to undo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименование"
+          }
+        }
+      }
+    },
+    "Rename %lld Files" : {
+      "comment" : "Batch rename: title; the argument is the number of files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименовать файлы: %lld"
+          }
+        }
+      }
+    },
+    "rename.button" : {
+      "comment" : "Button: renames the file or files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименовать"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rename"
+          }
+        }
+      }
+    },
+    "Renamed" : {
+      "comment" : "Toast after renaming a file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименовано"
+          }
+        }
+      }
+    },
+    "Rename…" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переименовать…"
+          }
+        }
+      }
+    },
+    "Reorder" : {
+      "comment" : "Undo menu: reordering album items",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порядок"
+          }
+        }
+      }
+    },
+    "Replace" : {
+      "comment" : "Name conflict: replace the existing file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменить"
+          }
+        }
+      }
+    },
+    "Replaced files go to the Trash." : {
+      "comment" : "Name conflict alert",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменённые файлы попадут в Корзину."
+          }
+        }
+      }
+    },
+    "Restore Default" : {
+      "comment" : "Settings → Shortcuts: one command back to its default",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть стандартное"
+          }
+        }
+      }
+    },
+    "Restore Defaults" : {
+      "comment" : "Settings → Shortcuts",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вернуть стандартные"
+          }
+        }
+      }
+    },
+    "Reveal in Finder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать в Finder"
+          }
+        }
+      }
+    },
+    "Rotate Left" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повернуть влево"
+          }
+        }
+      }
+    },
+    "Rotate Right" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повернуть вправо"
+          }
+        }
+      }
+    },
+    "Same name twice" : {
+      "comment" : "Batch rename problem: two files would get one name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Одинаковые имена"
+          }
+        }
+      }
+    },
+    "Sample Rate" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Частота дискретизации"
+          }
+        }
+      }
+    },
+    "Save As…" : {
+      "comment" : "Segment menu: save the segment as a file",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить как…"
+          }
+        }
+      }
+    },
+    "Save Frame" : {
+      "comment" : "Player: saves the video frame on screen as a picture",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить кадр"
+          }
+        }
+      }
+    },
+    "Save To" : {
+      "comment" : "Split into Stems: the target folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить в"
+          }
+        }
+      }
+    },
+    "Saved %@" : {
+      "comment" : "Toast: the video frame was saved; the argument is the file name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранено: %@"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "comment" : "Search field placeholder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск"
+          }
+        }
+      }
+    },
+    "Search the whole library" : {
+      "comment" : "Search scope tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Искать во всей библиотеке"
+          }
+        }
+      }
+    },
+    "Select a Segment" : {
+      "comment" : "Player: mode for choosing a part of the file to export",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выделить отрезок"
+          }
+        }
+      }
+    },
+    "Selected" : {
+      "comment" : "Preview pane: label under the number of selected files; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрано"
+          }
+        }
+      }
+    },
+    "Shortcuts" : {
+      "comment" : "Settings section: keyboard shortcuts",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Клавиши"
+          }
+        }
+      }
+    },
+    "Show camera, codec and other details" : {
+      "comment" : "Settings: extended facts in the preview pane",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать камеру, кодек и другие подробности"
+          }
+        }
+      }
+    },
+    "Show Filmstrip" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать плёнку"
+          }
+        }
+      }
+    },
+    "Show Flagged Files" : {
+      "comment" : "Top bar: flag filter tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать отмеченные файлы"
+          }
+        }
+      }
+    },
+    "Show in Finder" : {
+      "comment" : "Sidebar folder menu",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать в Finder"
+          }
+        }
+      }
+    },
+    "Show Names" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать имена"
+          }
+        }
+      },
+      "comment" : "View menu: names under thumbnails"
+    },
+    "Show Preview" : {
+      "comment" : "View menu: the preview pane on the right",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать просмотр"
+          }
+        }
+      }
+    },
+    "Show the next file while swiping" : {
+      "comment" : "Settings: swipe animation between photos or songs",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать соседний файл при свайпе"
+          }
+        }
+      }
+    },
+    "Show the song in the library" : {
+      "comment" : "Mini player: the folder link",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать песню в библиотеке"
+          }
+        }
+      }
+    },
+    "Show the Trash in Finder; drop files here to move them to the Trash" : {
+      "comment" : "Sidebar Trash tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать Корзину в Finder; перетащите сюда файлы, чтобы переместить их в Корзину"
+          }
+        }
+      }
+    },
+    "Side by Side" : {
+      "comment" : "View ▸ Split View: two panes, left and right",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рядом"
+          }
+        }
+      }
+    },
+    "Size" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размер"
+          }
+        }
+      },
+      "comment" : "Sort key"
+    },
+    "Skip" : {
+      "comment" : "Name conflict: leave these files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пропустить"
+          }
+        }
+      }
+    },
+    "Skip This Version" : {
+      "comment" : "Update offer",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пропустить эту версию"
+          }
+        }
+      }
+    },
+    "Skipped: %lld" : {
+      "comment" : "Toast: files skipped because of a name conflict",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пропущено: %lld"
+          }
+        }
+      }
+    },
+    "Sort By" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сортировка"
+          }
+        }
+      }
+    },
+    "Source Code" : {
+      "comment" : "About: opens the source code on GitHub",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исходный код"
+          }
+        }
+      }
+    },
+    "Speed" : {
+      "comment" : "Player speed menu",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скорость"
+          }
+        }
+      }
+    },
+    "Split" : {
+      "comment" : "Split into Stems: starts splitting",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделить"
+          }
+        }
+      }
+    },
+    "Split %lld Songs into Stems" : {
+      "comment" : "Split into Stems: title for several songs",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделить песни на дорожки: %lld"
+          }
+        }
+      }
+    },
+    "Split into %lld stems" : {
+      "comment" : "Toast after Split into Stems; the argument is the number of files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделено на дорожки: %lld"
+          }
+        }
+      }
+    },
+    "Split into Stems…" : {
+      "comment" : "Action: separates a song into vocals, drums, bass…",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделить на дорожки…"
+          }
+        }
+      }
+    },
+    "Split View" : {
+      "comment" : "View menu: two library panes side by side",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделить окно"
+          }
+        }
+      }
+    },
+    "Split “%@” into Stems" : {
+      "comment" : "Split into Stems: title; the argument is a song",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделить «%@» на дорожки"
+          }
+        }
+      }
+    },
+    "Splitting needs the 4-stem model (%@), downloaded once." : {
+      "comment" : "Split into Stems: model offer",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для разделения нужна модель на 4 дорожки (%@), она скачивается один раз."
+          }
+        }
+      }
+    },
+    "Splitting needs the 6-stem model (%@), downloaded once." : {
+      "comment" : "Split into Stems: model offer",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для разделения нужна модель на 6 дорожек (%@), она скачивается один раз."
+          }
+        }
+      }
+    },
+    "Splitting “%@”" : {
+      "comment" : "Stem progress card; the argument is a song",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделяется «%@»"
+          }
+        }
+      }
+    },
+    "Stacked" : {
+      "comment" : "View ▸ Split View: two panes, top and bottom",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Друг над другом"
+          }
+        }
+      }
+    },
+    "Start at %lld" : {
+      "comment" : "Batch rename: the first number",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать с %lld"
+          }
+        }
+      }
+    },
+    "Stem Splitting" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разделение на дорожки"
+          }
+        }
+      }
+    },
+    "Stereo" : {
+      "comment" : "Audio channels",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Стерео"
+          }
+        }
+      }
+    },
+    "Stop" : {
+      "comment" : "Toast: stops a running file operation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остановить"
+          }
+        }
+      }
+    },
+    "Stop adding and remove the folder from the library" : {
+      "comment" : "Adding card: Stop button help",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остановить добавление и убрать папку из библиотеки"
+          }
+        }
+      }
+    },
+    "Swap (X)" : {
+      "comment" : "Compare: the photos change places",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поменять местами (X)"
+          }
+        }
+      }
+    },
+    "System" : {
+      "comment" : "Settings: follow the system",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Системный"
+          }
+        }
+      }
+    },
+    "Taken" : {
+      "comment" : "Get Info label: capture date",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Снято"
+          }
+        }
+      }
+    },
+    "Taken from “%@”, which now has none." : {
+      "comment" : "Settings → Shortcuts: the shortcut moved from another command",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Забрано у «%@», теперь там пусто."
+          }
+        }
+      }
+    },
+    "Teal" : {
+      "comment" : "Accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бирюзовый"
+          }
+        }
+      }
+    },
+    "Template" : {
+      "comment" : "Batch rename: the name pattern field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шаблон"
+          }
+        }
+      }
+    },
+    "That name can't be used." : {
+      "comment" : "Rename: empty or invalid name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Такое имя использовать нельзя."
+          }
+        }
+      }
+    },
+    "That name is taken." : {
+      "comment" : "Rename: another file has this name",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это имя занято."
+          }
+        }
+      }
+    },
+    "The download was damaged. Try again." : {
+      "comment" : "Stem model download: checksum mismatch",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка повреждена. Попробуйте ещё раз."
+          }
+        }
+      }
+    },
+    "The files stay where they are." : {
+      "comment" : "Delete album confirmation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы останутся на месте."
+          }
+        }
+      }
+    },
+    "The folder is not available." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка недоступна."
+          }
+        }
+      }
+    },
+    "The library **can't open**." : {
+      "comment" : "Startup error headline; ** marks the accent word",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека **не открывается**."
+          }
+        }
+      }
+    },
+    "The library was damaged and is back from its copy of %@." : {
+      "comment" : "Startup recovery banner; the argument is the backup's date",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека была повреждена и восстановлена из копии от %@."
+          }
+        }
+      }
+    },
+    "The library was damaged; a new one was started." : {
+      "comment" : "Startup recovery banner without a backup",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека была повреждена — начата новая."
+          }
+        }
+      }
+    },
+    "The model could not be downloaded. Check the connection and try again." : {
+      "comment" : "Stem model download failed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось скачать модель. Проверьте подключение и попробуйте ещё раз."
+          }
+        }
+      }
+    },
+    "The mouse wheel zooms the timeline of a segment (otherwise ⌘ and the wheel)" : {
+      "comment" : "Settings: in segment selection the plain mouse wheel zooms",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Колесо мыши масштабирует таймлайн отрезка (иначе ⌘ и колесо)"
+          }
+        }
+      }
+    },
+    "Theme" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тема"
+          }
+        }
+      }
+    },
+    "They sound the same; Compact takes half the space on disk." : {
+      "comment" : "Settings: compact and full stem models",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звучат одинаково; компактная занимает вдвое меньше места на диске."
+          }
+        }
+      }
+    },
+    "Third-Party Notices" : {
+      "comment" : "About: the licences of the software in the app",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сторонние лицензии"
+          }
+        }
+      }
+    },
+    "This file can't be cut." : {
+      "comment" : "Player: export button of a file that can't be cut (MKV)",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот файл нельзя вырезать."
+          }
+        }
+      }
+    },
+    "This folder is already in the library." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта папка уже в библиотеке."
+          }
+        }
+      }
+    },
+    "This folder is inside a library folder or contains one." : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта папка внутри папки библиотеки или содержит её."
+          }
+        }
+      }
+    },
+    "This folder isn't in the library." : {
+      "comment" : "Viewer offer for a file opened from outside the library",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этой папки нет в библиотеке."
+          }
+        }
+      }
+    },
+    "Thumbnail Cache" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кеш миниатюр"
+          }
+        }
+      }
+    },
+    "Thumbnail Size" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размер миниатюр"
+          }
+        }
+      }
+    },
+    "Timeline" : {
+      "comment" : "Settings: audio scrubber as the plain video slider",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шкала"
+          }
+        }
+      }
+    },
+    "Toggle Split View" : {
+      "comment" : "View menu: turns the split view on or off",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить/выключить разделение"
+          }
+        }
+      }
+    },
+    "Trash" : {
+      "comment" : "Sidebar: the system Trash",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Корзина"
+          }
+        }
+      }
+    },
+    "Undo" : {
+      "comment" : "Toast: undoes the file operation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменить"
+          }
+        }
+      }
+    },
+    "Undo %@" : {
+      "comment" : "Edit menu; the argument names the operation",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменить: %@"
+          }
+        }
+      }
+    },
+    "Undone" : {
+      "comment" : "Toast after undo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отменено"
+          }
+        }
+      }
+    },
+    "Unmute" : {
+      "comment" : "Player",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить звук"
+          }
+        }
+      }
+    },
+    "Unpin" : {
+      "comment" : "Sidebar: removes a folder from the pinned ones",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открепить"
+          }
+        }
+      }
+    },
+    "Updates" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обновления"
+          }
+        }
+      }
+    },
+    "Use as Album Cover" : {
+      "comment" : "Action",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сделать обложкой альбома"
+          }
+        }
+      }
+    },
+    "Use ⌘ or ⌃ with the key." : {
+      "comment" : "Settings → Shortcuts: a shortcut needs Command or Control",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используйте ⌘ или ⌃ вместе с клавишей."
+          }
+        }
+      }
+    },
+    "Version %@" : {
+      "comment" : "About: the argument is the version number",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия %@"
+          }
+        }
+      }
+    },
+    "Version %@ is available" : {
+      "comment" : "Update offer: title; the argument is a version",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доступна версия %@"
+          }
+        }
+      }
+    },
+    "Video" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видео"
+          }
+        }
+      },
+      "comment" : "Media kind"
+    },
+    "Video Bitrate" : {
+      "comment" : "Get Info label",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Битрейт видео"
+          }
+        }
+      }
+    },
+    "Videos" : {
+      "comment" : "Settings: default viewer for videos",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видео"
+          }
+        }
+      }
+    },
+    "Vocals" : {
+      "comment" : "Stem",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вокал"
+          }
+        }
+      }
+    },
+    "Volume" : {
+      "comment" : "Player volume slider",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Громкость"
+          }
+        }
+      }
+    },
+    "Waveform" : {
+      "comment" : "Settings: audio scrubber as a waveform",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Волна"
+          }
+        }
+      }
+    },
+    "Where" : {
+      "comment" : "Get Info label: the file's folder",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка"
+          }
+        }
+      }
+    },
+    "Words" : {
+      "comment" : "Settings: kind filters as labelled chips",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Надписи"
+          }
+        }
+      }
+    },
+    "Yellow" : {
+      "comment" : "Flag color, accent color",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Жёлтый"
+          }
+        }
+      }
+    },
+    "You can change it any time." : {
+      "comment" : "First launch: under the mode cards",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Его можно поменять в любой момент."
+          }
+        }
+      }
+    },
+    "You can turn this check off in Settings → General." : {
+      "comment" : "Update offer: note",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эту проверку можно отключить в Настройки → Основные."
+          }
+        }
+      }
+    },
+    "You have the latest version." : {
+      "comment" : "Settings: the update check result",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас последняя версия."
+          }
+        }
+      }
+    },
+    "Your own mix." : {
+      "comment" : "Settings: the options match neither preset",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Своя настройка."
+          }
+        }
+      }
+    },
+    "“%@” could not be split." : {
+      "comment" : "Split into Stems failed; the argument is a song",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось разделить «%@»."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

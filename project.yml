@@ -1,0 +1,132 @@
+# jGlancer project definition for XcodeGen (`xcodegen generate`). Never hand-edit the generated *.xcodeproj.
+# The app's name and bundle id are defined here only; code reads them through AppIdentity.swift (Info.plist),
+# scripts read `name:` below. Generated files (App/Info.plist, App/jGlancer.entitlements) are git-ignored.
+name: jGlancer
+options:
+  bundleIdPrefix: io.github.volodya88i # DECISIONS D-68
+  deploymentTarget:
+    macOS: "14.0" # DECISIONS D-02
+  createIntermediateGroups: true
+  developmentLanguage: en
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "0.5.0" # major.minor.patch, one per published build (CHANGELOG.md, D-76)
+    CURRENT_PROJECT_VERSION: "3"
+    ENABLE_HARDENED_RUNTIME: YES
+    # Local builds are ad-hoc signed ("Sign to Run Locally"); Developer ID signing arrives with release prep (Phase 13).
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    DEAD_CODE_STRIPPING: YES
+packages:
+  JGCore:
+    path: Packages/JGCore
+  JGDesign:
+    path: Packages/JGDesign
+targets:
+  jGlancer:
+    type: application
+    platform: macOS
+    sources:
+      - path: App/Sources
+      - path: App/Resources
+    settings:
+      base:
+        PRODUCT_NAME: $(TARGET_NAME)
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.volodya88i.jglancer
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        # Xcode drops hardened runtime for ad-hoc signatures; force it in Release so local Release builds
+        # run under the same restrictions as the notarized app. (Debug keeps it off: library validation
+        # would reject Xcode's ad-hoc debug/preview dylibs.)
+        Release:
+          OTHER_CODE_SIGN_FLAGS: --options=runtime
+          # Symbols go to the dSYM (crash reports); the shipped binary is stripped (bundle budget ≤ 15 MB, D-66).
+          DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+          DEPLOYMENT_POSTPROCESSING: YES
+          STRIP_INSTALLED_PRODUCT: YES
+          STRIP_STYLE: non-global
+    entitlements:
+      path: App/jGlancer.entitlements
+      properties:
+        com.apple.security.app-sandbox: false # v1 = Developer ID, not sandboxed (DECISIONS D-03)
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundleDisplayName: $(PRODUCT_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleLocalizations: [en, ru]
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSApplicationCategoryType: public.app-category.photography
+        # Finder's context menu ▸ Services ▸ "jGlancer: Quick Preview" for photos, videos and audio; the user may
+        # give it a shortcut in System Settings ▸ Keyboard ▸ Keyboard Shortcuts ▸ Services (DECISIONS D-63).
+        NSServices:
+          - NSMenuItem:
+              default: "$(PRODUCT_NAME): Quick Preview"
+            # ⇧⌘J by default (⌘Y and Space belong to Finder's own Quick Look); changeable in System Settings.
+            NSKeyEquivalent:
+              default: J
+            NSMessage: quickPreview
+            NSPortName: $(PRODUCT_NAME)
+            NSSendFileTypes: [public.image, public.movie, public.audio]
+            NSRequiredContext: {}
+        # macOS has no types for Matroska; these make .mkv a movie and .mka audio for Open With and Services (D-71).
+        # Imported, so an installed player that declares them wins.
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: org.matroska.mkv
+            UTTypeDescription: Matroska Video
+            UTTypeConformsTo: [public.movie]
+            UTTypeTagSpecification:
+              public.filename-extension: [mkv, mk3d]
+              public.mime-type: [video/x-matroska]
+          - UTTypeIdentifier: org.matroska.mka
+            UTTypeDescription: Matroska Audio
+            UTTypeConformsTo: [public.audio]
+            UTTypeTagSpecification:
+              public.filename-extension: [mka]
+              public.mime-type: [audio/x-matroska]
+        # Registered as a Viewer with rank Alternate: offered in "Open With", never steals the default (FEATURES §13).
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Image
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.image]
+          - CFBundleTypeName: Movie
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.movie]
+          - CFBundleTypeName: Audio
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.audio]
+          - CFBundleTypeName: Folder
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.folder]
+    dependencies:
+      - package: JGCore
+        product: JGModel
+      - package: JGCore
+        product: JGStore
+      - package: JGCore
+        product: JGScanner
+      - package: JGCore
+        product: JGThumbs
+      - package: JGCore
+        product: JGPlayback
+      - package: JGCore
+        product: JGActions
+      - package: JGCore
+        product: JGSettings
+      - package: JGCore
+        product: JGStems
+      - package: JGDesign
+        product: JGDesign
+    scheme: {}

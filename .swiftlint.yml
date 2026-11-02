@@ -1,0 +1,32 @@
+# SwiftLint configuration. Style that SwiftFormat owns (commas, wrapping) is not linted here.
+included:
+  - App
+  - Packages
+  - scripts
+excluded:
+  - build
+  - TestMedia
+  - Packages/JGCore/.build
+  - Packages/JGDesign/.build
+
+disabled_rules:
+  - trailing_comma # SwiftFormat adds trailing commas to multi-line literals
+  - modifier_order # SwiftFormat's modifierOrder owns this (the two disagree on `nonisolated`)
+
+opt_in_rules:
+  - force_unwrapping # CLAUDE.md: no force-unwraps outside tests
+  - contains_over_first_not_nil
+  - empty_count
+  - first_where
+  - sorted_first_last
+  - toggle_bool
+
+line_length:
+  warning: 140
+  error: 200
+
+identifier_name:
+  excluded: [id, db, x, y, s, m, l, xs, xl, xxs, xxl, up, to]
+
+opening_brace:
+  ignore_multiline_statement_conditions: true # SwiftFormat puts the brace on its own line after a wrapped condition

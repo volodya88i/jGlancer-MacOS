@@ -1,0 +1,6 @@
+# SwiftFormat configuration (scripts/lint.sh runs it in --lint mode; run `swiftformat .` to apply).
+--swiftversion 6.0
+--maxwidth 140
+--indent 4
+--importgrouping testable-last
+--exclude build,**/.build,TestMedia,*.xcodeproj
