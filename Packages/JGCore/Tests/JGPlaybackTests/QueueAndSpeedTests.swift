@@ -87,4 +87,11 @@ struct PlaybackSpeedTests {
         }
         #expect(rate == PlaybackSpeed.range.lowerBound)
     }
+
+    @Test func volumeFollowsHearingNotAmplitude() {
+        #expect(PlaybackController.gain(1) == 1)
+        #expect(PlaybackController.gain(0) == 0)
+        #expect(PlaybackController.gain(0.5) == 0.125)
+        #expect(PlaybackController.gain(2) == 1)
+    }
 }

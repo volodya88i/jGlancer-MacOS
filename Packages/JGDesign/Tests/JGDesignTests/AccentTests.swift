@@ -25,6 +25,10 @@ struct AccentTests {
         #expect(JGAccent.on(0x7A2CFF) == 0xFFFFFF)
         #expect(JGAccent.presets.first?.color == JGAccent.defaultColor)
         #expect(!JGAccent.presets.contains { $0.color == 0x1F3BFF })
+        // The default is exact in every theme (D-105), and what sits on it is what `on` picks.
+        #expect(JGColor.accent.light == JGRGB(hex: JGAccent.defaultColor))
+        #expect(JGColor.accent.dark == JGRGB(hex: JGAccent.defaultColor))
+        #expect(JGColor.accentOn.light == JGRGB(hex: JGAccent.on(JGAccent.defaultColor)))
     }
 
     @Test func hexTextParsesAndFormats() {

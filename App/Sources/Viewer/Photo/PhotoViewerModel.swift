@@ -15,6 +15,20 @@ struct ViewerPhoto: Hashable, Sendable {
     let assetID: Int64?
     let modifiedAt: Date?
     let typeIdentifier: String?
+    /// The library's display size in pixels, when known: a thumbnail standing in is shown at it, so the photo does
+    /// not first fill the window and then shrink to its real size (D-113).
+    var pixelSize: CGSize?
+}
+
+extension ViewerPhoto {
+    /// A library asset as a viewer photo.
+    init(asset: Asset) {
+        self.init(
+            url: asset.url, name: asset.name, assetID: asset.id, modifiedAt: asset.modifiedAt,
+            typeIdentifier: asset.typeIdentifier,
+            pixelSize: asset.width.flatMap { width in asset.height.map { CGSize(width: width, height: $0) } }
+        )
+    }
 }
 
 /// The photo viewer's state (docs/ARCHITECTURE.md §8): the folder context, the current index, a pager that keeps
@@ -309,10 +323,7 @@ final class PhotoViewerModel {
             let assets = await (try? store.assets(ids: Array(Set(missing + extra)))) ?? []
             guard let self else { return }
             for asset in assets {
-                rows[asset.id] = ViewerPhoto(
-                    url: asset.url, name: asset.name, assetID: asset.id, modifiedAt: asset.modifiedAt,
-                    typeIdentifier: asset.typeIdentifier
-                )
+                rows[asset.id] = ViewerPhoto(asset: asset)
             }
             // Only rows the pager is waiting for restart it (filmstrip rows must not drop a full-size picture).
             let pagerWindow = Set(Pager.window(around: index, count: entries.count).map { entries[$0] })

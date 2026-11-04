@@ -10,6 +10,13 @@ final class PlaybackTuning {
     let playback: PlaybackController
     @ObservationIgnored private let store: PlaybackPreferencesStore
     private(set) var preferences: PlaybackPreferences
+    /// A pitch or tempo asked for the current song (D-106): a rate without Keep Pitch, never saved. The next file, a
+    /// speed choice or Keep Pitch brings back the saved speed and Keep Pitch.
+    private(set) var targetKind: MediaKind?
+
+    var isTargeted: Bool {
+        targetKind != nil
+    }
 
     init(playback: PlaybackController, store: PlaybackPreferencesStore) {
         self.playback = playback
@@ -19,6 +26,7 @@ final class PlaybackTuning {
 
     /// The remembered speed and "play next" of `kind`, the volume and Keep Pitch, before a file of that kind loads.
     func prepare(for kind: MediaKind) {
+        targetKind = nil
         playback.setRate(preferences.rate(for: kind))
         playback.autoAdvance = preferences.playsNext(for: kind)
         playback.volume = preferences.volume
@@ -26,6 +34,10 @@ final class PlaybackTuning {
     }
 
     func setRate(_ rate: Float, for kind: MediaKind) {
+        if isTargeted {
+            targetKind = nil
+            playback.preservesPitch = preferences.preservesPitch
+        }
         playback.setRate(rate)
         preferences.setRate(playback.rate, for: kind)
         store.save(preferences)
@@ -50,8 +62,31 @@ final class PlaybackTuning {
     }
 
     func setPreservesPitch(_ preserves: Bool) {
+        clearTarget()
         playback.preservesPitch = preserves
         preferences.preservesPitch = preserves
         store.save(preferences)
+    }
+
+    // MARK: Target pitch and tempo
+
+    /// How many semitones the current song sounds from its own pitch.
+    var heardSemitones: Double {
+        playback.preservesPitch ? 0 : PlaybackTarget.semitones(rate: Double(playback.rate))
+    }
+
+    /// Plays the current song at `rate` without Keep Pitch, to reach a pitch or a tempo (D-106).
+    func setTargetRate(_ rate: Double, for kind: MediaKind) {
+        targetKind = kind
+        playback.preservesPitch = false
+        playback.setExactRate(Float(rate))
+    }
+
+    /// Back to the saved speed and Keep Pitch.
+    func clearTarget() {
+        guard let kind = targetKind else { return }
+        targetKind = nil
+        playback.setRate(preferences.rate(for: kind))
+        playback.preservesPitch = preferences.preservesPitch
     }
 }

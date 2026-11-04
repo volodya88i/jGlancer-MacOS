@@ -149,6 +149,14 @@ final class QuickPreviewController: NSObject, NSWindowDelegate {
                 display: false
             )
         }
+        // The window is never narrower than its controls row (the content's own minimum, set by the hosting view, and
+        // `minSize`), also when a narrower frame was saved before (D-112).
+        let least = max(panel.minSize.width, panel.contentView?.fittingSize.width ?? 0)
+        if panel.frame.width < least {
+            var frame = panel.frame
+            frame.size.width = least
+            panel.setFrame(frame, display: false)
+        }
         panel.setFrameAutosaveName(QuickPreviewPanel.frameName)
         return panel
     }

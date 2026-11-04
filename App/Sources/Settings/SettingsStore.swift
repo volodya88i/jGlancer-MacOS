@@ -125,5 +125,6 @@ private struct AppSettingsEnvironment: ViewModifier {
             .environment(\.settingsStore, store)
             .environment(\.reduceMotionOverride, store.settings.reduceMotion)
             .environment(\.jgThemeRevision, JGTheme.current.revision)
+            .environment(\.jgFrostedGlass, store.settings.frostedGlass)
     }
 }

@@ -19,6 +19,8 @@ enum ZoomBenchmark {
         var worstTileMovePt = 0.0
         var worstTileResizePt = 0.0
         var tileJumps = 0
+        /// Tiles on screen once the drag settled (0: the grid went blank).
+        var visibleAfter = 0
     }
 
     static func run(library: LibraryModel, output: URL) async {
@@ -37,7 +39,9 @@ enum ZoomBenchmark {
         let began = CACurrentMediaTime()
         var last = began
         var gaps: [Double] = []
-        let ticks = 180
+        // -JGZoomStep <points>: a fast drag takes big steps (D-112); the default is a slow one, about 2 points a tick.
+        let stepPoints = DeveloperHooks.defaults.double(forKey: "JGZoomStep")
+        let ticks = stepPoints > 0 ? max(2, Int(400 / stepPoints)) : 180
         let grid = DeveloperHooks.mainWindow?.contentView.flatMap(findGrid)
         let tracked = grid.flatMap(middleTile)
         var lastFrame = tracked.flatMap { drawnFrame(of: $0, in: grid) }
@@ -66,6 +70,8 @@ enum ZoomBenchmark {
         result.averageGapMs = gaps.reduce(0, +) / Double(max(gaps.count, 1))
         result.worstGapMs = gaps.max() ?? 0
         result.peakFootprintMB = peak
+        try? await Task.sleep(for: .seconds(1))
+        result.visibleAfter = grid?.visibleItems().count ?? 0
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         try? encoder.encode(result).write(to: output)

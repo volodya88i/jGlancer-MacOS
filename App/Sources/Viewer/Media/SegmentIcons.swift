@@ -29,21 +29,6 @@ struct FadeEdgesIcon: View {
     }
 }
 
-/// "Drag out a file": a pointer over a document, as when a file is dragged.
-struct DragFileIcon: View {
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            Image(systemName: "doc")
-                .font(.system(size: JGTextStyle.body.size))
-                .padding(.leading, JGTextStyle.body.size * 0.45)
-                .padding(.top, JGTextStyle.body.size * 0.3)
-            Image(systemName: "cursorarrow")
-                .font(.system(size: JGTextStyle.body.size * 0.85, weight: .semibold))
-        }
-        .accessibilityHidden(true)
-    }
-}
-
 /// A player button with a drawn icon instead of an SF Symbol (otherwise `ViewerIconButton`).
 struct ViewerGlyphButton<Glyph: View>: View {
     let label: Text

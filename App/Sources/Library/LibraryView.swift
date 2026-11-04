@@ -18,11 +18,27 @@ struct LibraryView: View {
     var onSplitFraction: (Double) -> Void = { _ in }
 
     var body: some View {
-        HStack(spacing: 0) {
+        // The mini player spans the whole window under the sidebar, the panes and the preview, as on Windows; the side
+        // columns give way to the window's width, not the content's (D-111).
+        GeometryReader { window in
+            VStack(spacing: 0) {
+                columns(width: window.size.width)
+                playerBar
+            }
+            .frame(width: window.size.width, height: window.size.height)
+        }
+        .ignoresSafeArea(.container, edges: .top)
+        .background(JGColor.bgBase)
+    }
+
+    private func columns(width: CGFloat) -> some View {
+        let preview = previewWidth(in: width)
+        let sidebar = sidebarWidth(in: width, preview: preview)
+        return HStack(spacing: 0) {
             SidebarView(model: model, target: isSecondPaneActive ? secondPane : model)
-                .frame(width: model.state.sidebarWidth)
+                .frame(width: sidebar)
                 .overlay(alignment: .trailing) {
-                    PaneResizeHandle(width: model.state.sidebarWidth, growsTowardLeading: false, set: model.setSidebarWidth)
+                    PaneResizeHandle(width: sidebar, growsTowardLeading: false, set: model.setSidebarWidth)
                 }
             JGHairline(.vertical)
             VStack(spacing: 0) {
@@ -37,17 +53,29 @@ struct LibraryView: View {
                 } else {
                     LibraryPaneView(model: model, onOpen: onOpen)
                 }
-                // The mini player sits at the very bottom, below the status bar.
-                playerBar
             }
-            if let preview, model.state.previewVisible, !model.roots.isEmpty {
+            if let previewModel = self.preview, showsPreview {
                 JGHairline(.vertical)
-                PreviewPane(preview: preview, library: model, pane: isSecondPaneActive ? secondPane : model)
-                    .frame(width: model.state.previewWidth)
+                PreviewPane(preview: previewModel, library: model, pane: isSecondPaneActive ? secondPane : model)
+                    .frame(width: preview)
             }
         }
-        .ignoresSafeArea(.container, edges: .top)
-        .background(JGColor.bgBase)
+    }
+
+    private var showsPreview: Bool {
+        preview != nil && model.state.previewVisible && !model.roots.isEmpty
+    }
+
+    /// The preview's chosen width, narrower when the window leaves the panes less than their minimum (D-111).
+    private func previewWidth(in width: CGFloat) -> CGFloat {
+        guard showsPreview else { return 0 }
+        let room = width - JGMetrics.libraryPaneMinWidth - JGMetrics.sidebarMinWidth
+        return max(JGMetrics.previewPaneMinWidth, min(model.state.previewWidth, room))
+    }
+
+    /// The sidebar's chosen width, narrower as for the preview.
+    private func sidebarWidth(in width: CGFloat, preview: CGFloat) -> CGFloat {
+        max(JGMetrics.sidebarMinWidth, min(model.state.sidebarWidth, width - JGMetrics.libraryPaneMinWidth - preview))
     }
 
     @ViewBuilder

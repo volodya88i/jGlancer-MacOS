@@ -26,10 +26,21 @@ struct PhotoViewerView: View {
     @State private var filmstripReveal = FilmstripRevealer()
     @State private var pager = SwipePager()
     @Environment(\.appSettings) private var settings
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    private var seesThrough: Bool {
+        settings.translucentPhotoViewer && !reduceTransparency
+    }
 
     var body: some View {
         ZStack {
-            Rectangle().fill(JGColor.bgMedia)
+            if seesThrough {
+                // What lies behind the window, blurred (Settings → Effects; D-114).
+                BehindWindowGlass()
+                Rectangle().fill(JGColor.bgMedia).opacity(JGMetrics.behindWindowTintOpacity)
+            } else {
+                Rectangle().fill(JGColor.bgMedia)
+            }
             PhotoCanvas(
                 model: model, picture: model.shownPicture, index: model.index, zoomCommand: zoomCommand, pager: pager,
                 onClose: onEscape ?? onClose, onActivity: showHUD, contextMenu: contextMenu

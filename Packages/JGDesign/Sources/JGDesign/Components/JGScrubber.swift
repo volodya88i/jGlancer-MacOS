@@ -26,7 +26,6 @@ public struct JGScrubber: NSViewRepresentable {
     private var segmentMenu: (() -> NSMenu?)?
     private var animatesPlayhead = true
     private var wheelZooms = false
-    private var waveformHeight: CGFloat = 1
     private var animatesWaveform = false
 
     public init(
@@ -69,7 +68,6 @@ public struct JGScrubber: NSViewRepresentable {
         view.segmentMenu = segmentMenu
         view.animatesPlayhead = animatesPlayhead
         view.wheelZooms = wheelZooms
-        view.waveformHeight = waveformHeight
         view.animatesWaveform = animatesWaveform
         if let liveTime {
             liveTime.attach(view)
@@ -97,10 +95,9 @@ public extension JGScrubber {
         return copy
     }
 
-    /// The waveform's share of the height (½ for the narrow style) and whether a new one morphs in (D-79).
-    func waveformStyle(height: CGFloat, animates: Bool) -> JGScrubber {
+    /// Whether a new waveform morphs in (D-79). The waveform fills the scrubber's height (D-112).
+    func animatesWaveform(_ animates: Bool) -> JGScrubber {
         var copy = self
-        copy.waveformHeight = height
         copy.animatesWaveform = animates
         return copy
     }

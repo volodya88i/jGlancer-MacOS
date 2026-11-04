@@ -58,6 +58,15 @@ final class MediaViewerModel {
     @ObservationIgnored var detailTask: Task<Void, Never>?
     /// Settings: exported WAV, AIFF and FLAC segments keep their format (D-74).
     @ObservationIgnored var segmentKeepsAudioFormat = true
+    /// Settings: video segments are cut exactly, encoded again (D-108).
+    @ObservationIgnored var segmentCutsExactly = true
+    /// Tempo and key of the current song (D-106), once known; `isAnalyzing` while they are looked for, and
+    /// `foundNothing` when the song was analyzed without a result. Set by `MediaViewerModel+Analysis`.
+    var analysis: AudioAnalysis?
+    var isAnalyzing = false
+    var foundNothing = false
+    @ObservationIgnored var analyses: AudioAnalyses?
+    @ObservationIgnored var analysisTask: Task<Void, Never>?
     /// A one-line confirmation (a toast), set by the app.
     @ObservationIgnored var showMessage: ((String) -> Void)?
 
@@ -184,10 +193,10 @@ final class MediaViewerModel {
         cover = image.map(Cover.image) ?? .none
     }
 
-    /// The waveform of the current audio file, progressively.
-    func loadWaveform(for item: PlaybackItem) async {
+    /// The waveform of the current audio file, progressively; of a video's sound when `video` (D-110).
+    func loadWaveform(for item: PlaybackItem, video: Bool = false) async {
         waveform = nil
-        guard item.kind == .audio else { return }
+        guard item.kind == .audio || (video && item.kind == .video) else { return }
         let request = WaveformRequest(url: item.url, assetID: item.assetID, modifiedAt: item.modifiedAt)
         for await partial in waveforms.waveform(for: request) {
             guard !Task.isCancelled, current == item else { return }

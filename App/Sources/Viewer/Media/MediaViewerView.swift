@@ -125,9 +125,14 @@ struct MediaViewerView: View {
                 await model.loadCover(for: item)
             }
         }
+        .task(id: WaveformKey(item: model.current, videoWaveform: settings.videoWaveformStyle == .narrow)) {
+            if let item = model.current {
+                await model.loadWaveform(for: item, video: settings.videoWaveformStyle == .narrow)
+            }
+        }
         .task(id: model.current) {
             if let item = model.current {
-                await model.loadWaveform(for: item)
+                await model.loadAnalysis(for: item)
             }
         }
     }
@@ -142,10 +147,15 @@ struct MediaViewerView: View {
                 FilmstripPanel(source: model, reveal: filmstripReveal)
                 // The controls row sits centred between the scrubber and the bottom edge (D-78).
                 VStack(spacing: JGSpacing.xs) {
+                    // The sound's waveform when Decor → Video player says so (D-110).
                     PlaybackScrubber(
-                        playback: playback, liveTime: model.liveTime, isObserving: model.isChromeVisible, segmentModel: model
+                        playback: playback, liveTime: model.liveTime,
+                        waveform: settings.videoWaveformStyle == .narrow ? model.waveform ?? Self.silence : nil,
+                        style: settings.videoWaveformStyle, isObserving: model.isChromeVisible, segmentModel: model
                     )
-                    .frame(height: JGMetrics.controlHeightCompact)
+                    .frame(
+                        height: settings.videoWaveformStyle == .narrow ? JGMetrics.videoWaveformHeight : JGMetrics.controlHeightCompact
+                    )
                     PlaybackControls(model: model, isFullScreen: isFullScreen, onToggleFullScreen: toggleFullScreen)
                 }
                 .padding(.horizontal, JGSpacing.m)
@@ -256,9 +266,13 @@ struct MediaViewerView: View {
             (onEscape ?? onClose)()
         }
     }
+}
 
+// MARK: Chrome
+
+extension MediaViewerView {
     /// Shows the chrome; while video plays it hides again after a short idle unless the pointer is on the controls.
-    private func showChrome() {
+    func showChrome() {
         if !model.isChromeVisible {
             model.isChromeVisible = true
         }
@@ -282,4 +296,10 @@ struct MediaViewerView: View {
             return true
         }
     }
+}
+
+/// The waveform loads again for another file, or when the video player starts or stops showing one.
+private struct WaveformKey: Equatable {
+    let item: PlaybackItem?
+    let videoWaveform: Bool
 }

@@ -2,7 +2,7 @@ import AppKit
 import JGDesign
 import SwiftUI
 
-/// The viewers' top bar on scrim (docs/DESIGN.md §8): back to the library, the file name, its position in the
+/// The viewers' top bar on frosted scrim (docs/DESIGN.md §8): back to the library, the file name, its position in the
 /// folder in mono, then viewer-specific controls. Esc closes, or runs `onEscape` when given.
 struct ViewerTopBar<Trailing: View>: View {
     let name: String
@@ -52,7 +52,9 @@ struct ViewerTopBar<Trailing: View>: View {
         .padding(.leading, JGMetrics.windowControlsInset)
         .padding(.trailing, JGSpacing.m)
         .frame(height: JGMetrics.barHeight)
-        .background { Rectangle().fill(JGColor.overlayScrim).opacity(isLight ? JGMetrics.filmstripScrimOpacity : 1) }
+        .background { Color.clear.contentShape(Rectangle()).titleBarDoubleClick() }
+        // Blurs what is behind it like the bottom controls (D-109).
+        .viewerGlass(tint: isLight ? JGMetrics.filmstripScrimOpacity : 1)
         .overlay(alignment: .bottom) { JGHairline() }
     }
 }

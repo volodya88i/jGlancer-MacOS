@@ -57,7 +57,7 @@ public enum JGContrastRequirements {
         for status in [JGColor.accentText, JGColor.danger, JGColor.success, JGColor.warning] {
             add(status, on: [JGColor.bgBase, JGColor.bgPanel], .text)
         }
-        add(JGColor.accent, on: surfaces + [JGColor.bgMedia], .graphic)
+        // The accent itself is exactly the color chosen (D-98, D-105); accent.text carries the obligation.
         add(JGColor.accentText, on: surfaces + [JGColor.bgMedia], .graphic)
         add(JGColor.accentOn, on: [JGColor.accent], .text)
         // Players: artist and album under the title, unplayed waveform.

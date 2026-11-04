@@ -18,6 +18,8 @@ final class GridController: NSObject, NSCollectionViewDataSource {
     var rowQueue: [Int64] = []
     static let rowCapacity = 5000
     var rowsInFlight: Set<Int64> = []
+    /// Rows that changed in the store (a flag, a move, a rename): still drawn, fetched again as they show (D-113).
+    var staleRows: Set<Int64> = []
 
     var thumbnailTasks: [Int64: (task: Task<Void, Never>, priority: ThumbnailPriority)] = [:]
     /// Scroll speed and the screen it predicts (`GridController+Prefetch`, D-81).
@@ -25,6 +27,8 @@ final class GridController: NSObject, NSCollectionViewDataSource {
     var settleTask: Task<Void, Never>?
     /// The end of a live tile-size change (`GridController+Sizing`, D-93).
     var sizingSettle: Task<Void, Never>?
+    /// When the tile size last changed: a step soon after another joins the live change, however big (D-112).
+    var lastSizeChange: CFTimeInterval = 0
     /// Keys of additive glides, so they stack.
     var reflowSerial = 0
     /// Tiles that flew past while scrolling, lowered to background, oldest first.
@@ -53,6 +57,7 @@ final class GridController: NSObject, NSCollectionViewDataSource {
         collectionView.register(ThumbnailItem.self, forItemWithIdentifier: ThumbnailItem.identifier)
         collectionView.setAccessibilityLabel(String(localized: "Library", comment: "Accessibility label of the thumbnail grid"))
         scrollView.documentView = collectionView
+        scrollView.automaticallyAdjustsContentInsets = false
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
@@ -68,6 +73,15 @@ final class GridController: NSObject, NSCollectionViewDataSource {
         marqueeLayer.zPosition = 10
         dropIndicator.zPosition = 10
         dropIndicator.isHidden = true
+    }
+
+    /// The bars over the grid (D-114): content and scroller start below the top bar and end above the status bar.
+    func setInsets(_ insets: NSEdgeInsets) {
+        let current = scrollView.contentInsets
+        guard current.top != insets.top || current.bottom != insets.bottom else { return }
+        scrollView.contentInsets = insets
+        scrollView.scrollerInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.invalidateLayout()
     }
 
     // MARK: Model sync
@@ -89,10 +103,10 @@ final class GridController: NSObject, NSCollectionViewDataSource {
         layout.targetTileSide = model.state.tileSide
         layout.showsCaptions = model.state.showNames
         if model.rowsVersion != lastRowsVersion {
-            // Moved or renamed files keep their ids but not their paths: fetch the rows again.
+            // Flagged, moved or renamed files keep their ids: the tiles keep what they show while the rows are fetched
+            // again, so nothing blanks out and thumbnails stay (D-113).
             lastRowsVersion = model.rowsVersion
-            rows.removeAll()
-            rowQueue.removeAll()
+            staleRows = Set(rows.keys)
         }
         if let request = model.inlineRenameRequest, request.serial != lastRenameSerial {
             lastRenameSerial = request.serial

@@ -69,15 +69,6 @@ public final class ScrubberView: NSView {
 
     let motion = PlayheadMotion()
     var wheelZooms = false
-    /// The waveform's share of the height (the narrow style: ½).
-    var waveformHeight: CGFloat = 1 {
-        didSet {
-            if waveformHeight != oldValue {
-                needsLayout = true
-            }
-        }
-    }
-
     /// Waveform changes morph in (off with Reduce Motion).
     var animatesWaveform = false
     let morph = WaveformMorph()
@@ -200,6 +191,7 @@ public final class ScrubberView: NSView {
         let x = duration > 0 ? x(of: min(max(shown, 0), duration)) : 0
         // A plain track shows the position by its fill alone (W-99); a waveform has a thin playhead.
         playheadLayer.isHidden = waveform == nil || x < -width || x > bounds.width
+        // As tall as the waveform, which fills the scrubber (D-111, D-112).
         playheadLayer.frame = CGRect(x: x, y: 0, width: width, height: bounds.height)
         let filled = min(max(x + width / 2, 0), bounds.width)
         if waveform == nil {

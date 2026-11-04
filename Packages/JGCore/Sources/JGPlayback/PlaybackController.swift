@@ -61,11 +61,20 @@ public final class PlaybackController {
 
     @ObservationIgnored public var onMotionChange: ((Double) -> Void)?
 
+    /// The volume slider's position, 0…1. What is played is `Self.gain(volume)` (D-111).
     public var volume: Float = 1 {
         didSet {
-            player.volume = volume
-            matroska?.audioRenderer?.volume = volume
+            player.volume = Self.gain(volume)
+            matroska?.audioRenderer?.volume = Self.gain(volume)
         }
+    }
+
+    /// The amplitude for a slider position: its cube, as mpv does (D-111). Loudness is heard on a logarithmic scale,
+    /// so a linear amplitude put most of the change into the slider's first fifth; the cube makes each step sound
+    /// alike (half the slider ≈ −18 dB).
+    public nonisolated static func gain(_ volume: Float) -> Float {
+        let position = min(max(volume, 0), 1)
+        return position * position * position
     }
 
     public var isMuted = false {
@@ -89,8 +98,14 @@ public final class PlaybackController {
         }
     }
 
-    /// Repeats the current item.
-    public var loops = false
+    /// Repeats the current item. The player then does not pause at the end, so a loop restarting never reports a
+    /// pause (hidden chrome stays hidden, D-110).
+    public var loops = false {
+        didSet {
+            player.actionAtItemEnd = loops ? .none : .pause
+        }
+    }
+
     /// Continues with the next item at the end (audio).
     public var autoAdvance = true
     /// Playback pauses here (the end of a selected segment, D-74); nil plays on. Cleared when another item loads.
@@ -303,25 +318,6 @@ public final class PlaybackController {
             }
         default:
             break
-        }
-    }
-
-    func itemDidEnd() {
-        switch queue.endAction(loop: loops, autoAdvance: autoAdvance) {
-        case .replay:
-            seek(to: 0, precise: true)
-            if matroska != nil {
-                play()
-            } else {
-                player.play()
-            }
-        case let .advance(index):
-            select(index)
-        case .stop:
-            if matroska != nil {
-                isPlaying = false
-            }
-            setTime(duration ?? mediaSeconds, exact: true)
         }
     }
 }

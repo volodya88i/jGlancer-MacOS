@@ -32,6 +32,8 @@ struct SidebarView: View {
         VStack(alignment: .leading, spacing: 0) {
             // The window controls sit here, level with the top bar.
             Color.clear.frame(height: JGMetrics.barHeight)
+                .contentShape(Rectangle())
+                .titleBarDoubleClick()
             SidebarPins(model: model, target: pane)
             HStack {
                 JGSectionHeader(Text("Folders", comment: "Sidebar section label; shown in capitals"))
@@ -70,7 +72,8 @@ struct SidebarView: View {
             .onMoveCommand(perform: moveSelection)
             JGHairline()
             TrashRow(model: model)
-                .padding(JGSpacing.xs)
+                .padding(.horizontal, JGSpacing.xs)
+                .frame(height: JGMetrics.statusBarHeight)
         }
         .background(JGColor.bgPanel)
         .confirmationDialog(
@@ -265,11 +268,7 @@ private struct FolderRowView: View {
         .padding(.horizontal, JGSpacing.xs)
         .frame(height: JGMetrics.controlHeightCompact)
         .background(isSelected ? JGColor.bgRaised : JGColor.bgPanel, in: JGShape(.small))
-        .overlay {
-            if isDropTarget {
-                JGShape(.small).strokeBorder(JGColor.accent, lineWidth: JGMetrics.selectionEdgeWidth)
-            }
-        }
+        .jgDropMark(isDropTarget, in: JGShape(.small))
         .contentShape(JGShape(.small))
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : [.isButton])

@@ -62,6 +62,8 @@ final class AppModel {
     /// The one player of the app (docs/ARCHITECTURE.md §9).
     let playback = PlaybackController()
     @ObservationIgnored private(set) var waveforms = WaveformService(disk: nil)
+    /// Tempo and key of songs (D-106), kept in the library's database once it is open.
+    @ObservationIgnored let analyses = AudioAnalyses()
     @ObservationIgnored private(set) lazy var tuning = PlaybackTuning(
         playback: playback, store: PlaybackPreferencesStore(isPersistent: AppPaths.dataOverride == nil)
     )
@@ -155,6 +157,7 @@ final class AppModel {
                 stateStore: ViewStateStore(isPersistent: AppPaths.dataOverride == nil)
             )
             waveforms = WaveformService(disk: opened.1)
+            await analyses.setStore(opened.0)
             settingsStore.thumbnailCache = opened.1
             settingsStore.applyAll()
             connectPreview(to: model)

@@ -21,7 +21,7 @@ struct AddingFoldersCard: View {
             }
             .padding(JGSpacing.m)
             .frame(width: JGMetrics.addingCardWidth)
-            .background(JGColor.bgPanel, in: JGShape(.medium))
+            .jgPanelBackground(JGColor.bgRaised, in: JGShape(.medium))
             .overlay(JGShape(.medium).strokeBorder(JGColor.lineHair, lineWidth: JGMetrics.outlineWidth))
             .shadow(color: .black.opacity(JGMetrics.toastShadowOpacity), radius: JGMetrics.toastShadowRadius)
             .padding(.bottom, JGSpacing.xl)

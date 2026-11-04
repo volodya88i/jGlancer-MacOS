@@ -28,6 +28,14 @@ struct AppearanceSettings: View {
                 isOn: settings.coverBackdrop
             ) { isOn in store.update { $0.coverBackdrop = isOn } }
             SettingsToggle(
+                title: Text("Frosted glass in menus and panels", comment: "Settings: blurred backgrounds of toasts and panels"),
+                isOn: settings.frostedGlass
+            ) { isOn in store.update { $0.frostedGlass = isOn } }
+            SettingsToggle(
+                title: Text("See through the photo viewer", comment: "Settings: the photo viewer shows what is behind the window"),
+                isOn: settings.translucentPhotoViewer
+            ) { isOn in store.update { $0.translucentPhotoViewer = isOn } }
+            SettingsToggle(
                 title: Text("Show the next file while swiping", comment: "Settings: swipe animation between photos or songs"),
                 isOn: settings.swipeAnimation
             ) { isOn in store.update { $0.swipeAnimation = isOn } }
@@ -64,16 +72,22 @@ struct AppearanceSettings: View {
             SettingsToggle(title: crosshairs, isOn: settings.crosshairMarks) { isOn in
                 store.update { $0.crosshairMarks = isOn }
             }
-            HStack {
-                Text("Audio waveform", comment: "Settings: decor, how audio players draw their scrubber")
-                    .jgTextStyle(.body)
-                    .foregroundStyle(JGColor.textPrimary)
-                Spacer()
-                segmented(\.waveformStyle, [
-                    (.narrow, Text("Waveform", comment: "Settings: audio scrubber as a waveform")),
-                    (.timeline, Text("Timeline", comment: "Settings: audio scrubber as the plain video slider")),
-                ])
-            }
+            scrubberRow(Text("Audio player", comment: "Settings: decor, how the audio players draw their scrubber"), \.waveformStyle)
+            scrubberRow(Text("Video player", comment: "Settings: decor, how the video player draws its scrubber"), \.videoWaveformStyle)
+        }
+    }
+
+    /// A player's scrubber: its name on the left, Waveform | Timeline on the right (D-110).
+    private func scrubberRow(_ title: Text, _ keyPath: WritableKeyPath<AppSettings, WaveformStyle>) -> some View {
+        HStack {
+            title
+                .jgTextStyle(.body)
+                .foregroundStyle(JGColor.textPrimary)
+            Spacer()
+            segmented(keyPath, [
+                (.narrow, Text("Waveform", comment: "Settings: audio scrubber as a waveform")),
+                (.timeline, Text("Timeline", comment: "Settings: audio scrubber as the plain video slider")),
+            ])
         }
     }
 

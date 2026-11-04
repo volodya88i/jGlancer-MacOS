@@ -74,6 +74,8 @@ public final class SliderView: NSView {
     static let wheelFraction = 0.2
     /// ⇧-scrolling: travel not yet turned into a tick.
     private var pendingSnap = 0.0
+    /// The window's own movability while a press holds it still.
+    private var heldWindow: (window: NSWindow, wasMovable: Bool)?
 
     override public var isFlipped: Bool {
         true
@@ -107,11 +109,33 @@ public final class SliderView: NSView {
         if focusesOnClick {
             window?.makeFirstResponder(self)
         }
+        // In the title-bar strip the window's own drag can still start under a SwiftUI host; the window stays still
+        // until the press ends (D-112).
+        if let window, heldWindow == nil {
+            heldWindow = (window, window.isMovable)
+            window.isMovable = false
+        }
         track(event)
     }
 
     override public func mouseDragged(with event: NSEvent) {
         track(event)
+    }
+
+    override public func mouseUp(with _: NSEvent) {
+        releaseWindow()
+    }
+
+    override public func viewWillMove(toWindow newWindow: NSWindow?) {
+        super.viewWillMove(toWindow: newWindow)
+        releaseWindow()
+    }
+
+    private func releaseWindow() {
+        if let held = heldWindow {
+            held.window.isMovable = held.wasMovable
+            heldWindow = nil
+        }
     }
 
     private func track(_ event: NSEvent) {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Kind-filter toggles such as Video, Photo, Audio (W-98): quiet, no fill while off and no capitals. Off =
-/// `text.secondary` (hover `text.primary`), on = `bg.raised` with `text.primary`.
+/// `text.secondary` (hover `text.primary`); on = inverted, a `text.primary` fill with `bg.base` on it (D-116).
 public struct JGChipToggleStyle: ToggleStyle {
     public init() {}
 
@@ -20,10 +20,10 @@ public struct JGChipToggleStyle: ToggleStyle {
                 configuration.label
                     .jgTextStyle(.button)
                     .lineLimit(1)
-                    .foregroundStyle(configuration.isOn || isHovered ? JGColor.textPrimary : JGColor.textSecondary)
+                    .foregroundStyle(configuration.isOn ? JGColor.bgBase : isHovered ? JGColor.textPrimary : JGColor.textSecondary)
                     .padding(.horizontal, JGSpacing.s)
                     .frame(height: JGMetrics.controlHeightCompact)
-                    .background(configuration.isOn ? AnyShapeStyle(JGColor.bgRaised) : AnyShapeStyle(.clear), in: JGShape(.small))
+                    .background(configuration.isOn ? AnyShapeStyle(JGColor.textPrimary) : AnyShapeStyle(.clear), in: JGShape(.small))
                     .contentShape(JGShape(.small))
             }
             .buttonStyle(.plain)

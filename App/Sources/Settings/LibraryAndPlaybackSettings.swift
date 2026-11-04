@@ -142,6 +142,13 @@ struct PlaybackSettings: View {
             ) { isOn in store.update { $0.segmentKeepsAudioFormat = isOn } }
             SettingsToggle(
                 title: Text(
+                    "Cut video exactly at the brackets (encodes it again)",
+                    comment: "Settings: video segments are encoded again so they start and end exactly at the brackets"
+                ),
+                isOn: store.settings.segmentCutsExactly
+            ) { isOn in store.update { $0.segmentCutsExactly = isOn } }
+            SettingsToggle(
+                title: Text(
                     "The mouse wheel zooms the timeline of a segment (otherwise ⌘ and the wheel)",
                     comment: "Settings: in segment selection the plain mouse wheel zooms"
                 ),

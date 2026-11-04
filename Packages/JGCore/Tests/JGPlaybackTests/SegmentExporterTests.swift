@@ -19,6 +19,22 @@ struct SegmentExporterTests {
         #expect(!SegmentExporter.canExport(URL(fileURLWithPath: "/m/a.mkv"), kind: .video))
     }
 
+    @Test func wholeFilesAreNamedBySpeedAndVideoIsCopied() async throws {
+        var song = SegmentExportRequest.whole(URL(fileURLWithPath: "/m/Song.flac"), kind: .audio, duration: 200)
+        #expect(SegmentExporter.suggestedName(for: song) == "Song.flac")
+        song.rate = 1.25
+        #expect(SegmentExporter.suggestedName(for: song) == "Song 1.25x.flac")
+        #expect(SegmentExporter.canExportWhole(URL(fileURLWithPath: "/m/a.M4V"), kind: .video))
+        #expect(!SegmentExporter.canExportWhole(URL(fileURLWithPath: "/m/a.avi"), kind: .video))
+        #expect(!SegmentExporter.canExportWhole(URL(fileURLWithPath: "/m/a.mka"), kind: .audio))
+        let folder = try TemporaryDirectory()
+        let movie = folder.url.appendingPathComponent("clip.mov")
+        try await MediaFactory.mov(at: movie, width: 32, height: 32, frames: 30, fps: 30)
+        let out = folder.url.appendingPathComponent("copy.mov")
+        try await SegmentExporter.export(.whole(movie, kind: .video, duration: 1), to: out)
+        #expect(try Data(contentsOf: out) == Data(contentsOf: movie))
+    }
+
     @Test func savingNeverReplacesAFile() async throws {
         let folder = try TemporaryDirectory()
         let movie = folder.url.appendingPathComponent("clip.mov")
@@ -44,6 +60,22 @@ struct SegmentExporterTests {
         let codec = try await track.load(.formatDescriptions).first.map(CMFormatDescriptionGetMediaSubType)
         let sourceTrack = try #require(try await AVURLAsset(url: movie).loadTracks(withMediaType: .video).first)
         #expect(try await codec == (sourceTrack.load(.formatDescriptions).first.map(CMFormatDescriptionGetMediaSubType)))
+    }
+
+    @Test func cutsAVideoExactlyByEncodingIt() async throws {
+        let folder = try TemporaryDirectory()
+        let movie = folder.url.appendingPathComponent("clip.mov")
+        try await MediaFactory.mov(at: movie, width: 64, height: 64, frames: 60, fps: 30)
+        var request = SegmentExportRequest(source: movie, kind: .video, range: 0.4 ... 1.3)
+        request.isExact = true
+        #expect(SegmentExporter.suggestedName(for: request) == "clip (0m00.4s–0m01.3s).mp4")
+        let out = folder.url.appendingPathComponent("exact.mp4")
+        try await SegmentExporter.export(request, to: out)
+        let asset = AVURLAsset(url: out)
+        #expect(try await abs(asset.load(.duration).seconds - 0.9) < 0.05)
+        let track = try #require(try await asset.loadTracks(withMediaType: .video).first)
+        let codec = try await track.load(.formatDescriptions).first.map(CMFormatDescriptionGetMediaSubType)
+        #expect(codec == kCMVideoCodecType_H264)
     }
 
     @Test func losslessSourcesKeepTheirFormat() async throws {

@@ -13,6 +13,16 @@ enum QuickPreviewOpenCheck {
         try? await Task.sleep(for: .milliseconds(500))
         if let panel = NSApp.windows.first(where: { $0 is QuickPreviewPanel }) {
             log("open \(quickPreview.isOpen), floating \(panel.level == .floating), hides when inactive \(panel.hidesOnDeactivate)")
+            // -JGQuickPreviewNarrow <png>: the panel squeezed; it stops where its controls row still fits (D-112).
+            if let narrow = DeveloperHooks.defaults.string(forKey: "JGQuickPreviewNarrow") {
+                for width in [230.0, 420] {
+                    panel.setContentSize(NSSize(width: width, height: 520))
+                    try? await Task.sleep(for: .milliseconds(400))
+                    let url = URL(fileURLWithPath: narrow).deletingPathExtension().appendingPathExtension("\(Int(width)).png")
+                    DeveloperHooks.snapshot(panel, to: url)
+                    log("asked \(Int(width)) pt, got \(Int(panel.frame.width)) pt")
+                }
+            }
         }
         appModel.openFromQuickPreview()
         try? await Task.sleep(for: .milliseconds(1000))

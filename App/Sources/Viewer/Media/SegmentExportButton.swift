@@ -4,11 +4,12 @@ import JGPlayback
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// The export button of segment selection (D-73, D-74). Pressing it starts rendering the segment; dragged to
-/// Finder or any app it delivers the file (as a file, for apps like Telegram, and as a promise, for Finder);
-/// a click opens Save As. Disabled (dimmed) without `request`.
+/// The players' export button (D-73, D-74, D-107): the segment while one is chosen, else the whole file. Pressing it
+/// starts rendering; dragged to Finder or any app it delivers the file (as a file, for apps like Telegram, and as a
+/// promise, for Finder); a click opens Save As. Disabled (dimmed) without `request`.
 struct SegmentExportButton: NSViewRepresentable {
     let request: SegmentExportRequest?
+    var isWhole = false
 
     func makeNSView(context _: Context) -> SegmentDragView {
         SegmentDragView()
@@ -16,12 +17,23 @@ struct SegmentExportButton: NSViewRepresentable {
 
     func updateNSView(_ view: SegmentDragView, context _: Context) {
         view.request = request
-        let label = request == nil
-            ? String(localized: "This file can't be cut.", comment: "Player: export button of a file that can't be cut (MKV)")
-            : String(localized: "Drag to export the segment, click to save it", comment: "Player: the segment export button")
+        let label = Self.label(isAvailable: request != nil, isWhole: isWhole)
         view.toolTip = label
         view.setAccessibilityLabel(label)
         view.alphaValue = request == nil ? JGMetrics.placeholderOpacity : 1
+    }
+
+    private static func label(isAvailable: Bool, isWhole: Bool) -> String {
+        switch (isAvailable, isWhole) {
+        case (false, false):
+            String(localized: "This file can't be cut.", comment: "Player: export button of a file that can't be cut (MKV)")
+        case (false, true):
+            String(localized: "This file can't be exported.", comment: "Player: export button of a video other than MP4 or MOV")
+        case (true, false):
+            String(localized: "Drag to export the segment, click to save it", comment: "Player: the segment export button")
+        case (true, true):
+            String(localized: "Drag to export the file, click to save it", comment: "Player: the export button without a segment")
+        }
     }
 
     func sizeThatFits(_: ProposedViewSize, nsView _: SegmentDragView, context _: Context) -> CGSize? {
@@ -29,10 +41,15 @@ struct SegmentExportButton: NSViewRepresentable {
     }
 }
 
-/// A drag source showing `DragFileIcon`.
+/// A drag source showing an arrow rising out of a tray.
 final class SegmentDragView: NSView, NSDraggingSource {
     var request: SegmentExportRequest?
-    private let icon = NSHostingView(rootView: AnyView(DragFileIcon().foregroundStyle(JGColor.textPrimary)))
+    private let icon = NSHostingView(rootView: AnyView(
+        Image(systemName: "square.and.arrow.up")
+            .font(.system(size: JGTextStyle.body.size))
+            .foregroundStyle(JGColor.textPrimary)
+            .accessibilityHidden(true)
+    ))
     private var pressed: NSEvent?
     /// The segment being rendered since the button was pressed.
     private var render: SegmentRender?

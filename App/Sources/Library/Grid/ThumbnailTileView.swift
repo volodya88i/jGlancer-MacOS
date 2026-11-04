@@ -157,11 +157,13 @@ final class ThumbnailTileView: NSView {
         glyphLayer.frame = square
         imageLayer.frame = image.map { Self.aspectFit(CGSize(width: $0.width, height: $0.height), in: square) } ?? square
         layoutSequence(in: square)
+        // The duration sits at the bottom right (D-105): the top left is often where a picture's subject is.
         let badgeSize = badgeLayer.preferredFrameSize()
         let inset = JGMetrics.badgeInset
+        let badgeHeight = badgeSize.height + JGMetrics.badgeExtraHeight
         badgeLayer.frame = CGRect(
-            x: imageLayer.frame.minX + inset, y: imageLayer.frame.minY + inset,
-            width: badgeSize.width + 2 * inset, height: badgeSize.height
+            x: imageLayer.frame.maxX - inset - badgeSize.width - 2 * inset, y: imageLayer.frame.maxY - inset - badgeHeight,
+            width: badgeSize.width + 2 * inset, height: badgeHeight
         )
         let flagSide = JGMetrics.flagBadgeSide
         flagLayer.frame = CGRect(

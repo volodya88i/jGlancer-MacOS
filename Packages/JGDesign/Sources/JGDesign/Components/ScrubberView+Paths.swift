@@ -13,14 +13,14 @@ extension ScrubberView {
     }
 
     /// A filled outline: highs along the top, lows back along the bottom, one column per point, scaled so the
-    /// loudest peak of the whole file reaches the edges (or `height` of them: the narrow style). Zoomed in, `detail`
+    /// loudest peak of the whole file reaches the edges. Zoomed in, `detail`
     /// supplies finer peaks where it covers the window.
     static func waveformPath(
         _ peaks: JGWaveformPeaks, detail: JGWaveformDetail? = nil, duration: Double = 0, visible: ScrubberWindow? = nil,
-        height: CGFloat = 1, in bounds: CGRect
+        in bounds: CGRect
     ) -> CGPath {
         let columns = waveColumns(peaks, detail: detail, duration: duration, visible: visible, count: Int(bounds.width.rounded(.down)))
-        return wavePath(columns, height: height, in: bounds)
+        return wavePath(columns, in: bounds)
     }
 
     /// The waveform as columns, one per point: highs and lows in -1…1 of the loudest peak of the file.
@@ -48,13 +48,13 @@ extension ScrubberView {
     }
 
     /// The outline of `columns` across `bounds`; at least a hairline, so silence still reads as a line.
-    static func wavePath(_ columns: WaveColumns, height: CGFloat = 1, in bounds: CGRect) -> CGPath {
+    static func wavePath(_ columns: WaveColumns, in bounds: CGRect) -> CGPath {
         let path = CGMutablePath()
         let count = min(columns.tops.count, columns.bottoms.count)
         guard count > 1 else { return path }
         let middle = bounds.midY
         let half = bounds.height / 2
-        let scale = half * height
+        let scale = half
         let floor = JGMetrics.outlineWidth / 2
         let step = bounds.width / CGFloat(count)
         path.move(to: CGPoint(x: 0, y: middle - min(max(columns.tops[0] * scale, floor), half)))

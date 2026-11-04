@@ -52,7 +52,7 @@ extension PlaybackController {
         removeStopObserver()
         matroska = engine
         matroskaLayer = engine.videoLayer
-        engine.audioRenderer?.volume = volume
+        engine.audioRenderer?.volume = Self.gain(volume)
         engine.audioRenderer?.isMuted = isMuted || mutesWhileScrubbing
         engine.audioRenderer?.audioTimePitchAlgorithm = pitchAlgorithm
         engine.onEnd = { [weak self] in self?.itemDidEnd() }

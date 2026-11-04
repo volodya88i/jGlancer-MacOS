@@ -61,7 +61,10 @@ final class GridLayout: NSCollectionViewLayout {
     }
 
     override var collectionViewContentSize: NSSize {
-        let visibleHeight = collectionView?.enclosingScrollView?.contentSize.height ?? 0
+        // The height the files can use: the scroll view's, less the bars over it (D-114).
+        let scrollView = collectionView?.enclosingScrollView
+        let insets = scrollView?.contentInsets ?? NSEdgeInsets()
+        let visibleHeight = (scrollView?.contentSize.height ?? 0) - insets.top - insets.bottom
         return NSSize(width: geometry.width, height: max(geometry.contentHeight, visibleHeight))
     }
 

@@ -1,16 +1,20 @@
 import AppKit
 import AVFoundation
+import JGDesign
 import JGModel
 import SwiftUI
 
 /// The video picture (an `AVPlayerLayer`, aspect-fit on `bg.media`) and the keyboard of the video and audio
 /// viewers: Space, ←/→ seek, ⌥←/⌥→ previous/next, ↑/↓ volume, `,` `.` frame step, `[` `]` `\` speed
-/// (docs/FEATURES.md §15). Double-click toggles full screen. With `onSwipe` (audio), mouse drags and two-finger
+/// (docs/FEATURES.md §15). A click on a video plays or pauses it (released within `clickSlop` of the press);
+/// a double-click undoes that and toggles full screen (D-110). With `onSwipe` (audio), mouse drags and two-finger
 /// trackpad swipes page between files; mouse wheels do not.
 final class MediaSurfaceView: NSView {
     var onCommand: ((MediaCommand) -> Void)?
     var onSwipe: ((SwipeInput) -> Void)?
     private var isDragging = false
+    /// Where a single click on the video went down.
+    private var pressLocation: NSPoint?
     var onActivity: (() -> Void)?
     var onContextMenu: (() -> NSMenu?)?
     /// False in previews: the library keeps the keyboard.
@@ -112,7 +116,11 @@ final class MediaSurfaceView: NSView {
         }
         onActivity?()
         isDragging = false
+        pressLocation = event.clickCount == 1 && hasVideo ? event.locationInWindow : nil
         if event.clickCount == 2 {
+            if hasVideo {
+                onCommand?(.togglePlay)
+            }
             onCommand?(.toggleFullScreen)
         }
     }
@@ -130,11 +138,15 @@ final class MediaSurfaceView: NSView {
         onSwipe(.moved(delta: event.deltaX, time: event.timestamp))
     }
 
-    override func mouseUp(with _: NSEvent) {
+    override func mouseUp(with event: NSEvent) {
         if isDragging {
             isDragging = false
             onSwipe?(.ended)
         }
+        if let press = pressLocation, hypot(event.locationInWindow.x - press.x, event.locationInWindow.y - press.y) <= JGMetrics.clickSlop {
+            onCommand?(.togglePlay)
+        }
+        pressLocation = nil
     }
 
     override func scrollWheel(with event: NSEvent) {

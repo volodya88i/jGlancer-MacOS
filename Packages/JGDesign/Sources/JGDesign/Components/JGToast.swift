@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// A non-modal message at the bottom of the window (docs/DESIGN.md §7): one short line, an optional action
-/// ("Undo"), an optional progress bar with a stop button for long batches. Radius large, `bg.raised`; one soft
+/// ("Undo"), an optional progress bar with a stop button for long batches. Radius large, `bg.raised` over frosted
+/// glass (D-109); one soft
 /// shadow in light mode only (DESIGN §2.6).
 public struct JGToast: View {
     private let message: Text
@@ -63,7 +64,7 @@ public struct JGToast: View {
         }
         .padding(.horizontal, JGSpacing.m)
         .padding(.vertical, JGSpacing.s)
-        .background(JGColor.bgRaised, in: JGShape(.large))
+        .jgPanelBackground(JGColor.bgRaised, in: JGShape(.large))
         .overlay(JGShape(.large).strokeBorder(JGColor.lineHair, lineWidth: JGMetrics.outlineWidth))
         .shadow(
             color: colorScheme == .light ? .black.opacity(JGMetrics.toastShadowOpacity) : .clear,

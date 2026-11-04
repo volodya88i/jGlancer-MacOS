@@ -106,6 +106,19 @@ enum LibrarySchema {
             CREATE INDEX asset_flag ON asset(flag) WHERE flag != 0;
             """)
         }
+        migrator.registerMigration("v4-audio-analysis") { db in
+            // Tempo and key by path (D-106): any song opened counts, in the library or not.
+            try db.execute(sql: """
+            CREATE TABLE audio_analysis (
+              path TEXT PRIMARY KEY,
+              size INTEGER NOT NULL,
+              mtime INTEGER NOT NULL,
+              bpm REAL,
+              key_tonic INTEGER,
+              key_minor INTEGER NOT NULL DEFAULT 0
+            );
+            """)
+        }
         return migrator
     }
 }

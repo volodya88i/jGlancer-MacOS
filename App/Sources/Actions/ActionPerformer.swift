@@ -127,7 +127,7 @@ final class ActionPerformer {
     private func performFileAction(_ id: ActionID, on target: ActionTarget) async {
         switch id {
         case .getInfo:
-            await info.show(target, store: appModel?.activeLibrary?.store)
+            await info.show(target, store: appModel?.activeLibrary?.store, analyses: appModel?.analyses)
         case .revealInFinder:
             await NSWorkspace.shared.activateFileViewerSelecting(target.urls())
         case .copyPath:

@@ -14,8 +14,11 @@ struct LibraryGridView: NSViewRepresentable {
     let rowsVersion: Int
     let renameSerial: Int
     let crosshairs: Bool
+    /// The bars over the grid (D-114): the files scroll under them and start and end clear of them.
+    let insets: NSEdgeInsets
 
-    init(model: LibraryModel) {
+    init(model: LibraryModel, insets: NSEdgeInsets = NSEdgeInsets()) {
+        self.insets = insets
         self.model = model
         refsVersion = model.refsVersion
         selection = AnyHashable(model.selection.selected)
@@ -36,6 +39,7 @@ struct LibraryGridView: NSViewRepresentable {
     }
 
     func updateNSView(_: NSScrollView, context: Context) {
+        context.coordinator.setInsets(insets)
         context.coordinator.sync()
     }
 }

@@ -24,8 +24,10 @@ public enum JGMetrics {
     public static let controlHeight: CGFloat = 32
     /// Top bar and section header rows.
     public static let barHeight: CGFloat = 44
-    /// Status bar.
-    public static let statusBarHeight: CGFloat = 24
+    /// Footer rows: the sidebar's Trash row (D-105); toasts sit above it.
+    public static let statusBarHeight: CGFloat = 36
+    /// The floating status bubble at the bottom of a pane (D-116).
+    public static let statusBubbleHeight: CGFloat = 28
 
     /// Library sidebar width.
     public static let sidebarWidth: CGFloat = 220
@@ -36,12 +38,15 @@ public enum JGMetrics {
     public static let previewPaneMinWidth: CGFloat = 320
     public static let previewPaneMaxWidth: CGFloat = 480
     /// The pane's mini player: waveform height and cover side.
-    public static let miniWaveformHeight: CGFloat = 56
+    public static let miniWaveformHeight: CGFloat = 28
     public static let miniCoverSide: CGFloat = 160
     /// Grab area for resizing a pane by its edge.
     public static let resizeHandleWidth: CGFloat = 6
     /// The top bar's breadcrumb never gets narrower than this; the bar's controls give way first (D-89).
-    public static let breadcrumbMinWidth: CGFloat = 140
+    public static let breadcrumbMinWidth: CGFloat = 100
+    /// The least a library pane keeps between the sidebar and the preview; they give way first when the window
+    /// narrows (D-111).
+    public static let libraryPaneMinWidth: CGFloat = 400
     /// The track of a slider and a plain scrubber (W-98).
     public static let sliderThickness: CGFloat = 4
     /// The app's own switch and check box (macOS's take the system accent, not the app's; D-102).
@@ -106,6 +111,8 @@ public enum JGMetrics {
     public static let tileCaptionMinimumSide: CGFloat = 96
     /// Inset of badges inside a tile.
     public static let badgeInset: CGFloat = 4
+    /// What the duration badge adds to its text's height (D-105).
+    public static let badgeExtraHeight: CGFloat = 2
     /// The flag star of a tile and the square badge around it.
     public static let flagStarSize: CGFloat = 11
     public static let flagBadgeSide: CGFloat = 20
@@ -113,14 +120,19 @@ public enum JGMetrics {
     public static let tileGlyphSize: CGFloat = 28
 
     /// Room for the window's close / minimize / zoom buttons at the top-left of full-window views.
-    public static let windowControlsInset: CGFloat = 80
+    public static let windowControlsInset: CGFloat = 88
     /// Seconds without pointer movement before the viewer's HUD fades.
     public static let hudIdleSeconds: Double = 2.5
     /// Fade duration of overlays (docs/DESIGN.md §9).
     public static let fadeDuration: Double = 0.18
+    /// The drop mark of a sidebar row: its fade and the strength of its accent wash (D-110).
+    public static let dropMarkFadeDuration: Double = 0.15
+    public static let dropWashOpacity: Double = 0.28
 
-    /// Height of the audio player's waveform scrubber.
-    public static let waveformHeight: CGFloat = 96
+    /// Height of the audio player's waveform scrubber: the waveform fills it (D-112).
+    public static let waveformHeight: CGFloat = 48
+    /// The video player's scrubber with its sound's waveform (D-110): lower, so less of the picture is covered.
+    public static let videoWaveformHeight: CGFloat = 28
     /// The unplayed part of a waveform: `text.primary` at this opacity (D-79).
     public static let waveformUnplayedOpacity: Double = 0.35
     /// Segment brackets on the scrubber (D-73): the horizontal ends of `[` `]`, the tint between, and how near an
@@ -135,6 +147,9 @@ public enum JGMetrics {
     public static let zoomPerPoint: Double = 0.01
     /// Width of the players' volume ruler.
     public static let volumeSliderWidth: CGFloat = 80
+    /// The audio player's key and tempo panel (D-106): its fields and moving bars, its − and + buttons.
+    public static let musicFieldWidth: CGFloat = 56
+    public static let musicStepWidth: CGFloat = 40
     /// Longest side of the audio player's cover art.
     public static let coverArtSide: CGFloat = 280
     /// Picture area of a filmstrip tile (16:9).
@@ -143,7 +158,7 @@ public enum JGMetrics {
     /// The whole strip: tile, name line and padding.
     public static let filmstripHeight: CGFloat = 84
     /// Automatic filmstrip: how far above the strip the pointer already brings it, and how long it stays after the
-    /// pointer moves up.
+    /// pointer leaves its place.
     public static let filmstripRevealMargin: CGFloat = 24
     public static let filmstripHideDelay: Double = 0.5
     /// How long a released swipe takes to finish its page or spring back.
@@ -174,6 +189,17 @@ public enum JGMetrics {
 
     /// Opacity of a pressed control.
     public static let pressedOpacity: Double = 0.75
+    /// How far a click on a video may move and still count as a click (play / pause), not a drag (D-110).
+    public static let clickSlop: CGFloat = 4
+    /// How much of a floating panel's color covers its frosted glass (D-109, W-111).
+    public static let panelGlassTintOpacity: Double = 0.62
+    /// How much of a bar's color covers the content scrolling under it (D-114).
+    public static let barGlassTintOpacity: Double = 0.3
+    /// How much of the media color covers what lies behind a see-through photo viewer (D-114, D-115).
+    public static let behindWindowTintOpacity: Double = 0.25
+    /// How much of the see-through viewer is blurred: the rest shows the desktop sharp, so the blur reads lighter
+    /// (the system's blur radius is fixed; D-115).
+    public static let behindWindowBlurOpacity: Double = 0.85
     /// Opacity of the marquee fill (`accent.dim`).
     public static let marqueeFillOpacity: Double = 0.5
 

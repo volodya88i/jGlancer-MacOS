@@ -70,7 +70,13 @@ public extension PlaybackController {
 
     /// Sets the speed (clamped to `PlaybackSpeed.range`); takes effect at once while playing.
     func setRate(_ newRate: Float) {
-        rate = PlaybackSpeed.clamped(newRate)
+        setExactRate(PlaybackSpeed.clamped(newRate))
+    }
+
+    /// Sets the speed to exactly `newRate` within `PlaybackSpeed.range`, not rounded to the fine step: a target pitch
+    /// or tempo (D-106).
+    func setExactRate(_ newRate: Float) {
+        rate = min(max(newRate, PlaybackSpeed.range.lowerBound), PlaybackSpeed.range.upperBound)
         if let matroska, isPlaying {
             matroska.setRate(rate)
         }

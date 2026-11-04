@@ -4,8 +4,8 @@ import JGThumbs
 /// Live tile-size changes (D-93). A ruler drag changes the size many times a second: the tiles take each size as it
 /// comes (no stretching, rows centered), so they grow smoothly instead of jumping when the column count changes; the
 /// drag starts from the size shown. A short while after the last change the rows fill again (gliding with Animate the
-/// library grid) and thumbnails of the new size are asked for. A single big step (a click on the ruler, a menu
-/// command) is not live: the tiles fill at once.
+/// library grid) and thumbnails of the new size are asked for. A single big step after a quiet while (a click on the
+/// ruler, a menu command) is not live: the tiles fill at once; a big step soon after another (a fast drag) is.
 extension GridController {
     /// Steps smaller than this start a live change; while one runs, every step joins it.
     static let liveStepLimit: CGFloat = 24
@@ -17,8 +17,12 @@ extension GridController {
         let old = layout.targetTileSide
         let new = model.state.tileSide
         guard new != old else { return false }
+        let now = CACurrentMediaTime()
+        let isQuick = now - lastSizeChange < Self.sizingSettleDelay
+        lastSizeChange = now
         if layout.liveScale == nil {
-            guard abs(new - old) < Self.liveStepLimit, old > 0 else { return false }
+            // A fast drag or pinch takes big steps: one soon after another is live too, not a jump (D-112).
+            guard abs(new - old) < Self.liveStepLimit || isQuick, old > 0 else { return false }
             // Start from what is shown: a filled tile is a little bigger than the size set.
             layout.liveScale = layout.currentGeometry().tileSide / old
         }

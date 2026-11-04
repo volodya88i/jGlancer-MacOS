@@ -1,8 +1,9 @@
 import JGDesign
+import JGSettings
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// One pane of the library window: top bar, grid, status bar. A split view has two (D-89); the active one shows an
+/// One pane of the library window: top bar, grid, status bubble. A split view has two (D-89); the active one shows an
 /// accent edge on top, and a click anywhere in a pane makes it active.
 struct LibraryPaneView: View {
     let model: LibraryModel
@@ -10,16 +11,15 @@ struct LibraryPaneView: View {
     let onOpen: ([URL]) -> Void
     var showsActiveEdge = false
     @State private var isDropTargeted = false
+    @Environment(\.appSettings) private var settings
 
     var body: some View {
-        VStack(spacing: 0) {
-            TopBarView(model: model)
-                .frame(height: JGMetrics.barHeight)
-                .simultaneousGesture(activation)
-            JGHairline()
+        // The files run the pane's whole height and scroll under the top bar and the status bar, which are frosted
+        // glass, as in Finder (D-114).
+        ZStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .overlay(alignment: .bottom) { AddingFoldersCard(model: model) }
+                .overlay(alignment: .bottom) { AddingFoldersCard(model: model).padding(.bottom, bottomInset) }
                 // Files and folders from Finder: folders join the library, files open. Tiles dragged inside the
                 // app are not taken here; sidebar folders take them. A sidebar folder row shows its folder here.
                 .onDrop(of: [.fileURL, .utf8PlainText], delegate: OpenDropDelegate(
@@ -29,13 +29,12 @@ struct LibraryPaneView: View {
                     if isDropTargeted {
                         Rectangle()
                             .strokeBorder(JGColor.accent, lineWidth: JGMetrics.selectionEdgeWidth)
+                            .padding(.top, topInset)
+                            .padding(.bottom, bottomInset)
                             .allowsHitTesting(false)
                     }
                 }
-            JGHairline()
-            StatusBarView(model: model)
-                .frame(height: JGMetrics.statusBarHeight)
-                .simultaneousGesture(activation)
+            bars
         }
         .overlay(alignment: .top) {
             if showsActiveEdge {
@@ -45,6 +44,39 @@ struct LibraryPaneView: View {
                     .allowsHitTesting(false)
             }
         }
+    }
+
+    /// The top bar and the status bar over the files; the space between them lets clicks through.
+    private var bars: some View {
+        VStack(spacing: 0) {
+            VStack(spacing: 0) {
+                // The click that makes the pane active lies under the bar's controls, not over them: a gesture over
+                // the whole bar took their clicks for the window's own view, and a drag on the size ruler moved the
+                // window (D-112).
+                TopBarView(model: model)
+                    .frame(height: JGMetrics.barHeight)
+                    .background { Color.clear.contentShape(Rectangle()).gesture(activation).titleBarDoubleClick() }
+                JGHairline()
+            }
+            .jgBarBackground(JGColor.bgBase)
+            Spacer(minLength: 0)
+            // View → Show Status Bar (D-110): a bubble floating over the files, centred (D-116).
+            if settings.showsStatusBar {
+                StatusBarView(model: model)
+                    .simultaneousGesture(activation)
+                    .padding(.bottom, JGSpacing.xs)
+            }
+        }
+    }
+
+    /// The room the bars take at the top and the bottom of the files.
+    private var topInset: CGFloat {
+        JGMetrics.barHeight + JGMetrics.outlineWidth
+    }
+
+    /// The last row can scroll clear of the status bubble.
+    private var bottomInset: CGFloat {
+        settings.showsStatusBar ? JGMetrics.statusBubbleHeight + 2 * JGSpacing.xs : 0
     }
 
     /// A click on the bars makes the pane active; the grid reports its own clicks (AppKit, `onInteraction`).
@@ -61,6 +93,8 @@ struct LibraryPaneView: View {
     private var content: some View {
         if model.roots.isEmpty {
             EmptyLibraryView(model: model)
+                .padding(.top, topInset)
+                .padding(.bottom, bottomInset)
         } else if model.isLoaded, model.refs.isEmpty {
             JGEmptyState(
                 title: AttributedString(localized: "Nothing **here**.", comment: "Empty folder headline; ** marks the accent word"),
@@ -71,8 +105,10 @@ struct LibraryPaneView: View {
             }
             .padding(JGSpacing.xxl)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .padding(.top, topInset)
+            .padding(.bottom, bottomInset)
         } else {
-            LibraryGridView(model: model)
+            LibraryGridView(model: model, insets: NSEdgeInsets(top: topInset, left: 0, bottom: bottomInset, right: 0))
         }
     }
 }

@@ -30,12 +30,20 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var autoplayInPreview = true
     /// Exported audio segments of WAV, AIFF and FLAC files keep that format; off: always M4A (D-74).
     public var segmentKeepsAudioFormat = true
+    /// Video segments are cut exactly at the brackets, encoded again as H.264 MP4; off: copied from the keyframe
+    /// before the start (D-108, W-106).
+    public var segmentCutsExactly = true
     /// Selecting a segment, the mouse wheel alone zooms the timeline; off: ⌘ + wheel (D-78, W-63).
     public var wheelZoomsTimeline = true
     /// Decor: "+" marks at the corners of selected tiles.
     public var crosshairMarks = false
     /// Fades and slides off even when the system setting is on.
     public var reduceMotion = false
+    /// Appearance → Effects: frosted glass behind toasts and progress panels (D-109); on in both presets.
+    public var frostedGlass = true
+    /// Appearance → Effects: the photo viewer shows what lies behind the window, blurred, instead of its dark
+    /// background (D-114). Off by default.
+    public var translucentPhotoViewer = false
     /// Appearance (defaults = the Performance preset): a heavily blurred cover art behind audio files.
     public var coverBackdrop = false
     public var filmstripReveal: FilmstripReveal = .button
@@ -48,6 +56,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var kindFilterStyle: KindFilterStyle = .labels
     /// Settings → Appearance → Decor → Audio waveform.
     public var waveformStyle: WaveformStyle = .narrow
+    /// The video player's scrubber: the plain timeline by default, or the waveform of the video's sound (D-110, W-110).
+    public var videoWaveformStyle: WaveformStyle = .timeline
+    /// View → Show Status Bar: the counts under the files (D-110).
+    public var showsStatusBar = true
     /// The preview pane also lists camera, exposure, codecs and rates (always in Get Info).
     public var previewDetails = false
 
@@ -75,15 +87,22 @@ public struct AppSettings: Codable, Equatable, Sendable {
         wheelZoomsTimeline = try container.decodeIfPresent(Bool.self, forKey: .wheelZoomsTimeline) ?? defaults.wheelZoomsTimeline
         segmentKeepsAudioFormat = try container.decodeIfPresent(Bool.self, forKey: .segmentKeepsAudioFormat)
             ?? defaults.segmentKeepsAudioFormat
+        segmentCutsExactly = try container.decodeIfPresent(Bool.self, forKey: .segmentCutsExactly) ?? defaults.segmentCutsExactly
         crosshairMarks = try container.decodeIfPresent(Bool.self, forKey: .crosshairMarks) ?? defaults.crosshairMarks
         reduceMotion = try container.decodeIfPresent(Bool.self, forKey: .reduceMotion) ?? defaults.reduceMotion
         coverBackdrop = try container.decodeIfPresent(Bool.self, forKey: .coverBackdrop) ?? defaults.coverBackdrop
+        frostedGlass = try container.decodeIfPresent(Bool.self, forKey: .frostedGlass) ?? defaults.frostedGlass
+        translucentPhotoViewer = try container.decodeIfPresent(Bool.self, forKey: .translucentPhotoViewer)
+            ?? defaults.translucentPhotoViewer
         filmstripReveal = (try? container.decodeIfPresent(FilmstripReveal.self, forKey: .filmstripReveal)) ?? defaults.filmstripReveal
         swipeAnimation = try container.decodeIfPresent(Bool.self, forKey: .swipeAnimation) ?? defaults.swipeAnimation
         animatesGrid = try container.decodeIfPresent(Bool.self, forKey: .animatesGrid) ?? defaults.animatesGrid
         foldsSequences = try container.decodeIfPresent(Bool.self, forKey: .foldsSequences) ?? defaults.foldsSequences
         kindFilterStyle = (try? container.decodeIfPresent(KindFilterStyle.self, forKey: .kindFilterStyle)) ?? defaults.kindFilterStyle
         waveformStyle = (try? container.decodeIfPresent(WaveformStyle.self, forKey: .waveformStyle)) ?? defaults.waveformStyle
+        videoWaveformStyle = (try? container.decodeIfPresent(WaveformStyle.self, forKey: .videoWaveformStyle))
+            ?? defaults.videoWaveformStyle
+        showsStatusBar = try container.decodeIfPresent(Bool.self, forKey: .showsStatusBar) ?? defaults.showsStatusBar
         previewDetails = try container.decodeIfPresent(Bool.self, forKey: .previewDetails) ?? defaults.previewDetails
         checksForUpdates = try container.decodeIfPresent(Bool.self, forKey: .checksForUpdates) ?? defaults.checksForUpdates
         lastUpdateCheck = try? container.decodeIfPresent(Date.self, forKey: .lastUpdateCheck)

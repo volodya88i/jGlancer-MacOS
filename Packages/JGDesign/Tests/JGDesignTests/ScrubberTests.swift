@@ -149,10 +149,9 @@ struct ScrubberTests {
         #expect(!morph.isRunning)
     }
 
-    @Test func narrowWaveformsUseHalfTheHeight() {
+    @Test func waveformsFillTheHeight() {
         let bounds = CGRect(x: 0, y: 0, width: 50, height: 80)
         let loud = WaveColumns(tops: Array(repeating: 1, count: 50), bottoms: Array(repeating: -1, count: 50))
         #expect(abs(ScrubberView.wavePath(loud, in: bounds).boundingBox.height - 80) < 0.5)
-        #expect(abs(ScrubberView.wavePath(loud, height: 0.5, in: bounds).boundingBox.height - 40) < 0.5)
     }
 }

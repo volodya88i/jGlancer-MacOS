@@ -36,14 +36,14 @@ public enum JGColor {
     )
 
     /// The single accent: selection edges, progress, switches. Never a large fill. Lavender by default (it went
-    /// back to it, D-102); a chosen color is exact in every theme.
-    public static let accent = JGColorToken("accent", dark: 0xA396F4, light: 0x5B4FCF)
+    /// back to it, D-102), the same in every theme (D-105); a chosen color is exact in every theme.
+    public static let accent = JGColorToken("accent", dark: 0xA396F4, light: 0xA396F4)
     /// The accent for text and thin glyphs: a chosen color moves only in lightness, so it reads on each theme's surfaces.
-    public static let accentText = JGColorToken("accent.text", dark: 0xA396F4, light: 0x5B4FCF)
+    public static let accentText = JGColorToken("accent.text", dark: 0xA396F4, light: 0x6A55ED)
     /// What sits on an accent fill: a switch's knob, a tick, the chosen segment's word.
-    public static let accentOn = JGColorToken("accent.on", dark: 0x000000, light: 0xFFFFFF)
+    public static let accentOn = JGColorToken("accent.on", dark: 0x000000, light: 0x000000)
     /// Selection fill.
-    public static let accentDim = JGColorToken("accent.dim", dark: 0x372F5A, light: 0xE6E0F8)
+    public static let accentDim = JGColorToken("accent.dim", dark: 0x261F51, light: 0xE0DBFA)
 
     /// Destructive actions.
     public static let danger = JGColorToken("danger", dark: 0xFF6B6B, light: 0xC23737)

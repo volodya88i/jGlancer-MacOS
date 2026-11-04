@@ -32,6 +32,9 @@ struct MiniPlayer: View {
     let style: Style
     var fullScreen: FullScreen?
     @Environment(\.appSettings) private var settings
+    /// The song's tags from the shared cache, before its player has loaded (D-110).
+    @State private var tags: MediaInfo?
+    @State private var tagsURL: URL?
 
     var body: some View {
         switch asset.kind {
@@ -171,11 +174,19 @@ struct MiniPlayer: View {
                     .foregroundStyle(JGColor.textPrimary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
-                if let subtitle {
-                    Text(verbatim: subtitle)
-                        .jgTextStyle(.body)
-                        .foregroundStyle(JGColor.textSecondary)
-                        .lineLimit(1)
+                // The line stays when empty, so nothing jumps as tags arrive (D-110).
+                Text(verbatim: subtitle ?? " ")
+                    .jgTextStyle(.body)
+                    .foregroundStyle(JGColor.textSecondary)
+                    .lineLimit(1)
+                    .accessibilityHidden(subtitle == nil)
+            }
+            .task(id: asset.url) {
+                let url = asset.url
+                tags = SongTags.shared.cached(url)
+                tagsURL = url
+                if tags == nil {
+                    tags = await SongTags.shared.load(url)
                 }
             }
             Spacer(minLength: 0)
@@ -191,12 +202,16 @@ struct MiniPlayer: View {
         }
     }
 
+    /// The cached tags of this file, else the player's once it has loaded this file.
+    private var info: MediaInfo? {
+        (tagsURL == asset.url ? tags : nil) ?? (preview.asset?.id == asset.id ? preview.playback.info : nil)
+    }
+
     private var title: String {
-        preview.playback.info?.title ?? (asset.name as NSString).deletingPathExtension
+        info?.title ?? (asset.name as NSString).deletingPathExtension
     }
 
     private var subtitle: String? {
-        let info = preview.playback.info
         let parts = [info?.artist, info?.album].compactMap(\.self)
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }

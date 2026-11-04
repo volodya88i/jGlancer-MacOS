@@ -401,6 +401,28 @@
         }
       }
     },
+    "A Semitone Higher" : {
+      "comment" : "Key and tempo panel button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На полутон выше"
+          }
+        }
+      }
+    },
+    "A Semitone Lower" : {
+      "comment" : "Key and tempo panel button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На полутон ниже"
+          }
+        }
+      }
+    },
     "About %@" : {
       "comment" : "App menu: the About panel; the argument is the app's name",
       "localizations" : {
@@ -577,6 +599,17 @@
         }
       }
     },
+    "Analyzing…" : {
+      "comment" : "Key and tempo panel: the song is being analyzed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анализ…"
+          }
+        }
+      }
+    },
     "Animate the library grid" : {
       "comment" : "Settings: tiles glide to new places when size, names or sort change",
       "localizations" : {
@@ -675,13 +708,13 @@
         }
       }
     },
-    "Audio waveform" : {
-      "comment" : "Settings: decor, how audio players draw their scrubber",
+    "Audio player" : {
+      "comment" : "Settings: decor, how the audio players draw their scrubber",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Волна аудио"
+            "value" : "Аудиоплеер"
           }
         }
       }
@@ -770,6 +803,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Размытая обложка за аудио"
+          }
+        }
+      }
+    },
+    "BPM" : {
+      "comment" : "Key and tempo panel: the song's tempo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BPM"
           }
         }
       }
@@ -1135,6 +1179,17 @@
         }
       }
     },
+    "Couldn't find the tempo or key of this file." : {
+      "comment" : "Key and tempo panel: nothing found",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось определить темп и тональность этого файла."
+          }
+        }
+      }
+    },
     "Create" : {
       "comment" : "Alert button: makes the new folder",
       "localizations" : {
@@ -1164,6 +1219,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Крестики у выделенных файлов"
+          }
+        }
+      }
+    },
+    "Cut video exactly at the brackets (encodes it again)" : {
+      "comment" : "Settings: video segments are encoded again so they start and end exactly at the brackets",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Резать видео точно по меткам (с перекодированием)"
           }
         }
       }
@@ -1327,6 +1393,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скачать"
+          }
+        }
+      }
+    },
+    "Drag to export the file, click to save it" : {
+      "comment" : "Player: the export button without a segment",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перетащите, чтобы экспортировать файл, или нажмите, чтобы сохранить"
           }
         }
       }
@@ -1759,6 +1836,17 @@
         }
       }
     },
+    "Frosted glass in menus and panels" : {
+      "comment" : "Settings: blurred backgrounds of toasts and panels",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Матовое стекло в меню и панелях"
+          }
+        }
+      }
+    },
     "Full" : {
       "comment" : "Settings: the stem model with the original weights",
       "localizations" : {
@@ -1951,6 +2039,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сохранять отрезки WAV, AIFF и FLAC в их формате (иначе M4A)"
+          }
+        }
+      }
+    },
+    "Key" : {
+      "comment" : "Key and tempo panel: the song's key",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тональность"
+          }
+        }
+      }
+    },
+    "Key and Tempo" : {
+      "comment" : "Audio player: tooltip of the key and tempo button",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тональность и темп"
+          }
+        }
+      }
+    },
+    "Key · BPM" : {
+      "comment" : "Audio player: button for the song's key and tempo",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тон · BPM"
           }
         }
       }
@@ -3050,6 +3171,17 @@
         }
       }
     },
+    "Reset" : {
+      "comment" : "Key and tempo panel: back to the saved speed",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сбросить"
+          }
+        }
+      }
+    },
     "Restore Default" : {
       "comment" : "Settings → Shortcuts: one command back to its default",
       "localizations" : {
@@ -3192,6 +3324,17 @@
         }
       }
     },
+    "See through the photo viewer" : {
+      "comment" : "Settings: the photo viewer shows what is behind the window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прозрачный фон у просмотра фото"
+          }
+        }
+      }
+    },
     "Select a Segment" : {
       "comment" : "Player: mode for choosing a part of the file to export",
       "localizations" : {
@@ -3286,6 +3429,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показать просмотр"
+          }
+        }
+      }
+    },
+    "Show Status Bar" : {
+      "comment" : "View menu: the counts under the files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показывать строку состояния"
           }
         }
       }
@@ -3619,6 +3773,50 @@
         }
       }
     },
+    "Target Pitch" : {
+      "comment" : "Key and tempo panel: the pitch to play the song at",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Целевой тон"
+          }
+        }
+      }
+    },
+    "Target Pitch in Semitones" : {
+      "comment" : "Key and tempo panel field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Целевой тон, в полутонах"
+          }
+        }
+      }
+    },
+    "Target Tempo" : {
+      "comment" : "Key and tempo panel: the tempo to play the song at",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Целевой темп"
+          }
+        }
+      }
+    },
+    "Target Tempo in BPM" : {
+      "comment" : "Key and tempo panel field",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Целевой темп, BPM"
+          }
+        }
+      }
+    },
     "Teal" : {
       "comment" : "Accent color",
       "localizations" : {
@@ -3790,6 +3988,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Этот файл нельзя вырезать."
+          }
+        }
+      }
+    },
+    "This file can't be exported." : {
+      "comment" : "Player: export button of a video other than MP4 or MOV",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот файл нельзя экспортировать."
           }
         }
       }
@@ -4007,6 +4216,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Битрейт видео"
+          }
+        }
+      }
+    },
+    "Video player" : {
+      "comment" : "Settings: decor, how the video player draws its scrubber",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видеоплеер"
           }
         }
       }

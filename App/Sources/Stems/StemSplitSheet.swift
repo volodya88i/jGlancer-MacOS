@@ -207,7 +207,7 @@ struct StemProgressCard: View {
                     .buttonStyle(.jg(.secondary))
             }
             .padding(JGSpacing.m)
-            .background(JGColor.bgPanel, in: JGShape(.medium))
+            .jgPanelBackground(JGColor.bgRaised, in: JGShape(.medium))
             .overlay(JGShape(.medium).strokeBorder(JGColor.lineHair, lineWidth: JGMetrics.outlineWidth))
         }
     }

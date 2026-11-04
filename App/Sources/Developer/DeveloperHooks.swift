@@ -30,6 +30,11 @@ import SwiftUI
 /// - `-JGAbout YES`: opens the About panel (snapshot it with `-JGSnapshotPanel`).
 /// - `-JGOnboarding YES`: shows the first-launch choice of a look.
 /// - `-JGFilmstripRevealCheck <folder>`: pointer near the bottom and away again, a snapshot of each (automatic strip).
+/// - `-JGResizeBenchmark`: window resize steps with the library and each viewer, in milliseconds.
+/// - `-JGWindowControlsCheck`: the window buttons' place, a viewer in a smaller window, the see-through photo viewer.
+/// - `-JGFlagRedrawCheck <png>`: three tiles flagged; the grid snapshotted 150 ms later.
+/// - `-JGZoomStep <points>` with `-JGZoomBenchmark`: a fast ruler drag of big steps.
+/// - `-JGMusicCheck <png>`: the first song's tempo and key, a target pitch and tempo, the panel (logged, muted).
 /// - `-JGMiniPlayerCheck <png>`: the mini player paused by the full player and resumed (logged, muted).
 /// - `-JGCompareCheck <png>`: Compare on the first two photos at fit and 100 % (a snapshot of each), then swap, unlink
 ///   and back (logged).

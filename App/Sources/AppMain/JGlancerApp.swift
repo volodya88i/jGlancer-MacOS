@@ -16,6 +16,8 @@ struct JGlancerApp: App {
             MainView(appModel: appModel)
                 .appSettings(appModel.settingsStore)
                 .environment(\.flagBook, appModel.flagBook)
+                // The window's buttons centred on the top bar (D-114).
+                .background(WindowControlsInstaller().frame(width: 0, height: 0))
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: JGMetrics.windowDefaultWidth, height: JGMetrics.windowDefaultHeight)
@@ -55,7 +57,36 @@ enum SceneID {
 
 /// The main window's root: the library once the databases are open.
 struct MainView: View {
+    /// The library's size while no viewer covers it: under a viewer it keeps it, so resizing the window lays out
+    /// only the viewer (D-112).
+    @State private var librarySize: CGSize?
     let appModel: AppModel
+
+    private func libraryView(_ library: LibraryModel) -> some View {
+        LibraryView(
+            model: library, preview: appModel.preview, onOpen: { urls in Task { await appModel.open(urls) } },
+            miniPlayer: appModel.windowPlayer, onShowMiniPlayerSong: appModel.showInLibrary,
+            secondPane: appModel.secondPane, isSecondPaneActive: appModel.isSecondPaneActive,
+            onSplitFraction: appModel.setSplitFraction
+        )
+        .frame(width: frozenLibrarySize?.width, height: frozenLibrarySize?.height)
+        .onGeometryChange(for: CGSize.self) { $0.size } action: { size in
+            if appModel.viewer == nil {
+                librarySize = size
+            }
+        }
+    }
+
+    /// Settings → Effects → See through the photo viewer, while a photo is open.
+    private var seesThroughPhotoViewer: Bool {
+        guard case .photo = appModel.viewer else { return false }
+        return appModel.settingsStore.settings.translucentPhotoViewer && !NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+    }
+
+    /// The library's own size under a viewer; nil (the window's) without one.
+    private var frozenLibrarySize: CGSize? {
+        appModel.viewer == nil ? nil : librarySize
+    }
 
     private func addFolder(_ folder: URL) {
         Task { await appModel.addFolderFromViewer(folder) }
@@ -72,15 +103,15 @@ struct MainView: View {
                 // First launch: the choice of a look in place of the library, sized by the window alone.
                 OnboardingView(store: appModel.settingsStore)
             } else if let library = appModel.library {
-                // The library stays underneath the viewer, so its scroll position and state survive.
-                LibraryView(
-                    model: library, preview: appModel.preview, onOpen: { urls in Task { await appModel.open(urls) } },
-                    miniPlayer: appModel.windowPlayer, onShowMiniPlayerSong: appModel.showInLibrary,
-                    secondPane: appModel.secondPane, isSecondPaneActive: appModel.isSecondPaneActive,
-                    onSplitFraction: appModel.setSplitFraction
-                )
-                .allowsHitTesting(appModel.viewer == nil)
-                .accessibilityHidden(appModel.viewer != nil)
+                // The library stays underneath the viewer, so its scroll position and state survive. It hangs in a
+                // window-sized frame: kept at its size under a viewer, it must never make the stack (and the viewer
+                // over it) bigger than the window (D-115).
+                Color.clear
+                    .overlay(alignment: .topLeading) { libraryView(library) }
+                    // A see-through photo viewer shows the desktop, not the library (D-114).
+                    .opacity(seesThroughPhotoViewer ? 0 : 1)
+                    .allowsHitTesting(appModel.viewer == nil)
+                    .accessibilityHidden(appModel.viewer != nil)
             } else {
                 Rectangle().fill(JGColor.bgBase)
             }
@@ -107,6 +138,7 @@ struct MainView: View {
                 EmptyView()
             }
         }
+        .background(WindowSeeThrough(isOn: seesThroughPhotoViewer).frame(width: 0, height: 0))
         .overlay(alignment: .top) {
             if let recovery = appModel.startupRecovery {
                 RecoveryBanner(recovery: recovery) { appModel.startupRecovery = nil }
@@ -254,7 +286,7 @@ private struct FindMenuItem: View {
     }
 }
 
-/// View ▸ Show Names, Include Subfolders (the active pane's), Show Preview, Split View.
+/// View ▸ Show Names, Include Subfolders (the active pane's), Show Preview, Show Status Bar, Split View.
 private struct ViewMenuItems: View {
     let appModel: AppModel
 
@@ -273,6 +305,12 @@ private struct ViewMenuItems: View {
                 Text("Show Preview", comment: "View menu: the preview pane on the right")
             }
             .keyboardShortcut(shortcuts.keyboardShortcut(for: .togglePreview))
+            Toggle(isOn: Binding(
+                get: { appModel.settingsStore.settings.showsStatusBar },
+                set: { isOn in appModel.settingsStore.update { $0.showsStatusBar = isOn } }
+            )) {
+                Text("Show Status Bar", comment: "View menu: the counts under the files")
+            }
             Divider()
             Picker(selection: Binding(get: { appModel.splitMode }, set: { appModel.setSplitMode($0) })) {
                 Text("Off", comment: "View ▸ Split View: one pane").tag(LibraryViewState.SplitMode.off)

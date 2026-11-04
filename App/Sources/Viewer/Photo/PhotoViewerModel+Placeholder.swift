@@ -14,7 +14,7 @@ extension PhotoViewerModel {
                 modifiedAt: modifiedAt, duration: nil, bucket: bucket
             )
             if let cached = thumbnails.cachedThumbnail(for: request), let image = cached {
-                return placeholderPicture(image)
+                return placeholderPicture(image, of: photo)
             }
         }
         return nil
@@ -38,13 +38,16 @@ extension PhotoViewerModel {
             }
             guard let self, let image = found, picture == nil, entries.indices.contains(index), entries[index] == entry
             else { return }
-            standIn(placeholderPicture(image))
+            standIn(placeholderPicture(image, of: photo))
         }
     }
 
-    /// A thumbnail standing in for the photo: sized like a screen-size decode (same aspect), so it fills the view
-    /// as the photo will instead of showing at its own small size.
-    private func placeholderPicture(_ image: CGImage) -> Picture {
+    /// A thumbnail standing in for the photo: at the photo's own size when the library knows it, so it shows as the
+    /// photo will (a small photo is not first stretched to the window, D-113); else sized like a screen-size decode.
+    private func placeholderPicture(_ image: CGImage, of photo: ViewerPhoto) -> Picture {
+        if let size = photo.pixelSize, size.width > 0, size.height > 0 {
+            return Picture(image: image, fullSize: size, isFullResolution: false, isPlaceholder: true)
+        }
         let longest = CGFloat(max(image.width, image.height, 1))
         let scale = CGFloat(screenPixels) / longest
         return Picture(

@@ -41,7 +41,7 @@ extension GridController {
             .flatMap { geometry.indices(in: $0) }
             .filter { $0 < refs.count && !visible.contains($0) }
         let wanted = visible.map { refs[$0].id } + ahead.map { refs[$0].id }
-        let missing = wanted.filter { rows[$0] == nil && !rowsInFlight.contains($0) }
+        let missing = wanted.filter { (rows[$0] == nil || staleRows.contains($0)) && !rowsInFlight.contains($0) }
         if !missing.isEmpty {
             fetchRows(missing)
         }
@@ -96,6 +96,11 @@ extension GridController {
             let assets = await (try? store.assets(ids: ids)) ?? []
             guard let self else { return }
             rowsInFlight.subtract(ids)
+            // Gone from the store meanwhile: dropped; the rest replace what was drawn.
+            for id in Set(ids).subtracting(assets.map(\.id)) where staleRows.contains(id) {
+                rows[id] = nil
+            }
+            staleRows.subtract(ids)
             rowQueue += assets.filter { rows[$0.id] == nil }.map(\.id)
             for asset in assets {
                 rows[asset.id] = asset

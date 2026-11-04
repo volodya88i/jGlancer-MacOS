@@ -29,6 +29,20 @@ struct GridGeometryTests {
         #expect(grid.leading == 16)
     }
 
+    @Test func gutterPointsTakeTheNearestTile() {
+        let first = grid.frame(at: 0)
+        let second = grid.frame(at: 1)
+        // Just left and just right of the gutter between the first two tiles.
+        #expect(grid.nearestIndex(to: CGPoint(x: first.maxX + 2, y: first.midY)) == 0)
+        #expect(grid.nearestIndex(to: CGPoint(x: second.minX - 2, y: first.midY)) == 1)
+        // Under the last row, and right of the last tile: the last tile.
+        let last = grid.frame(at: 22)
+        #expect(grid.nearestIndex(to: CGPoint(x: last.maxX + 300, y: last.midY)) == 22)
+        #expect(grid.nearestIndex(to: CGPoint(x: first.minX - 10, y: -50)) == 0)
+        #expect(GridGeometry(itemCount: 0, width: 500, targetTileSide: 100, gutter: 8, inset: 16, captionHeight: 0)
+            .nearestIndex(to: .zero) == nil)
+    }
+
     @Test func narrowWindowsKeepOneColumn() {
         let narrow = GridGeometry(itemCount: 3, width: 50, targetTileSide: 160, gutter: 8, inset: 16, captionHeight: 0)
         #expect(narrow.columns == 1)

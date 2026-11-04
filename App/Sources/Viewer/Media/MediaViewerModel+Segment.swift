@@ -81,7 +81,7 @@ extension MediaViewerModel {
     /// scrolling) load after a short pause.
     func segmentWindowChanged(_ range: ClosedRange<Double>) {
         detailTask?.cancel()
-        guard kind == .audio, let item = current, let duration = playback.duration,
+        guard waveform != nil, let item = current, let duration = playback.duration,
               range.upperBound - range.lowerBound < duration * 0.5
         else {
             waveformDetail = nil
@@ -107,10 +107,26 @@ extension MediaViewerModel {
     var segmentExport: SegmentExportRequest? {
         guard let segment, let item = current, canExportSegment else { return nil }
         var request = SegmentExportRequest(source: item.url, kind: kind, range: segment)
+        request.isExact = kind == .video && segmentCutsExactly
         if kind == .audio {
             request.rate = playback.rate
             request.preservesPitch = playback.preservesPitch
             request.fades = tuning.preferences.segmentFades
+            request.keepsAudioFormat = segmentKeepsAudioFormat
+        }
+        return request
+    }
+
+    /// What the export button saves without a segment (D-107): the whole file, audio at the speed and Keep Pitch it
+    /// plays with (no fades), video copied unchanged.
+    var wholeExport: SegmentExportRequest? {
+        guard let item = current, let duration = playback.duration, duration > 0,
+              SegmentExporter.canExportWhole(item.url, kind: kind)
+        else { return nil }
+        var request = SegmentExportRequest.whole(item.url, kind: kind, duration: duration)
+        if kind == .audio {
+            request.rate = playback.rate
+            request.preservesPitch = playback.preservesPitch
             request.keepsAudioFormat = segmentKeepsAudioFormat
         }
         return request

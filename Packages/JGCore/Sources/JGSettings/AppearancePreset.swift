@@ -35,6 +35,7 @@ public enum AppearancePreset: String, Codable, CaseIterable, Sendable {
         settings.filmstripReveal = isBeauty ? .automatic : .button
         settings.swipeAnimation = isBeauty
         settings.animatesGrid = isBeauty
+        settings.frostedGlass = true
     }
 
     /// The preset whose options `settings` match, or nil when they were mixed by hand.

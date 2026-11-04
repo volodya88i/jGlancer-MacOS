@@ -1,7 +1,8 @@
 import SwiftUI
 
 /// Icon toggles, a compact alternative to `JGChipToggleStyle` (Settings → Appearance → Kind Filters; W-98): 28 pt
-/// squares 4 pt apart, quiet like the words: on = `bg.raised` with `text.primary`, off = no fill with `text.secondary`.
+/// squares 4 pt apart, quiet like the words: on = inverted (`text.primary` fill, `bg.base` glyph; D-116), off = no fill with
+/// `text.secondary`.
 public struct JGJoinedToggles: View {
     public struct Item: Identifiable {
         public let id: String
@@ -41,9 +42,9 @@ public struct JGJoinedToggles: View {
             Button(action: item.toggle) {
                 Image(systemName: item.symbol)
                     .font(.system(size: JGTextStyle.body.size, weight: .medium))
-                    .foregroundStyle(item.isOn || isHovered ? JGColor.textPrimary : JGColor.textSecondary)
+                    .foregroundStyle(item.isOn ? JGColor.bgBase : isHovered ? JGColor.textPrimary : JGColor.textSecondary)
                     .frame(width: JGMetrics.controlHeightCompact, height: JGMetrics.controlHeightCompact)
-                    .background(item.isOn ? AnyShapeStyle(JGColor.bgRaised) : AnyShapeStyle(.clear), in: JGShape(.small))
+                    .background(item.isOn ? AnyShapeStyle(JGColor.textPrimary) : AnyShapeStyle(.clear), in: JGShape(.small))
                     .contentShape(JGShape(.small))
             }
             .buttonStyle(.plain)

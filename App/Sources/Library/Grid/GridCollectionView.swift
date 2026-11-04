@@ -43,6 +43,20 @@ final class GridCollectionView: NSCollectionView {
         controller?.mouseDown(event)
     }
 
+    /// A pinch sizes the tiles (D-112).
+    override func magnify(with event: NSEvent) {
+        controller?.zoomTiles(by: event.magnification)
+    }
+
+    /// ⌘ with two fingers up or down (or ⌘ and the wheel) sizes the tiles; without ⌘ the grid scrolls (D-112).
+    override func scrollWheel(with event: NSEvent) {
+        guard event.modifierFlags.contains(.command), let controller else {
+            super.scrollWheel(with: event)
+            return
+        }
+        controller.zoomTiles(scrolling: event)
+    }
+
     override func keyDown(with event: NSEvent) {
         if event.specialKey == .f2 {
             controller?.model.performAction?(.rename)

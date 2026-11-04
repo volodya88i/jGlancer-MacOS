@@ -127,6 +127,22 @@ extension DeveloperHooks {
         }
     }
 
+    /// -JGResizeBenchmark, -JGWindowControlsCheck, -JGFlagRedrawCheck, -JGMusicCheck.
+    private static func runPlayerChecks(_ appModel: AppModel, _ library: LibraryModel) async {
+        if defaults.bool(forKey: "JGResizeBenchmark") {
+            await ResizeBenchmark.run(appModel, library: library)
+        }
+        if let snapshot = defaults.string(forKey: "JGFlagRedrawCheck") {
+            await FlagRedrawCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
+        }
+        if defaults.bool(forKey: "JGWindowControlsCheck") {
+            await WindowControlsCheck.run(appModel, library: library)
+        }
+        if let snapshot = defaults.string(forKey: "JGMusicCheck") {
+            await MusicCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
+        }
+    }
+
     /// -JGMiniPlayerCheck, -JGCompareCheck, -JGSplitCheck.
     private static func runWindowChecks(_ appModel: AppModel, _ library: LibraryModel) async {
         if defaults.bool(forKey: "JGUpdateCheck") {
@@ -156,6 +172,7 @@ extension DeveloperHooks {
         if let snapshot = defaults.string(forKey: "JGDuplicatesCheck") {
             await DuplicatesCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
         }
+        await runPlayerChecks(appModel, library)
         if let snapshot = defaults.string(forKey: "JGSplitCheck") {
             await SplitCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
         }

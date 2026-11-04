@@ -4,6 +4,45 @@ One short entry per published build of the macOS app. Versions are `major.minor.
 bump the patch number, a release with new features bumps the minor number (DECISIONS D-76). The Windows version
 keeps its own changelog in its repository.
 
+## 0.6.0 — 2026-11-04
+A large update: the Mac app catches up with jGlancer for Windows 0.5.4 and gets a Finder-like window.
+
+**New**
+- Audio player: **Key · BPM** finds a song's tempo and key. Its panel plays the song at a target pitch or tempo by
+  speed, for that song only; the speed menu offers target pitches; Get Info shows BPM and Key once found.
+- The players' export button is always there: without a segment it saves the whole file (audio at the current speed,
+  MP4 and MOV video unchanged).
+- Video segments are cut exactly at the brackets, encoded again as H.264 MP4 (Settings → Playback; off copies as
+  before).
+- Pinch, or ⌘ with two fingers up and down, sizes the thumbnails.
+- Settings → Appearance → Effects → **See through the photo viewer**: the desktop shows, blurred, behind photos.
+- Settings → Appearance → Decor: the audio and the video player each draw a waveform or a timeline; the video can
+  show its sound's waveform.
+- View → Show Status Bar.
+
+**Look**
+- New icon: a glass photo frame on a dark tile.
+- Finder-like window: the window buttons sit on the top bar's line, the files scroll under a frosted top bar, and the
+  status became a small frosted bubble at the bottom of the files.
+- Frosted glass behind toasts, progress panels and the viewers' top bar (Settings → Appearance → Effects).
+- Filters that are on are inverted; lavender is the same in light and dark; the duration badge sits at the bottom
+  right of tiles.
+- The mini player runs under the whole window; waveforms fill their scrubber and the playhead is as tall as they are.
+
+**Better**
+- Volume follows the ear: half the slider sounds about half as loud.
+- Flagging files no longer reloads the library: flags appear at once.
+- Photos open at their own size straight away.
+- Smooth thumbnail sizing, also on fast drags; smooth window resizing with a viewer open; the size ruler never moves
+  the window.
+- A click on a video plays or pauses it, a double-click goes full screen; looping no longer brings the controls back.
+- A double-click on the top bar zooms the window.
+- The automatic filmstrip appears only where it lives and fades in place.
+- The key and tempo panel fits its contents and stays put; Quick Preview never gets narrower than its controls; a
+  narrow window no longer pushes the preview off the edge.
+- Sidebar rows mark drops with a fading accent; album drops land beside the nearest tile; song titles show at once in
+  the previews.
+
 ## 0.5.0 — 2026-11-02
 The first public version, free software under the GNU GPL 3.0.
 

@@ -15,11 +15,23 @@ public struct SegmentExportRequest: Equatable, Sendable {
     public var fades = false
     /// WAV, AIFF and FLAC stay in their format; off (or any other source): M4A (D-74).
     public var keepsAudioFormat = true
+    /// The whole file, not a segment (D-107): audio with the speed and Keep Pitch but no fades, video copied unchanged.
+    public var isWhole = false
+    /// A video segment cut exactly at its bounds, encoded again as H.264 / AAC MP4 (D-108); off: the source's own
+    /// samples from the keyframe before the start.
+    public var isExact = false
 
     public init(source: URL, kind: MediaKind, range: ClosedRange<Double>) {
         self.source = source
         self.kind = kind
         self.range = range
+    }
+
+    /// The whole file of `duration` seconds (D-107).
+    public static func whole(_ source: URL, kind: MediaKind, duration: Double) -> SegmentExportRequest {
+        var request = SegmentExportRequest(source: source, kind: kind, range: 0 ... max(duration, 0))
+        request.isWhole = true
+        return request
     }
 }
 
@@ -43,6 +55,13 @@ public enum SegmentExporter {
         kind != .photo && !PlaybackController.isMatroska(url)
     }
 
+    /// Whether the whole file can be saved (D-107): audio that can be cut; video only as MP4, MOV or M4V, copied as it is.
+    public static func canExportWhole(_ url: URL, kind: MediaKind) -> Bool {
+        kind == .audio ? canExport(url, kind: kind) : kind == .video && copiedVideoExtensions.contains(url.pathExtension.lowercased())
+    }
+
+    static let copiedVideoExtensions: Set = ["mov", "mp4", "m4v"]
+
     /// The extension of the saved file.
     public static func fileExtension(for request: SegmentExportRequest) -> String {
         let source = request.source.pathExtension.lowercased()
@@ -50,13 +69,17 @@ public enum SegmentExporter {
             let kept = ["wav": "wav", "wave": "wav", "aif": "aif", "aiff": "aiff", "aifc": "aiff", "flac": "flac"][source]
             return request.keepsAudioFormat ? kept ?? "m4a" : "m4a"
         }
-        return ["mov", "mp4", "m4v"].contains(source) ? source : "mov"
+        if request.isExact, !request.isWhole {
+            return "mp4"
+        }
+        return copiedVideoExtensions.contains(source) ? source : "mov"
     }
 
     /// "Name (1m02.0s–1m15.4s).m4a", with the speed when it is not 1×.
+    /// The whole file: "Name 1.25x.flac".
     public static func suggestedName(for request: SegmentExportRequest) -> String {
         let base = request.source.deletingPathExtension().lastPathComponent
-        var name = "\(base) (\(stamp(request.range.lowerBound))–\(stamp(request.range.upperBound)))"
+        var name = request.isWhole ? base : "\(base) (\(stamp(request.range.lowerBound))–\(stamp(request.range.upperBound)))"
         if request.kind == .audio, request.rate != PlaybackSpeed.normal {
             name += " " + String(format: "%gx", Double(request.rate))
         }
@@ -73,7 +96,12 @@ public enum SegmentExporter {
         guard canExport(request.source, kind: request.kind), request.range.upperBound > request.range.lowerBound else {
             throw SegmentExportError.unsupported
         }
-        if request.kind == .video {
+        if request.isWhole, request.kind == .video {
+            guard canExportWhole(request.source, kind: .video) else { throw SegmentExportError.unsupported }
+            try FileManager.default.copyItem(at: request.source, to: url)
+        } else if request.kind == .video, request.isExact {
+            try await exportExactVideo(request, to: url)
+        } else if request.kind == .video {
             try await exportVideo(request, to: url)
         } else {
             try await AudioSegmentWriter(request: request, url: url).write()
@@ -116,18 +144,33 @@ public enum SegmentExporter {
         CMTime(seconds: seconds, preferredTimescale: 600_000)
     }
 
-    private static func exportVideo(_ request: SegmentExportRequest, to url: URL) async throws {
-        let asset = AVURLAsset(url: request.source)
-        guard let session = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-            throw SegmentExportError.unsupported
+    /// Encodes the range on its exact bounds (D-108): H.264 and AAC in MP4 at the system's highest quality, the index
+    /// at the front. If encoding fails, the samples are copied instead (into an MP4 all the same).
+    private static func exportExactVideo(_ request: SegmentExportRequest, to url: URL) async throws {
+        do {
+            try await run(request, preset: AVAssetExportPresetHighestQuality, type: .mp4, to: url)
+        } catch {
+            try? FileManager.default.removeItem(at: url)
+            try await run(request, preset: AVAssetExportPresetPassthrough, type: .mp4, to: url)
         }
+    }
+
+    private static func exportVideo(_ request: SegmentExportRequest, to url: URL) async throws {
         let type: AVFileType = switch fileExtension(for: request) {
         case "mp4": .mp4
         case "m4v": .m4v
         default: .mov
         }
+        try await run(request, preset: AVAssetExportPresetPassthrough, type: type, to: url)
+    }
+
+    private static func run(_ request: SegmentExportRequest, preset: String, type: AVFileType, to url: URL) async throws {
+        let asset = AVURLAsset(url: request.source)
+        guard let session = AVAssetExportSession(asset: asset, presetName: preset) else {
+            throw SegmentExportError.unsupported
+        }
         session.timeRange = CMTimeRange(start: time(request.range.lowerBound), end: time(request.range.upperBound))
-        session.shouldOptimizeForNetworkUse = false
+        session.shouldOptimizeForNetworkUse = preset != AVAssetExportPresetPassthrough
         if #available(macOS 15, *) {
             try await session.export(to: url, as: type)
         } else {

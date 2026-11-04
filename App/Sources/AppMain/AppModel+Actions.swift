@@ -10,6 +10,7 @@ extension AppModel {
     func apply(_ settings: AppSettings) {
         preview?.autoplayInPreview = settings.autoplayInPreview
         mediaViewer?.segmentKeepsAudioFormat = settings.segmentKeepsAudioFormat
+        mediaViewer?.segmentCutsExactly = settings.segmentCutsExactly
         let reducesMotion = settings.reduceMotion || NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         for pane in [library, secondPane].compactMap(\.self) {
             pane.decorCrosshairs = settings.crosshairMarks

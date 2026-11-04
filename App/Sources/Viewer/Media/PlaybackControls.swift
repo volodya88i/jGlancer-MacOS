@@ -35,6 +35,9 @@ struct PlaybackControls: View {
                 .padding(.leading, JGSpacing.xs)
             Spacer(minLength: JGSpacing.m)
             SegmentControls(model: model)
+            if model.kind == .audio {
+                MusicButton(model: model)
+            }
             SpeedMenu(tuning: model.tuning, kind: model.kind)
             VolumeControl(tuning: model.tuning)
             ViewerIconButton(symbol: "repeat", label: Text("Loop", comment: "Player: repeat the current file"), isOn: playback.loops) {
@@ -94,9 +97,10 @@ struct SegmentControls: View {
                         FadeEdgesIcon()
                     }
                 }
-                SegmentExportButton(request: model.segmentExport)
-                    .frame(width: JGMetrics.controlHeight, height: JGMetrics.controlHeight)
             }
+            // Always there (D-107): without a segment it saves the whole file.
+            SegmentExportButton(request: model.segment == nil ? model.wholeExport : model.segmentExport, isWhole: model.segment == nil)
+                .frame(width: JGMetrics.controlHeight, height: JGMetrics.controlHeight)
             ViewerIconButton(
                 symbol: "timeline.selection",
                 label: Text("Select a Segment", comment: "Player: mode for choosing a part of the file to export"),
@@ -164,6 +168,9 @@ struct PlaybackTimeLabel: View {
             .jgTextStyle(.mono)
             .foregroundStyle(JGColor.textSecondary)
             .monospacedDigit()
+            // One line always: squeezed, it broke a character per line (D-112).
+            .lineLimit(1)
+            .fixedSize()
             .accessibilityLabel(Text(verbatim: "\(elapsed) / \(total)"))
     }
 }
@@ -174,6 +181,8 @@ struct PlaybackScrubber: View {
     let playback: PlaybackController
     let liveTime: JGLiveTime
     var waveform: JGWaveformPeaks?
+    /// The video player's own choice (D-110); nil: the audio players' (Settings → Decor).
+    var style: WaveformStyle?
     let isObserving: Bool
     /// Segment selection (the viewers only): brackets, zoom and finer peaks.
     var segmentModel: MediaViewerModel?
@@ -196,9 +205,7 @@ struct PlaybackScrubber: View {
             playback.seek(to: seconds, precise: isFinal)
         }
         .animatesPlayhead(isObserving)
-        .waveformStyle(
-            height: Self.narrowHeight, animates: !(systemReduceMotion || reduceMotionOverride)
-        )
+        .animatesWaveform(!(systemReduceMotion || reduceMotionOverride))
         .segment(segmentModel?.segment) { range, edge, isFinal in
             segmentModel?.setSegment(range, edge: edge, isFinal: isFinal)
         }
@@ -224,12 +231,9 @@ struct PlaybackScrubber: View {
         }
     }
 
-    /// The narrow waveform's share of the height (D-79).
-    static let narrowHeight: CGFloat = 0.5
-
-    /// Audio drawn as the plain ruler (Settings → Decor → Audio waveform).
+    /// Drawn as the plain ruler (Settings → Decor → Audio player, Video player).
     private var isTimeline: Bool {
-        waveform != nil && settings.waveformStyle == .timeline
+        waveform != nil && (style ?? settings.waveformStyle) == .timeline
     }
 
     private struct UpdateKey: Equatable {
@@ -260,6 +264,18 @@ struct SpeedMenu: View {
     }
 
     var body: some View {
+        // The menu button sizes itself to its title and ignores views hidden in its label, so a hidden `1.25×` beside
+        // it holds the width at any speed and nothing next to it moves (D-111).
+        ZStack {
+            Text(verbatim: Self.label(1.25))
+                .font(.system(size: JGTextStyle.heading.size, weight: .semibold))
+                .hidden()
+                .accessibilityHidden(true)
+            menu
+        }
+    }
+
+    private var menu: some View {
         Menu {
             Picker(selection: Binding(get: { playback.rate }, set: { tuning.setRate($0, for: kind) })) {
                 ForEach(Self.choices(current: playback.rate), id: \.self) { rate in
@@ -273,6 +289,9 @@ struct SpeedMenu: View {
             Toggle(isOn: Binding(get: { playback.preservesPitch }, set: { tuning.setPreservesPitch($0) })) {
                 Text("Keep Pitch", comment: "Player: keep the pitch when the speed changes")
             }
+            if kind == .audio {
+                targetPitch
+            }
         } label: {
             Text(verbatim: Self.label(playback.rate))
                 .jgTextStyle(.mono)
@@ -284,6 +303,27 @@ struct SpeedMenu: View {
         .help(Text("Speed", comment: "Player speed menu"))
         .accessibilityLabel(Text("Speed", comment: "Player speed menu"))
         .accessibilityValue(Text(verbatim: Self.label(playback.rate)))
+    }
+
+    /// The speeds that land on a pitch, in semitones from the song's own, for this song only (D-106; audio only).
+    private var targetPitch: some View {
+        Menu {
+            ForEach((-PlaybackTarget.limit ... PlaybackTarget.limit).reversed(), id: \.self) { semitones in
+                Toggle(isOn: Binding(
+                    get: { tuning.isTargeted && abs(tuning.heardSemitones - Double(semitones)) < 0.02 },
+                    set: { _ in tuning.setTargetRate(PlaybackTarget.rate(semitones: Double(semitones)), for: kind) }
+                )) {
+                    Text(verbatim: Self.pitchLabel(semitones))
+                }
+            }
+        } label: {
+            Text("Target Pitch", comment: "Key and tempo panel: the pitch to play the song at")
+        }
+    }
+
+    /// `+2 · 1.12×`
+    static func pitchLabel(_ semitones: Int) -> String {
+        "\(PlaybackTarget.label(Double(semitones))) · \(label(Float(PlaybackTarget.rate(semitones: Double(semitones)))))"
     }
 
     /// The presets, plus the current speed when `[` `]` set one in between.

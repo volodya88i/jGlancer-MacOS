@@ -93,6 +93,14 @@ public struct GridGeometry: Equatable, Sendable {
             .first { frame(at: $0).contains(point) }
     }
 
+    /// The tile nearest to `point`, also from a gutter or beyond the last tile (an album drop, D-110); nil when empty.
+    public func nearestIndex(to point: CGPoint) -> Int? {
+        guard itemCount > 0 else { return nil }
+        let row = min(max(Int(((point.y - inset + gutter / 2) / (cellHeight + gutter)).rounded(.down)), 0), rowCount - 1)
+        let column = min(max(Int(((point.x - leading + gutter / 2) / (tileSide + gutter)).rounded(.down)), 0), columns - 1)
+        return min(row * columns + column, itemCount - 1)
+    }
+
     /// Rows that fit in a viewport of `height`, at least one.
     public func rowsPerPage(viewportHeight height: CGFloat) -> Int {
         max(1, Int(height / (cellHeight + gutter)))

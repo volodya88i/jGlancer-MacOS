@@ -37,7 +37,7 @@ public extension ScrubberView {
     }
 
     private func drawWave() {
-        let path = Self.wavePath(morph.shown, height: waveformHeight, in: bounds)
+        let path = Self.wavePath(morph.shown, in: bounds)
         trackLayer.path = path
         playedLayer.path = path
     }

@@ -9,10 +9,8 @@ extension GridController {
         guard model.state.albumID != nil, InternalDrag.isActive, !model.refs.isEmpty else { return nil }
         let geometry = layout.currentGeometry()
         let barWidth = JGMetrics.selectionEdgeWidth
-        guard let index = geometry.index(at: point), index < model.refs.count else {
-            let last = collectionView.frameForItem(at: model.refs.count - 1)
-            return (nil, NSRect(x: last.maxX + JGMetrics.gridGutter / 2 - barWidth / 2, y: last.minY, width: barWidth, height: last.width))
-        }
+        // A point in a gutter, a caption or past the last tile takes the nearest tile (D-110).
+        guard let index = geometry.nearestIndex(to: point), index < model.refs.count else { return nil }
         let frame = collectionView.frameForItem(at: index)
         let after = point.x > frame.midX
         let landing = after ? index + 1 : index

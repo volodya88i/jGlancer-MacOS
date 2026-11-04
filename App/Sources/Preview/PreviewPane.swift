@@ -15,16 +15,20 @@ struct PreviewPane: View {
     @Environment(\.settingsStore) private var settingsStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: JGSpacing.m) {
+        // The header row is as high as the top bar, so PREVIEW and the breadcrumb share a centre line (D-105).
+        VStack(alignment: .leading, spacing: JGSpacing.xs) {
             HStack {
                 JGSectionHeader(Text("Preview", comment: "Section label of the preview pane; shown in capitals"))
                 Spacer()
                 detailsButton
                 closeButton
             }
+            .frame(height: JGMetrics.barHeight)
+            .background { Color.clear.contentShape(Rectangle()).titleBarDoubleClick() }
             content
+                .padding(.bottom, JGSpacing.m)
         }
-        .padding(JGSpacing.m)
+        .padding(.horizontal, JGSpacing.m)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background {
             ZStack {

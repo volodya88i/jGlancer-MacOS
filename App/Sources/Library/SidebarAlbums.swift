@@ -118,11 +118,7 @@ private struct AlbumRow: View {
         .padding(.horizontal, JGSpacing.xs)
         .frame(height: JGMetrics.controlHeightCompact)
         .background(isSelected ? JGColor.bgRaised : JGColor.bgPanel, in: JGShape(.small))
-        .overlay {
-            if isDropTarget {
-                JGShape(.small).strokeBorder(JGColor.accent, lineWidth: JGMetrics.selectionEdgeWidth)
-            }
-        }
+        .jgDropMark(isDropTarget, in: JGShape(.small))
         .contentShape(JGShape(.small))
         // Select on the first click; a count-2 tap gesture before it would hold every click for the double-click
         // interval (~0.5 s). The double click renames alongside.

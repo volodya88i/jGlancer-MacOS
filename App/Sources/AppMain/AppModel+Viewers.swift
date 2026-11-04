@@ -29,10 +29,7 @@ extension AppModel {
                 entries: refs.map { .asset($0.id) },
                 index: refs.firstIndex { $0.id == assetID } ?? 0,
                 store: library.store, thumbnails: library.thumbnails, screenPixels: Self.screenPixels,
-                opened: ViewerPhoto(
-                    url: asset.url, name: asset.name, assetID: asset.id, modifiedAt: asset.modifiedAt,
-                    typeIdentifier: asset.typeIdentifier
-                ),
+                opened: ViewerPhoto(asset: asset),
                 decodeGate: library.indexer.pause
             ))
         case .video, .audio:
@@ -43,9 +40,16 @@ extension AppModel {
                 kind: asset.kind, queue: queue, playback: playback, thumbnails: library.thumbnails,
                 waveforms: waveforms, tuning: tuning, segmentKeepsAudioFormat: settingsStore.settings.segmentKeepsAudioFormat
             )
-            model.showMessage = { [weak self] in self?.fileOps?.showMessage($0) }
+            configure(model)
             viewer = .media(model)
         }
+    }
+
+    /// What every player gets from the app: toasts, tempo and key, the exact cut setting.
+    private func configure(_ model: MediaViewerModel) {
+        model.showMessage = { [weak self] in self?.fileOps?.showMessage($0) }
+        model.analyses = analyses
+        model.segmentCutsExactly = settingsStore.settings.segmentCutsExactly
     }
 
     /// The grid's query narrowed to one kind: what the viewer pages through.
@@ -89,7 +93,7 @@ extension AppModel {
                 waveforms: waveforms, tuning: tuning, folderToOffer: folderToOffer,
                 segmentKeepsAudioFormat: settingsStore.settings.segmentKeepsAudioFormat
             )
-            model.showMessage = { [weak self] in self?.fileOps?.showMessage($0) }
+            configure(model)
             viewer = .media(model)
             show = { [weak self] files in
                 guard self?.mediaViewer === model else { return }

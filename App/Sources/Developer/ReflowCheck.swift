@@ -102,6 +102,11 @@ enum ReflowCheck {
         appModel.showInLibrary(songs[0])
         try? await Task.sleep(for: .milliseconds(800))
         log("reveal: audio shown \(library.state.kinds.contains(.audio)), selected \(library.selection.selected == [songs[0]])")
+        // The smallest window: the bar keeps inside it (D-111).
+        window.setContentSize(window.contentMinSize)
+        try? await Task.sleep(for: .milliseconds(600))
+        log("smallest window \(Int(window.frame.width)) × \(Int(window.frame.height))")
+        DeveloperHooks.snapshot(window, to: snapshot.deletingPathExtension().appendingPathExtension("small.png"))
     }
 
     private static func find(_ view: NSView) -> GridCollectionView? {

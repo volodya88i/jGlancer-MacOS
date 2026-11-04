@@ -11,17 +11,22 @@ import SwiftUI
 final class InfoController {
     private var panel: NSPanel?
 
-    func show(_ target: ActionTarget, store: LibraryStore?) async {
+    func show(_ target: ActionTarget, store: LibraryStore?, analyses: AudioAnalyses?) async {
         let entries: [InfoEntry] = if !target.assetIDs.isEmpty, let store {
             await ((try? store.assets(ids: target.assetIDs)) ?? []).map(InfoEntry.init(asset:))
         } else {
             await target.urls().map(InfoEntry.init(url:))
         }
         guard !entries.isEmpty else { return }
+        // Tempo and key, once the audio player found them (D-106).
+        var analysis: AudioAnalysis?
+        if entries.count == 1, let entry = entries.first, entry.kind == .audio {
+            analysis = await analyses?.known(URL(fileURLWithPath: entry.path))
+        }
         let panel = panel ?? makePanel()
         self.panel = panel
         // The panel follows the content's size, so it grows when the extended facts arrive.
-        let controller = NSHostingController(rootView: InfoView(entries: entries))
+        let controller = NSHostingController(rootView: InfoView(entries: entries, analysis: analysis))
         controller.sizingOptions = .preferredContentSize
         panel.contentViewController = controller
         panel.makeKeyAndOrderFront(nil)
@@ -84,6 +89,7 @@ struct InfoEntry: Equatable {
 /// Labels in the label style, values in mono (docs/DESIGN.md §4).
 struct InfoView: View {
     let entries: [InfoEntry]
+    var analysis: AudioAnalysis?
 
     var body: some View {
         VStack(alignment: .leading, spacing: JGSpacing.s) {
@@ -135,6 +141,12 @@ struct InfoView: View {
         }
         if let duration = entry.duration, let text = DurationFormat.positional(duration) {
             row(Text("Duration", comment: "Get Info label"), text)
+        }
+        if let bpm = analysis?.bpmLabel {
+            row(Text("BPM", comment: "Key and tempo panel: the song's tempo"), bpm)
+        }
+        if let key = analysis?.key {
+            row(Text("Key", comment: "Key and tempo panel: the song's key"), key.label)
         }
     }
 

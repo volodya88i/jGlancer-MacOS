@@ -1,7 +1,8 @@
 import JGDesign
 import SwiftUI
 
-/// Counts and sizes in mono, background activity, the latest problem (docs/DESIGN.md §8).
+/// Counts and sizes in mono, background activity, the latest problem (docs/DESIGN.md §8), in a frosted bubble
+/// floating at the bottom of the pane instead of a full-width bar (D-116). Nothing shows while it has nothing to say.
 struct StatusBarView: View {
     let model: LibraryModel
 
@@ -21,7 +22,6 @@ struct StatusBarView: View {
                 }
             }
             .foregroundStyle(JGColor.textSecondary)
-            Spacer()
             if let problem = model.problem {
                 problemText(problem)
                     .foregroundStyle(JGColor.danger)
@@ -45,7 +45,17 @@ struct StatusBarView: View {
         }
         .jgTextStyle(.mono)
         .lineLimit(1)
+        .fixedSize()
         .padding(.horizontal, JGSpacing.m)
+        .frame(height: JGMetrics.statusBubbleHeight)
+        .jgBarBackground(JGColor.bgRaised, in: Capsule())
+        .overlay { Capsule().strokeBorder(JGColor.lineHair, lineWidth: JGMetrics.outlineWidth) }
+        .opacity(hasContent ? 1 : 0)
+    }
+
+    private var hasContent: Bool {
+        !model.selection.selected.isEmpty || (model.isLoaded && !model.roots.isEmpty) || model.problem != nil
+            || model.activity != nil
     }
 
     private func problemText(_ problem: LibraryModel.Problem) -> Text {
