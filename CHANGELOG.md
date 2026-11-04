@@ -1,8 +1,17 @@
 # Changelog
 
-One short entry per published build of the macOS app. Versions are `major.minor.patch`: small features and fixes
-bump the patch number, a release with new features bumps the minor number (DECISIONS D-76). The Windows version
+One short entry per published build of the macOS app. Versions are `major.minor.patch`: after each public release
+the patch number goes up by one for the next one; the minor number goes up for larger releases. The Windows version
 keeps its own changelog in its repository.
+
+## 0.6.1 — 2026-11-04
+- Albums no longer show files that were removed as dimmed tiles that cannot be opened; a file that comes back
+  returns to its albums.
+- The blurred backdrop no longer blinks when paging between songs, in the audio player and in the previews.
+- The mini player shows the cover of the song that plays next by itself, and has Loop and Play Next.
+- Get Info and the preview show a song's key and tempo as the last line of the details once the player found them;
+  otherwise a small **detect** finds them on a click.
+- A new export glyph: a sheet with an arrow leaving it, in the style of the players' other buttons.
 
 ## 0.6.0 — 2026-11-04
 A large update: the Mac app catches up with jGlancer for Windows 0.5.4 and gets a Finder-like window.

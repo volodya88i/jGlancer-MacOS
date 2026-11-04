@@ -41,14 +41,11 @@ struct SegmentExportButton: NSViewRepresentable {
     }
 }
 
-/// A drag source showing an arrow rising out of a tray.
+/// A drag source showing `DragOutIcon`.
 final class SegmentDragView: NSView, NSDraggingSource {
     var request: SegmentExportRequest?
     private let icon = NSHostingView(rootView: AnyView(
-        Image(systemName: "square.and.arrow.up")
-            .font(.system(size: JGTextStyle.body.size))
-            .foregroundStyle(JGColor.textPrimary)
-            .accessibilityHidden(true)
+        DragOutIcon().foregroundStyle(JGColor.textPrimary)
     ))
     private var pressed: NSEvent?
     /// The segment being rendered since the button was pressed.

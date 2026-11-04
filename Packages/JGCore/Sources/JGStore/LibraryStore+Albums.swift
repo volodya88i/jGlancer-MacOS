@@ -3,10 +3,11 @@ import GRDB
 import JGModel
 
 /// Virtual albums (docs/FEATURES.md §6, ARCHITECTURE §13): lists of asset ids, so items follow the app's moves
-/// and renames. Deleting an album or removing items never touches files. Items whose files vanished stay as
-/// placeholders until `purgeAlbumPlaceholders` drops the old ones.
+/// and renames. Deleting an album or removing items never touches files. An item whose file vanished is not shown
+/// (it cannot be opened), but keeps its place for `albumPlaceholderLifetime`: when the file comes back (a disk plugged
+/// in again, an undone Trash) it is in its albums again (D-119); `purgeAlbumPlaceholders` drops older ones.
 public extension LibraryStore {
-    /// How long a vanished file stays in its albums as a placeholder.
+    /// How long a vanished file keeps its place in its albums.
     static let albumPlaceholderLifetime: TimeInterval = 30 * 24 * 3600
 
     @discardableResult
@@ -105,7 +106,7 @@ public extension LibraryStore {
         }
     }
 
-    /// The album's item ids in order (placeholders included).
+    /// The album's item ids in order (vanished files that keep their place included).
     func albumOrder(_ albumID: Int64) async throws -> [Int64] {
         try await writer.read { db in
             try Int64.fetchAll(db, sql: "SELECT asset_id FROM album_item WHERE album_id = ? ORDER BY position", arguments: [albumID])
@@ -178,12 +179,11 @@ public extension LibraryStore {
         }
     }
 
-    /// Album items in album order, filtered by kind, vanished files included as placeholders.
-    /// The album's items in its order, with the query's kinds, flag filter and search.
+    /// The album's present items in its order, with the query's kinds, flag filter and search (D-119).
     static func fetchAlbumRefs(_ db: Database, albumID: Int64, query: AssetQuery) throws -> [AssetRef] {
         let kinds = query.kinds.map(\.rawValue).sorted()
         guard !kinds.isEmpty else { return [] }
-        var conditions = ["album_item.album_id = ?", "asset.kind IN (\(kinds.map(String.init).joined(separator: ",")))"]
+        var conditions = ["album_item.album_id = ?", "asset.state = 0", "asset.kind IN (\(kinds.map(String.init).joined(separator: ",")))"]
         var arguments: StatementArguments = [albumID]
         if let flag = flagCondition(query.flagFilter) {
             conditions.append(flag)

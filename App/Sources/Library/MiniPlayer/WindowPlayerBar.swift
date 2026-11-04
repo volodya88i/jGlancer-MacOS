@@ -3,7 +3,7 @@ import JGPlayback
 import SwiftUI
 
 /// The bar of the window's mini player (D-88): cover, title and artist, the source folder (a click shows the song),
-/// previous / play / next, time, scrubber (silent while dragged), speed, mute, volume, and × to close, on the blurred
+/// previous / play / next, time, scrubber (silent while dragged), speed, mute, volume, loop, play next and × to close, on the blurred
 /// cover when Settings → Effects has it.
 struct WindowPlayerBar: View {
     let player: WindowPlayerModel
@@ -48,6 +48,17 @@ struct WindowPlayerBar: View {
                 .fixedSize()
             SpeedMenu(tuning: player.tuning, kind: .audio)
             VolumeControl(tuning: player.tuning)
+            // As in the big player (D-120).
+            ViewerIconButton(symbol: "repeat", label: Text("Loop", comment: "Player: repeat the current file"), isOn: playback.loops) {
+                playback.loops.toggle()
+            }
+            ViewerIconButton(
+                symbol: "text.line.last.and.arrowtriangle.forward",
+                label: Text("Play Next", comment: "Player: continue with the next file at the end"),
+                isOn: playback.autoAdvance
+            ) {
+                player.tuning.setPlaysNext(!playback.autoAdvance, for: .audio)
+            }
             ViewerIconButton(symbol: "xmark", label: Text("Close", comment: "Mini player: closes the bar"), action: player.close)
         }
         .padding(.horizontal, JGSpacing.m)

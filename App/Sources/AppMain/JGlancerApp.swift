@@ -16,6 +16,7 @@ struct JGlancerApp: App {
             MainView(appModel: appModel)
                 .appSettings(appModel.settingsStore)
                 .environment(\.flagBook, appModel.flagBook)
+                .environment(\.audioAnalyses, appModel.analyses)
                 // The window's buttons centred on the top bar (D-114).
                 .background(WindowControlsInstaller().frame(width: 0, height: 0))
         }

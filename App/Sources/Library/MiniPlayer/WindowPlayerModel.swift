@@ -23,6 +23,8 @@ final class WindowPlayerModel {
     @ObservationIgnored private var thumbnails: ThumbnailService?
     @ObservationIgnored private var pausedForOther = false
     @ObservationIgnored private var observer: NSObjectProtocol?
+    /// One watch of the queue at a time (`followQueue`).
+    @ObservationIgnored private var followsQueue = false
 
     init() {
         tuning = PlaybackTuning(playback: playback, store: PlaybackPreferencesStore(isPersistent: false))
@@ -53,6 +55,7 @@ final class WindowPlayerModel {
             playback.seek(to: seconds)
         }
         loadCover()
+        followQueue()
     }
 
     /// Play / pause by the user: a pause by the user is never undone by another player stopping.
@@ -63,12 +66,10 @@ final class WindowPlayerModel {
 
     func next() {
         playback.next()
-        loadCover()
     }
 
     func previous() {
         playback.previous()
-        loadCover()
     }
 
     func close() {
@@ -87,6 +88,25 @@ final class WindowPlayerModel {
         } else if !other.isPlaying, pausedForOther {
             pausedForOther = false
             playback.play()
+        }
+    }
+
+    /// Any change of song — next, previous, the next one playing by itself at the end — brings its cover (D-120).
+    private func followQueue() {
+        guard !followsQueue else { return }
+        followsQueue = true
+        withObservationTracking {
+            _ = playback.queue.index
+            _ = playback.queue.items.count
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                followsQueue = false
+                if isOpen {
+                    loadCover()
+                }
+                followQueue()
+            }
         }
     }
 

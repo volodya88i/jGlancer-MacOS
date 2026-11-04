@@ -1343,6 +1343,17 @@
         }
       }
     },
+    "detect" : {
+      "comment" : "Get Info and preview: finds the song's key and tempo; shown in mono, lower case",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "определить"
+          }
+        }
+      }
+    },
     "Digits: %lld" : {
       "comment" : "Batch rename: counter digits",
       "localizations" : {
@@ -1689,6 +1700,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Найти дубликаты…"
+          }
+        }
+      }
+    },
+    "Find the key and tempo" : {
+      "comment" : "Tooltip of the detect button in Get Info and the preview",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Определить тональность и темп"
           }
         }
       }

@@ -34,7 +34,7 @@ struct PreviewPane: View {
             ZStack {
                 Rectangle().fill(JGColor.bgPanel)
                 if preview.selectionCount <= 1, preview.asset?.kind == .audio {
-                    CoverBackdropView(cover: preview.cover)
+                    CoverBackdropView(cover: preview.backdropCover)
                 }
             }
         }

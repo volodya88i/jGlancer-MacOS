@@ -198,8 +198,6 @@ final class GridController: NSObject, NSCollectionViewDataSource {
         )
         tile.isSelected = model.selection.contains(ref.id)
         tile.showsCrosshairs = model.decorCrosshairs
-        // A vanished file stays in its albums as a dimmed placeholder (ARCHITECTURE §13).
-        tile.alphaValue = asset?.state == .missing ? JGMetrics.placeholderOpacity : 1
         if let asset, let cached = model.thumbnails.cachedThumbnail(for: request(for: asset)) {
             tile.image = cached
             tile.isLoading = false

@@ -23,6 +23,9 @@ struct CoverBackdropView: View {
     @State private var rendered: [ObjectIdentifier: CGImage] = [:]
     /// The last cover blended in by a swipe.
     @State private var lastIncoming: ObjectIdentifier?
+    /// The blurred copy on screen: it stays while the next cover's copy is still being made, so paging never blanks
+    /// the backdrop for a moment (D-119).
+    @State private var shown: CGImage?
 
     /// Rendered copies kept (the current cover, its neighbors, the one before).
     private static let kept = 4
@@ -33,14 +36,15 @@ struct CoverBackdropView: View {
 
     var body: some View {
         let coverID = cover.map(ObjectIdentifier.init)
-        let current = coverID.flatMap { rendered[$0] }
+        // A song without art lets the backdrop go; one whose copy is not made yet keeps the last one.
+        let current = cover == nil ? nil : coverID.flatMap { rendered[$0] } ?? shown
         let next = incoming.map(ObjectIdentifier.init).flatMap { rendered[$0] }
         let fades = !(systemReduceMotion || reduceMotionOverride) && coverID != lastIncoming
         // The container sets the size; the filled image never makes it larger.
         Color.clear
             .overlay {
                 if isOn, let current {
-                    layer(current).id(coverID).transition(.opacity)
+                    layer(current).id(ObjectIdentifier(current)).transition(.opacity)
                 }
             }
             .overlay {
@@ -59,6 +63,7 @@ struct CoverBackdropView: View {
             .animation(fades ? .easeInOut(duration: JGMetrics.backdropCrossfade) : nil, value: current.map(ObjectIdentifier.init))
             .task(id: isOn ? coverID : nil) { await render(cover) }
             .task(id: isOn ? incoming.map(ObjectIdentifier.init) : nil) { await render(incoming) }
+            .onChange(of: current.map(ObjectIdentifier.init), initial: true) { shown = current }
             .onChange(of: incoming.map(ObjectIdentifier.init)) { _, id in
                 if let id {
                     lastIncoming = id

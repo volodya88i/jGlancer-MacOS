@@ -24,6 +24,9 @@ final class PreviewModel {
     var picture: CGImage?
     /// Audio: cover art, if the file has one.
     private(set) var cover: CGImage?
+    /// The cover behind the previews' audio (the blurred backdrop): it changes only once the next song's cover is
+    /// known, so going from song to song never blanks it for a moment (D-120).
+    private(set) var backdropCover: CGImage?
     private(set) var waveform: JGWaveformPeaks?
     /// True while Quick Preview is on screen.
     private(set) var isQuickPreviewOpen = false
@@ -169,6 +172,7 @@ final class PreviewModel {
         asset = nil
         picture = nil
         cover = nil
+        backdropCover = nil
         waveform = nil
         if ownsPlayback {
             playback.stop()
@@ -184,6 +188,7 @@ final class PreviewModel {
         waveform = nil
         switch asset.kind {
         case .photo:
+            backdropCover = nil
             if ownsPlayback {
                 playback.stop()
                 ownsPlayback = false
@@ -193,6 +198,9 @@ final class PreviewModel {
             }
             await showPhoto(asset)
         case .video, .audio:
+            if asset.kind == .video {
+                backdropCover = nil
+            }
             startPlayer(asset)
             if asset.kind == .audio {
                 await showAudioExtras(asset)
@@ -235,6 +243,7 @@ final class PreviewModel {
     private func showAudioExtras(_ asset: Asset) async {
         cover = await thumbnailService(for: asset).thumbnail(for: request(asset, .large), priority: .visible)
         guard !Task.isCancelled, self.asset == asset else { return }
+        backdropCover = cover
         let stream = waveforms().waveform(
             for: WaveformRequest(url: asset.url, assetID: asset.id > 0 ? asset.id : nil, modifiedAt: asset.modifiedAt)
         )

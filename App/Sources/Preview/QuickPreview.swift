@@ -254,7 +254,7 @@ struct QuickPreviewView: View {
             ZStack {
                 Rectangle().fill(isFullScreen ? JGColor.bgMedia : JGColor.bgRaised)
                 if preview.asset?.kind == .audio {
-                    CoverBackdropView(cover: preview.cover)
+                    CoverBackdropView(cover: preview.backdropCover)
                 }
             }
         }

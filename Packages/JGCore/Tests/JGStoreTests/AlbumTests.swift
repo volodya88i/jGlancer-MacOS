@@ -53,10 +53,11 @@ struct AlbumTests {
         try await store.moveAsset(from: "/lib/a.jpg", to: "/lib/sub/renamed.jpg")
         #expect(try await refs(store, album.id) == [ids["a.jpg"], ids["b.jpg"]])
         try await store.markMissing(at: "/lib/b.jpg")
-        // A vanished file stays as a placeholder in its albums, not in folders, and is not counted.
-        #expect(try await refs(store, album.id) == [ids["a.jpg"], ids["b.jpg"]])
+        // A vanished file is not shown or counted, but comes back to its place with the file (D-119).
+        #expect(try await refs(store, album.id) == [ids["a.jpg"]])
         #expect(try await store.albums().first?.itemCount == 1)
         try await store.revive(at: "/lib/b.jpg")
+        #expect(try await refs(store, album.id) == [ids["a.jpg"], ids["b.jpg"]])
         #expect(try await store.albums().first?.itemCount == 2)
     }
 

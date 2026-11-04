@@ -8,8 +8,8 @@ public struct AssetQuery: Hashable, Sendable {
         case library
         /// One root folder and everything below it.
         case root(id: Int64)
-        /// The items of a virtual album, in the album's order (the sort is not applied); placeholders of
-        /// vanished files are included.
+        /// The items of a virtual album, in the album's order (the sort is not applied); vanished files are not
+        /// shown (D-119).
         case album(id: Int64)
         /// One folder, optionally with its subfolders.
         case folder(id: Int64, includeSubfolders: Bool)

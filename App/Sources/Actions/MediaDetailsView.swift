@@ -118,6 +118,8 @@ enum MediaDetailsRows {
 /// The rows of `MediaDetails` in two columns: labels in the label style, values in mono (docs/DESIGN.md §4).
 struct MediaDetailsGrid: View {
     let rows: [MediaDetailsRows.Row]
+    /// A song: its key and tempo as the last row (D-122).
+    var songURL: URL?
 
     var body: some View {
         Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: JGSpacing.s, verticalSpacing: JGSpacing.xxs) {
@@ -132,6 +134,14 @@ struct MediaDetailsGrid: View {
                         .foregroundStyle(JGColor.textPrimary)
                         .textSelection(.enabled)
                         .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            if let songURL {
+                GridRow {
+                    Text("Key · BPM", comment: "Audio player: button for the song's key and tempo")
+                        .jgTextStyle(.label)
+                        .foregroundStyle(JGColor.textTertiary)
+                    MusicFactsRow(url: songURL)
                 }
             }
         }
@@ -150,7 +160,7 @@ struct MediaDetailsSection: View {
             if rows.isEmpty {
                 Color.clear.frame(width: 0, height: 0)
             } else {
-                MediaDetailsGrid(rows: rows)
+                MediaDetailsGrid(rows: rows, songURL: kind == .audio ? url : nil)
             }
         }
         .task(id: url) {

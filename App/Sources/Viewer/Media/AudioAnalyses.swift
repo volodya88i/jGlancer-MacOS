@@ -34,6 +34,7 @@ actor AudioAnalyses {
         guard let found, let version = Self.version(of: url) else { return nil }
         memory[version] = found
         try? await store?.saveAudioAnalysis(found, path: version.path, size: version.size, modifiedAt: version.modifiedAt)
+        await MainActor.run { NotificationCenter.default.post(name: .audioAnalysisFound, object: url) }
         return found
     }
 

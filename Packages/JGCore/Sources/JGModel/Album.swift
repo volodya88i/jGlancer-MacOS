@@ -8,7 +8,7 @@ public struct Album: Hashable, Sendable, Identifiable {
     public let createdAt: Date
     /// The chosen cover, else the first present item; nil for an empty album.
     public let coverAssetID: Int64?
-    /// Present items (placeholders of vanished files not counted).
+    /// Present items (vanished files that keep their place not counted).
     public let itemCount: Int
 
     public init(id: Int64, name: String, createdAt: Date, coverAssetID: Int64?, itemCount: Int) {
