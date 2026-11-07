@@ -14,7 +14,7 @@ struct ClassifierAndListerTests {
         #expect(MediaClassifier().classify(fileName: name)?.kind == kind)
     }
 
-    @Test(arguments: ["notes.txt", "doc.pdf", "no_extension", ".jpg", "archive.zip", "page.html"])
+    @Test(arguments: ["notes.txt", "doc.pdf", "no_extension", ".jpg", "archive.zip", "page.html", "index.ts", "App.TS"])
     func otherFilesAreIgnored(name: String) {
         #expect(MediaClassifier().classify(fileName: name) == nil)
     }

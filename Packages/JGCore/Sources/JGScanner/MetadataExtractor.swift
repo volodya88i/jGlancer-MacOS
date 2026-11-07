@@ -12,6 +12,10 @@ public struct MetadataExtractor: Sendable {
 
     /// Extracts metadata for one pending asset. Never throws: failures become `.failed` updates.
     public func extract(_ item: PendingMetadataItem) async -> MetadataUpdate {
+        // Gone to the cloud since it was listed: reading it would download it, so it waits (D-124).
+        if CloudFile.isDataless(atPath: item.url.path) {
+            return MetadataUpdate(id: item.id, modifiedAt: item.modifiedAt, state: .pending)
+        }
         let hash = QuickHash.compute(url: item.url)
         switch item.kind {
         case .photo:

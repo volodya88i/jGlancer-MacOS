@@ -22,6 +22,8 @@ final class GridController: NSObject, NSCollectionViewDataSource {
     var staleRows: Set<Int64> = []
 
     var thumbnailTasks: [Int64: (task: Task<Void, Never>, priority: ThumbnailPriority)] = [:]
+    /// Files kept only in the cloud whose stored thumbnail was looked up (one look each, D-124).
+    var cloudLookups: Set<Int64> = []
     /// Scroll speed and the screen it predicts (`GridController+Prefetch`, D-81).
     var prefetch = ScrollPrefetch()
     var settleTask: Task<Void, Never>?
@@ -107,6 +109,7 @@ final class GridController: NSObject, NSCollectionViewDataSource {
             // again, so nothing blanks out and thumbnails stay (D-113).
             lastRowsVersion = model.rowsVersion
             staleRows = Set(rows.keys)
+            cloudLookups.removeAll()
         }
         if let request = model.inlineRenameRequest, request.serial != lastRenameSerial {
             lastRenameSerial = request.serial
@@ -194,7 +197,8 @@ final class GridController: NSObject, NSCollectionViewDataSource {
             accessibilityKind: Self.kindName(ref.kind),
             flag: asset?.flag ?? .none,
             sequenceFrames: model.sequence(headedBy: ref.id)?.frames.count,
-            sequenceUnfolded: !model.isFolded(ref.id)
+            sequenceUnfolded: !model.isFolded(ref.id),
+            isCloudOnly: asset?.isCloudOnly ?? false
         )
         tile.isSelected = model.selection.contains(ref.id)
         tile.showsCrosshairs = model.decorCrosshairs

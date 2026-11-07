@@ -164,6 +164,11 @@ struct MediaDetailsSection: View {
             }
         }
         .task(id: url) {
+            // A file kept only in the cloud is not downloaded for its details (D-124).
+            guard !CloudFile.isDataless(atPath: url.path) else {
+                rows = []
+                return
+            }
             rows = await MediaDetailsRows.rows(MediaDetails.read(url, kind: kind))
         }
     }

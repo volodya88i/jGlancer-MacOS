@@ -13,6 +13,7 @@ import SwiftUI
 /// - `-JGAppearance dark|light`: forces the appearance.
 /// - `-JGPreset performance|beauty`, `-JGKindFilters labels|icons`, `-JGPreviewDetails YES`: settings for the run.
 /// - `-JGTileSide <points>`, `-JGSelect <count>`: tile size and a selection of the first items.
+/// - `-JGViewMode grid|list` (`-JGListExpand YES`: every folder row unfolded): the library's view (D-125).
 /// - `-JGWindowWidth <points>`: the main window's width. `-JGSearch <text>` (`-JGSearchEverywhere YES`): a search.
 /// - `-JGOpen <path>`: opens a file or folder as if from Finder.
 /// - `-JGServiceLaunch <file>`: a launch by Finder ▸ Services ▸ Quick Preview (see `ServiceLaunchCheck`).
@@ -260,6 +261,7 @@ enum DeveloperHooks {
         if side > 0 {
             library.setTileSide(side)
         }
+        applyViewMode(library)
         let width = defaults.double(forKey: "JGWindowWidth")
         if width > 0, let window = mainWindow {
             window.setContentSize(NSSize(width: width, height: window.contentLayoutRect.height))
@@ -349,5 +351,21 @@ enum DeveloperHooks {
         layer.render(in: context)
         guard let image = context.makeImage() else { return }
         try? NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])?.write(to: url)
+    }
+}
+
+extension DeveloperHooks {
+    /// `-JGViewMode grid|list`, with `-JGListExpand YES` every folder row unfolded (D-125).
+    static func applyViewMode(_ library: LibraryModel) {
+        guard let mode = defaults.string(forKey: "JGViewMode").flatMap(LibraryViewState.ViewMode.init(rawValue:)) else { return }
+        if defaults.bool(forKey: "JGListExpand") {
+            library.listExpanded = Set(library.trees.values.flatMap { folderIDs(in: $0) })
+        }
+        library.setViewMode(mode)
+    }
+
+    /// Every folder id of a tree.
+    private static func folderIDs(in node: FolderNode) -> [Int64] {
+        [node.id] + (node.children ?? []).flatMap(folderIDs)
     }
 }

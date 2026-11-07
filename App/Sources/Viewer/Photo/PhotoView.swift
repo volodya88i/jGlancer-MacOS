@@ -19,6 +19,10 @@ final class PhotoScrollView: NSScrollView {
     var onContextMenu: (() -> NSMenu?)?
 
     private let imageView = PhotoImageView()
+    /// The animation of a GIF or animated PNG, drawn straight into `imageView` (no SwiftUI work per frame).
+    private let animation = AnimatedImagePlayer()
+    /// The still image last given by `display`, so a SwiftUI update does not put it back over a running animation.
+    private var still: CGImage?
     private var fullSize = CGSize.zero
     /// True while the image follows the window size at fit; false once the user zooms.
     private var isFitted = true
@@ -54,6 +58,9 @@ final class PhotoScrollView: NSScrollView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         window?.makeFirstResponder(self)
+        if window == nil {
+            animation.stop()
+        }
     }
 
     // MARK: Content
@@ -61,7 +68,10 @@ final class PhotoScrollView: NSScrollView {
     /// Shows `image` for a photo of `fullSize` pixels. A new photo resets to fit; a refined image of the same
     /// photo keeps the zoom.
     func display(_ image: CGImage?, fullSize newSize: CGSize, isNewPhoto: Bool) {
-        imageView.image = image
+        if image !== still || isNewPhoto {
+            still = image
+            imageView.image = image
+        }
         guard newSize.width > 0, newSize.height > 0 else { return }
         if isNewPhoto || newSize != fullSize {
             fullSize = newSize
@@ -69,6 +79,20 @@ final class PhotoScrollView: NSScrollView {
             // 100 % = one image pixel per device pixel.
             imageView.frame = CGRect(origin: .zero, size: CGSize(width: newSize.width / scale, height: newSize.height / scale))
             zoomToFit()
+        }
+    }
+
+    /// Plays the animated picture at `url` in place of the still one, or stops (nil: another photo, turned, or none).
+    func animate(_ url: URL?) {
+        guard let url, window != nil else {
+            if animation.url != nil {
+                animation.stop()
+                imageView.image = still
+            }
+            return
+        }
+        animation.play(url) { [weak self] frame in
+            self?.imageView.image = frame
         }
     }
 
@@ -331,6 +355,7 @@ struct PhotoCanvas: NSViewRepresentable {
         let isNewPhoto = context.coordinator.index != index
         context.coordinator.index = index
         view.display(picture?.image, fullSize: picture?.fullSize ?? .zero, isNewPhoto: isNewPhoto)
+        view.animate(model.animatedURL)
         if let zoomCommand, zoomCommand.serial != context.coordinator.zoomSerial {
             context.coordinator.zoomSerial = zoomCommand.serial
             view.zoom(zoomCommand.command)

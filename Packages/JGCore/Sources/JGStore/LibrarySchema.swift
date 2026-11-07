@@ -1,3 +1,4 @@
+import Foundation
 import GRDB
 
 /// Versioned migrations of `library.sqlite` (docs/ARCHITECTURE.md §4).
@@ -118,6 +119,18 @@ enum LibrarySchema {
               key_minor INTEGER NOT NULL DEFAULT 0
             );
             """)
+        }
+        migrator.registerMigration("v5-no-typescript") { db in
+            // `.ts` stopped being video (TypeScript sources, D-124): rows already indexed become tombstones at once,
+            // as a removed file does, instead of waiting for their folder to change.
+            try db.execute(
+                sql: "UPDATE asset SET state = 1, missing_since = ? WHERE state = 0 AND lower(name) LIKE '%.ts'",
+                arguments: [Date().millisecondsSince1970]
+            )
+        }
+        migrator.registerMigration("v6-cloud-only") { db in
+            // Files kept only in the cloud (D-124): not read for details or thumbnails until downloaded.
+            try db.execute(sql: "ALTER TABLE asset ADD COLUMN cloud_only INTEGER NOT NULL DEFAULT 0")
         }
         return migrator
     }

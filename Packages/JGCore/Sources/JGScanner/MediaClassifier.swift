@@ -36,8 +36,12 @@ public final class MediaClassifier: Sendable {
         "x3f": .photo, "mka": .audio, "ogg": .audio, "oga": .audio, "opus": .audio, "wma": .audio, "ape": .audio, "wv": .audio,
     ]
 
+    /// Extensions macOS declares as media that are almost always something else in a user's folders: `.ts` is a
+    /// TypeScript source far more often than an MPEG transport stream (camera clips use `.mts` / `.m2ts`).
+    static let excludedExtensions: Set<String> = ["ts"]
+
     private static func classify(pathExtension: String) -> Classification? {
-        guard let type = UTType(filenameExtension: pathExtension) else { return nil }
+        guard !excludedExtensions.contains(pathExtension), let type = UTType(filenameExtension: pathExtension) else { return nil }
         let kind: MediaKind? = if type.conforms(to: .image) {
             .photo
         } else if type.conforms(to: .movie) {

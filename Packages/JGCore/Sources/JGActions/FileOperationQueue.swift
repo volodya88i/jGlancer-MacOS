@@ -165,7 +165,16 @@ public actor FileOperationQueue {
                 try await undo.append(run(.trash(destination)))
             }
         }
-        try await undo.append(run(copying ? .copy(from: source, to: destination) : .move(from: source, to: destination)))
+        do {
+            try await undo.append(run(copying ? .copy(from: source, to: destination) : .move(from: source, to: destination)))
+        } catch {
+            // The item did not take the replaced file's place: that file comes back out of the Trash, so a failed
+            // item never leaves a change behind that no undo record knows about.
+            for step in undo.reversed() {
+                _ = try? await run(step)
+            }
+            throw error
+        }
         return (undo, destination)
     }
 
@@ -221,25 +230,28 @@ public actor FileOperationQueue {
             try fileSystem.move(source, to: destination)
             return
         }
+        let isFolder = fileSystem.itemsBelow(source) != nil
         try copyVerified(source, to: destination)
         do {
             try fileSystem.remove(source)
         } catch {
-            // Both copies exist: take the new one back so the move did not happen.
-            try? fileSystem.remove(destination)
+            // A file that could not be deleted is still whole: take the copy back so the move did not happen. A
+            // folder may have lost part of its items before the error, so its verified copy is the only complete
+            // one and stays where it is.
+            if !isFolder {
+                try? fileSystem.remove(destination)
+            }
             throw error
         }
     }
 
-    /// Copies through a temporary name next to the destination, checks size and quick hash, then places it.
+    /// Copies through a temporary name next to the destination, checks it (a folder item by item), then places it.
     private func copyVerified(_ source: URL, to destination: URL) throws {
         guard !fileSystem.exists(destination) else { throw FileOperationError.nameTaken }
         let temporary = destination.deletingLastPathComponent()
             .appendingPathComponent(".jglancer-\(UUID().uuidString)-\(destination.lastPathComponent)")
         try fileSystem.copy(source, to: temporary)
-        guard fileSystem.size(of: temporary) == fileSystem.size(of: source),
-              fileSystem.quickHash(of: temporary) == fileSystem.quickHash(of: source)
-        else {
+        guard isCopy(temporary, of: source) else {
             try? fileSystem.remove(temporary)
             throw FileOperationError.verificationFailed
         }
@@ -248,6 +260,19 @@ public actor FileOperationQueue {
         } catch {
             try? fileSystem.remove(temporary)
             throw error
+        }
+    }
+
+    /// Whether `copy` holds what `source` holds: a file's size and quick hash; a folder's every item, and the size and
+    /// quick hash of every file in it (a folder itself has neither, so comparing only those would prove nothing).
+    func isCopy(_ copy: URL, of source: URL) -> Bool {
+        guard let items = fileSystem.itemsBelow(source) else {
+            guard let hash = fileSystem.quickHash(of: source) else { return false }
+            return fileSystem.size(of: copy) == fileSystem.size(of: source) && fileSystem.quickHash(of: copy) == hash
+        }
+        guard fileSystem.itemsBelow(copy) == items else { return false }
+        return items.filter { !$0.hasSuffix("/") }.allSatisfy { item in
+            isCopy(copy.appendingPathComponent(item), of: source.appendingPathComponent(item))
         }
     }
 

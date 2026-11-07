@@ -37,9 +37,10 @@ extension GridController {
         }
         let refs = model.refs
         let visible = geometry.indices(in: visibleRect).filter { $0 < refs.count }
+        let visibleSet = Set(visible)
         let ahead = prefetch.aheadRects(visible: visibleRect, contentHeight: collectionView.bounds.height)
             .flatMap { geometry.indices(in: $0) }
-            .filter { $0 < refs.count && !visible.contains($0) }
+            .filter { $0 < refs.count && !visibleSet.contains($0) }
         let wanted = visible.map { refs[$0].id } + ahead.map { refs[$0].id }
         let missing = wanted.filter { (rows[$0] == nil || staleRows.contains($0)) && !rowsInFlight.contains($0) }
         if !missing.isEmpty {
@@ -130,6 +131,18 @@ extension GridController {
             show(cached, for: asset.id)
             return
         }
+        if asset.isCloudOnly {
+            // Kept only in the cloud (D-124): a thumbnail made before it left shows; none is made, that would
+            // download the file. Looked up once until the rows change (a download brings a fresh row).
+            guard cloudLookups.insert(asset.id).inserted else { return }
+            let service = model.thumbnails
+            let id = asset.id
+            Task { [weak self] in
+                let image = await service.storedThumbnail(for: request)
+                self?.show(image, for: id)
+            }
+            return
+        }
         if let existing = thumbnailTasks[asset.id] {
             if existing.priority < priority {
                 // A tile coming back (or into view): its request moves up instead of starting again.
@@ -167,5 +180,6 @@ extension GridController {
         }
         thumbnailTasks.removeAll()
         trail.removeAll()
+        cloudLookups.removeAll()
     }
 }

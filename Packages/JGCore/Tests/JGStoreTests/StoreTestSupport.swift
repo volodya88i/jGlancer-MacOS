@@ -19,11 +19,12 @@ struct FakeProbe: FileProbe {
 let base = Date(timeIntervalSince1970: 1_700_000_000)
 
 func file(
-    _ name: String, size: Int64 = 100, modified: TimeInterval = 0, inode: UInt64? = nil, kind: MediaKind = .photo
+    _ name: String, size: Int64 = 100, modified: TimeInterval = 0, inode: UInt64? = nil, kind: MediaKind = .photo,
+    cloudOnly: Bool = false
 ) -> ScannedFile {
     ScannedFile(
         name: name, kind: kind, typeIdentifier: nil, size: size,
-        modifiedAt: base.addingTimeInterval(modified), createdAt: nil, inode: inode
+        modifiedAt: base.addingTimeInterval(modified), createdAt: nil, inode: inode, isCloudOnly: cloudOnly
     )
 }
 

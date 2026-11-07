@@ -16,6 +16,8 @@ final class ThumbnailTileView: NSView {
         /// The head of an image sequence: its frame count, and whether it is unfolded (D-84).
         var sequenceFrames: Int?
         var sequenceUnfolded = false
+        /// Kept only in the cloud (D-124): a cloud instead of the kind glyph while there is no thumbnail.
+        var isCloudOnly = false
     }
 
     var content = Content(name: nil, kind: .photo, duration: nil, showsCaption: false, accessibilityKind: "") {
@@ -64,7 +66,26 @@ final class ThumbnailTileView: NSView {
         didSet {
             if isHovered != oldValue {
                 updateColors()
+                fadeHover()
             }
+        }
+    }
+
+    /// No implicit animations on the tile's layers: a selection follows the keyboard at once, and a tile reused while
+    /// scrolling never fades its selection or placeholder in (Core Animation's default is a 0.25 s fade on every
+    /// color change). Only hover fades, explicitly (`fadeHover`).
+    static let quietActions: [String: any CAAction] = [
+        "contents": NSNull(), "bounds": NSNull(), "position": NSNull(), "hidden": NSNull(), "backgroundColor": NSNull(),
+        "borderColor": NSNull(), "borderWidth": NSNull(), "foregroundColor": NSNull(), "strokeColor": NSNull(),
+    ]
+
+    /// The hover outline and wash fade in and out (docs/DESIGN.md §9) from what is drawn now.
+    private func fadeHover() {
+        for (layer, keyPath) in [(backgroundLayer, "backgroundColor"), (borderLayer, "borderColor"), (borderLayer, "borderWidth")] {
+            let fade = CABasicAnimation(keyPath: keyPath)
+            fade.duration = JGMetrics.fadeDuration
+            fade.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            layer.add(fade, forKey: keyPath)
         }
     }
 
@@ -119,7 +140,7 @@ final class ThumbnailTileView: NSView {
             captionLayer,
             crosshairLayer,
         ] {
-            layer.actions = ["contents": NSNull(), "bounds": NSNull(), "position": NSNull(), "hidden": NSNull()]
+            layer.actions = ThumbnailTileView.quietActions
             self.layer?.addSublayer(layer)
         }
         setUpSequenceLayers()
@@ -216,15 +237,18 @@ final class ThumbnailTileView: NSView {
         let showsGlyph = image == nil && !isLoading
         glyphLayer.isHidden = !showsGlyph
         if showsGlyph {
-            glyphLayer.contents = Self.glyph(for: content.kind, appearance: effectiveAppearance)
+            glyphLayer.contents = Self.glyph(for: content.kind, isCloudOnly: content.isCloudOnly, appearance: effectiveAppearance)
         }
         let flagName = content.flag == .none ? nil : content.flag.title
         updateSequenceText()
         let frames = content.sequenceFrames.map {
             String(localized: "image sequence, \($0) frames", comment: "Grid tile accessibility: a folded image sequence")
         }
-        setAccessibilityLabel([content.name, content.accessibilityKind, frames, content.duration, flagName].compactMap(\.self)
-            .joined(separator: ", "))
+        let cloud = content.isCloudOnly
+            ? String(localized: "in the cloud", comment: "Grid tile accessibility: the file is kept only in iCloud or another cloud")
+            : nil
+        setAccessibilityLabel([content.name, content.accessibilityKind, frames, content.duration, flagName, cloud]
+            .compactMap(\.self).joined(separator: ", "))
         updateColors()
         needsLayout = true
     }
@@ -254,6 +278,9 @@ final class ThumbnailTileView: NSView {
         isLoading = true
         isSelected = false
         isHovered = false
+        // A tile going back to the pool shows nothing of the last one's hover.
+        backgroundLayer.removeAllAnimations()
+        borderLayer.removeAllAnimations()
     }
 }
 

@@ -204,4 +204,20 @@ struct ThumbnailGeneratorTests {
         #expect(!ThumbnailCodec.preservesAlpha(typeIdentifier: "public.heic"))
         #expect(!ThumbnailCodec.preservesAlpha(typeIdentifier: nil))
     }
+
+    @Test func thumbnailsKeepWideGamutColors() throws {
+        let wideGamut = try #require(CGColorSpace(name: CGColorSpace.displayP3))
+        let context = try #require(CGContext(
+            data: nil, width: 8, height: 8, bitsPerComponent: 8, bytesPerRow: 0, space: wideGamut,
+            bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+        ))
+        context.setFillColor(CGColor(colorSpace: wideGamut, components: [1, 0, 0, 1]) ?? .black)
+        context.fill(CGRect(x: 0, y: 0, width: 8, height: 8))
+        let red = try #require(context.makeImage())
+        let shown = try #require(ThumbnailCodec.displayReady(red))
+        #expect(shown.colorSpace?.name == CGColorSpace.displayP3)
+        // Stored and read back from cache.sqlite, still Display P3 (sRGB would clip the red).
+        let stored = try #require(ThumbnailCodec.encode(shown))
+        #expect(ThumbnailCodec.decode(stored)?.colorSpace?.name == CGColorSpace.displayP3)
+    }
 }

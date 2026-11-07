@@ -11,10 +11,12 @@ public struct ScannedFile: Hashable, Sendable {
     public let createdAt: Date?
     /// File identifier (inode) on its volume.
     public let inode: UInt64?
+    /// Its content is only in the cloud (`CloudFile.isDataless`).
+    public let isCloudOnly: Bool
 
     public init(
         name: String, kind: MediaKind, typeIdentifier: String?, size: Int64,
-        modifiedAt: Date, createdAt: Date?, inode: UInt64?
+        modifiedAt: Date, createdAt: Date?, inode: UInt64?, isCloudOnly: Bool = false
     ) {
         self.name = name
         self.kind = kind
@@ -23,6 +25,7 @@ public struct ScannedFile: Hashable, Sendable {
         self.modifiedAt = modifiedAt
         self.createdAt = createdAt
         self.inode = inode
+        self.isCloudOnly = isCloudOnly
     }
 }
 

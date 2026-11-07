@@ -42,6 +42,28 @@ struct RecoveryTests {
         #expect(try Data(contentsOf: damaged) == Data(repeating: 0x42, count: 8192))
     }
 
+    @Test func aLibraryThatCannotBeReadIsNotTakenForDamaged() async throws {
+        let folder = try TemporaryDirectory()
+        let url = folder.url.appendingPathComponent("library.sqlite")
+        let backup = folder.url.appendingPathComponent("library-backup.sqlite")
+        do {
+            let store = try LibraryStore.open(at: url)
+            _ = try await store.addRoot(path: "/kept")
+            try await store.backup(to: backup, ifOlderThan: 0)
+            _ = try await store.createAlbum(name: "Only in the library")
+        }
+        // No permission to read it (copied from another Mac, say): an error to show, not a reason to replace it.
+        try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: url.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: url.path) }
+        #expect(throws: (any Error).self) { try LibraryStore.openWithRecovery(at: url, backup: backup) }
+        try FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: url.path)
+        let files = try FileManager.default.contentsOfDirectory(atPath: folder.url.path)
+        #expect(!files.contains { $0.contains("damaged") })
+        let (store, recovery) = try LibraryStore.openWithRecovery(at: url, backup: backup)
+        #expect(recovery == nil)
+        #expect(try await store.albums().map(\.name) == ["Only in the library"])
+    }
+
     @Test func withoutABackupANewLibraryStartsAndTheDamagedFileStays() async throws {
         let folder = try TemporaryDirectory()
         let url = folder.url.appendingPathComponent("library.sqlite")

@@ -109,7 +109,9 @@ public extension LibraryStore {
             return try LibraryStatistics(
                 assetsByKind: byKind,
                 missingAssets: Int.fetchOne(db, sql: "SELECT COUNT(*) FROM asset WHERE state = 1") ?? 0,
-                pendingMetadata: Int.fetchOne(db, sql: "SELECT COUNT(*) FROM asset WHERE meta_state = 0 AND state = 0") ?? 0,
+                pendingMetadata: Int.fetchOne(
+                    db, sql: "SELECT COUNT(*) FROM asset WHERE meta_state = 0 AND state = 0 AND cloud_only = 0"
+                ) ?? 0,
                 folders: Int.fetchOne(db, sql: "SELECT COUNT(*) FROM folder WHERE state = 0") ?? 0
             )
         }
@@ -205,7 +207,7 @@ extension LibraryStore {
         }
         if let search = searchCondition(query.searchText) {
             conditions.append(search.sql)
-            arguments += [search.argument]
+            arguments += search.arguments
         }
         return (conditions.joined(separator: " AND "), arguments)
     }
@@ -219,15 +221,29 @@ extension LibraryStore {
     }
 
     /// Three characters or more use the trigram index (a quoted phrase); shorter text a plain `LIKE`.
-    static func searchCondition(_ text: String?) -> (sql: String, argument: String)? {
+    static func searchCondition(_ text: String?) -> (sql: String, arguments: StatementArguments)? {
         guard let text else { return nil }
         if text.count >= 3 {
             return ("asset.id IN (SELECT rowid FROM asset_search WHERE asset_search MATCH ?)",
-                    "\"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\"")
+                    ["\"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\""])
         }
-        let escaped = text.replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "%", with: "\\%").replacingOccurrences(of: "_", with: "\\_")
-        return ("asset.name LIKE ? ESCAPE '\\'", "%" + escaped + "%")
+        // SQLite's LIKE ignores case for ASCII letters only: other letters (Cyrillic, accented) are tried in each case,
+        // as the trigram search does from three characters on. At most two characters, so at most four patterns.
+        let patterns = caseVariants(of: text).map { variant in
+            "%" + variant.replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "%", with: "\\%").replacingOccurrences(of: "_", with: "\\_") + "%"
+        }
+        let sql = patterns.map { _ in "asset.name LIKE ? ESCAPE '\\'" }.joined(separator: " OR ")
+        return ("(\(sql))", StatementArguments(patterns))
+    }
+
+    /// `text` with each non-ASCII letter in lower and upper case, every combination.
+    static func caseVariants(of text: String) -> [String] {
+        text.reduce([""]) { variants, character in
+            let forms = character.isASCII ? [String(character)]
+                : Array(Set([String(character).lowercased(), String(character).uppercased(), String(character)])).sorted()
+            return variants.flatMap { prefix in forms.map { prefix + $0 } }
+        }
     }
 
     static func fetchAssetRefs(_ db: Database, query: AssetQuery) throws -> [AssetRef] {
@@ -237,14 +253,14 @@ extension LibraryStore {
         guard let filter = filter(for: query) else { return [] }
         let direction = query.ascending ? "ASC" : "DESC"
         let sql = """
-        SELECT asset.id, asset.kind FROM asset
+        SELECT asset.id, asset.kind, asset.folder_id FROM asset
         WHERE \(filter.sql)
         ORDER BY \(orderColumns(query.sort).map { "\($0) \(direction)" }.joined(separator: ", "))
         """
         var refs: [AssetRef] = []
         let rows = try Row.fetchCursor(db, sql: sql, arguments: filter.arguments)
         while let row = try rows.next() {
-            refs.append(AssetRef(id: row[0], kind: MediaKind(rawValue: row[1]) ?? .photo))
+            refs.append(AssetRef(id: row[0], kind: MediaKind(rawValue: row[1]) ?? .photo, folderID: row[2]))
         }
         return refs
     }

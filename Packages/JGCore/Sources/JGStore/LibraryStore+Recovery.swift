@@ -13,22 +13,39 @@ public enum LibraryRecovery: Equatable, Sendable {
 /// `library-damaged-<date>.sqlite` next to it, so its albums and flags can still be rescued by hand.
 public extension LibraryStore {
     /// Opens `url`; if it is not a database or fails its integrity check, sets it aside and opens the backup at
-    /// `backup` instead (or a new library when there is none that works).
+    /// `backup` instead (or a new library when there is none that works). Any other error — no permission, a full or
+    /// read-only disk, a lock held by another process — is thrown and the file stays as it is: such a library is not
+    /// damaged, and setting it aside would hide the user's albums and flags behind a backup or an empty library.
     static func openWithRecovery(at url: URL, backup: URL, now: Date = Date()) throws -> (LibraryStore, LibraryRecovery?) {
-        if let store = try? open(at: url), (try? store.isIntact()) == true {
+        if let store = try openUnlessDamaged(at: url) {
             return (store, nil)
         }
         let damaged = try setAside(url, now: now)
         if FileManager.default.fileExists(atPath: backup.path) {
             let backupDate = (try? backup.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate ?? now
             try FileManager.default.copyItem(at: backup, to: url)
-            if let store = try? open(at: url), (try? store.isIntact()) == true {
+            if let store = try openUnlessDamaged(at: url) {
                 return (store, .restoredFromBackup(backupDate: backupDate, damagedCopy: damaged))
             }
             // The backup is no good either: keep it beside the damaged one and start over.
             _ = try setAside(url, now: now.addingTimeInterval(1))
         }
         return try (open(at: url), .startedEmpty(damagedCopy: damaged))
+    }
+
+    /// The store at `url`, or nil when the file is damaged: not a database, corrupt, or failing its integrity check.
+    private static func openUnlessDamaged(at url: URL) throws -> LibraryStore? {
+        do {
+            let store = try open(at: url)
+            return try store.isIntact() ? store : nil
+        } catch let error as DatabaseError where isDamage(error) {
+            return nil
+        }
+    }
+
+    /// SQLite's verdicts on the file itself; everything else (I/O, permissions, locks, a full disk) is not damage.
+    internal static func isDamage(_ error: DatabaseError) -> Bool {
+        error.resultCode == .SQLITE_CORRUPT || error.resultCode == .SQLITE_NOTADB
     }
 
     /// `PRAGMA quick_check` says "ok".

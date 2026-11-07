@@ -10,6 +10,7 @@ public struct DirectoryLister: Sendable {
         .isDirectoryKey, .isPackageKey, .isSymbolicLinkKey, .isRegularFileKey, .fileSizeKey,
         .contentModificationDateKey, .creationDateKey, .fileIdentifierKey,
     ]
+    private static let keySet = Set(keys)
 
     private let classifier: MediaClassifier
 
@@ -26,7 +27,7 @@ public struct DirectoryLister: Sendable {
         var subdirectories: [String] = []
         files.reserveCapacity(entries.count)
         for entry in entries {
-            guard let values = try? entry.resourceValues(forKeys: Set(Self.keys)), values.isSymbolicLink != true else { continue }
+            guard let values = try? entry.resourceValues(forKeys: Self.keySet), values.isSymbolicLink != true else { continue }
             let name = entry.lastPathComponent
             if values.isDirectory == true {
                 if values.isPackage != true {
@@ -42,7 +43,8 @@ public struct DirectoryLister: Sendable {
                 size: Int64(values.fileSize ?? 0),
                 modifiedAt: values.contentModificationDate ?? .distantPast,
                 createdAt: values.creationDate,
-                inode: values.fileIdentifier
+                inode: values.fileIdentifier,
+                isCloudOnly: CloudFile.isDataless(atPath: entry.path)
             ))
         }
         return DirectoryScan(

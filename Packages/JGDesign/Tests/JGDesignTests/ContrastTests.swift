@@ -30,6 +30,23 @@ struct ContrastTests {
         }
     }
 
+    /// The status bubble floats over thumbnails (D-116): its words stay readable, and its icons visible, whatever the
+    /// picture under it, even ignoring the darkening or lightening of its blur.
+    @Test(arguments: [true, false])
+    func statusBubbleStaysReadableOverAnyMedia(isDark: Bool) {
+        let tint = JGColor.bgRaised.value(isDark: isDark, increasedContrast: false)
+        let glass = JGRGB(red: tint.red, green: tint.green, blue: tint.blue, alpha: JGMetrics.statusBubbleTintOpacity)
+        for media in [JGRGB(hex: 0xFFFFFF), JGRGB(hex: 0x000000), JGRGB(hex: 0x808080)] {
+            let background = glass.composited(over: media)
+            for token in [JGColor.textPrimary, JGColor.textSecondary] {
+                #expect(token.value(isDark: isDark, increasedContrast: false).contrastRatio(with: background) >= 4.5, "\(token.name)")
+            }
+            for icon in [JGColor.danger, JGColor.textTertiary] {
+                #expect(icon.value(isDark: isDark, increasedContrast: false).contrastRatio(with: background) >= 3, "\(icon.name)")
+            }
+        }
+    }
+
     @Test func tokenNamesAreUnique() {
         let names = JGColor.all.map(\.name)
         #expect(Set(names).count == names.count)

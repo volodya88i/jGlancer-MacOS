@@ -107,6 +107,9 @@ struct LibraryPaneView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .padding(.top, topInset)
             .padding(.bottom, bottomInset)
+        } else if model.state.viewMode == .list {
+            // Finder-style list (D-125).
+            LibraryListView(model: model, insets: NSEdgeInsets(top: topInset, left: 0, bottom: bottomInset, right: 0))
         } else {
             LibraryGridView(model: model, insets: NSEdgeInsets(top: topInset, left: 0, bottom: bottomInset, right: 0))
         }

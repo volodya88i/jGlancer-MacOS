@@ -45,13 +45,14 @@ public struct MetadataUpdate: Hashable, Sendable {
 }
 
 public extension LibraryStore {
-    /// Up to `limit` present assets still waiting for stage 2, with ids above `afterID`, in id order.
+    /// Up to `limit` present assets still waiting for stage 2, with ids above `afterID`, in id order. Files kept only
+    /// in the cloud wait until they are downloaded (reading them would download them, D-124).
     func pendingMetadata(afterID: Int64 = 0, limit: Int) async throws -> [PendingMetadataItem] {
         try await writer.read { db in
             try Row.fetchAll(db, sql: """
             SELECT asset.id, asset.kind, asset.mtime, asset.name, folder.rel_path, root_folder.path
             FROM asset JOIN folder ON folder.id = asset.folder_id JOIN root_folder ON root_folder.id = folder.root_id
-            WHERE asset.meta_state = 0 AND asset.state = 0 AND asset.id > ?
+            WHERE asset.meta_state = 0 AND asset.state = 0 AND asset.cloud_only = 0 AND asset.id > ?
             ORDER BY asset.id LIMIT ?
             """, arguments: [afterID, limit]).map { row in
                 let directory = LibraryStore.absolutePath(rootPath: row["path"], relativePath: row["rel_path"])

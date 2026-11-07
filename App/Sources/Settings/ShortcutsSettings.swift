@@ -206,6 +206,8 @@ enum ShortcutNames {
         case .togglePreview: String(localized: "Show Preview", comment: "View menu: the preview pane on the right")
         case .showNames: String(localized: "Show Names", comment: "View menu: names under thumbnails")
         case .toggleSplitView: String(localized: "Split View", comment: "View menu: two library panes side by side")
+        case .asGrid: String(localized: "as Grid", comment: "View menu: thumbnails in a grid")
+        case .asList: String(localized: "as List", comment: "View menu: files in a Finder-style list")
         default: String(localized: "Include Subfolders")
         }
     }

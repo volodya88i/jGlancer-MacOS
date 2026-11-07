@@ -14,6 +14,10 @@ public struct LibraryViewState: Codable, Equatable, Sendable {
     public var ascending = true
     /// Preferred tile side in points.
     public var tileSide: Double = 160
+    /// Thumbnails in a grid, or a Finder-style list (D-125); one choice for the whole library (each split pane its own).
+    public var viewMode: ViewMode = .grid
+    /// The list's row height in points (the size ruler sets it while the list shows).
+    public var listRowHeight: Double = 28
     public var showNames = true
     public var selectedIDs: [Int64] = []
     public var focusedID: Int64?
@@ -34,6 +38,10 @@ public struct LibraryViewState: Codable, Equatable, Sendable {
         case off, sideBySide, stacked
     }
 
+    public enum ViewMode: String, Codable, CaseIterable, Sendable {
+        case grid, list
+    }
+
     /// The top bar's star: only flagged files, or one flag.
     public var flagFilter: AssetQuery.FlagFilter?
 
@@ -51,6 +59,8 @@ public struct LibraryViewState: Codable, Equatable, Sendable {
         sort = (try? container.decodeIfPresent(AssetQuery.Sort.self, forKey: .sort)) ?? defaults.sort
         ascending = try container.decodeIfPresent(Bool.self, forKey: .ascending) ?? defaults.ascending
         tileSide = try container.decodeIfPresent(Double.self, forKey: .tileSide) ?? defaults.tileSide
+        viewMode = (try? container.decodeIfPresent(ViewMode.self, forKey: .viewMode)) ?? defaults.viewMode
+        listRowHeight = try container.decodeIfPresent(Double.self, forKey: .listRowHeight) ?? defaults.listRowHeight
         showNames = try container.decodeIfPresent(Bool.self, forKey: .showNames) ?? defaults.showNames
         selectedIDs = try container.decodeIfPresent([Int64].self, forKey: .selectedIDs) ?? []
         focusedID = try container.decodeIfPresent(Int64.self, forKey: .focusedID)

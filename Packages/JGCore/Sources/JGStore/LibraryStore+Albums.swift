@@ -65,11 +65,12 @@ public extension LibraryStore {
                 db, sql: "SELECT COALESCE(MAX(position), -1) + 1 FROM album_item WHERE album_id = ?", arguments: [albumID]
             ) ?? 0
             var added: [Int64] = []
-            for id in assetIDs where !existing.contains(id) && !added.contains(id) {
-                try db.execute(
-                    sql: "INSERT INTO album_item (album_id, asset_id, position, added_at) VALUES (?, ?, ?, ?)",
-                    arguments: [albumID, id, next, Self.ms(now)]
-                )
+            var seen = existing
+            let insert = try db.makeStatement(
+                sql: "INSERT INTO album_item (album_id, asset_id, position, added_at) VALUES (?, ?, ?, ?)"
+            )
+            for id in assetIDs where seen.insert(id).inserted {
+                try insert.execute(arguments: [albumID, id, next, Self.ms(now)])
                 next += 1
                 added.append(id)
             }
@@ -116,8 +117,9 @@ public extension LibraryStore {
     /// Moves `assetIDs` (keeping their relative order) in front of `before`, or to the end when nil.
     func moveInAlbum(_ albumID: Int64, assetIDs: [Int64], before: Int64?) async throws {
         let order = try await albumOrder(albumID)
-        let moving = order.filter(assetIDs.contains)
-        var rest = order.filter { !assetIDs.contains($0) }
+        let movingIDs = Set(assetIDs)
+        let moving = order.filter(movingIDs.contains)
+        var rest = order.filter { !movingIDs.contains($0) }
         let index = before.flatMap { rest.firstIndex(of: $0) } ?? rest.count
         rest.insert(contentsOf: moving, at: index)
         try await setAlbumOrder(albumID, rest)
@@ -130,12 +132,11 @@ public extension LibraryStore {
                 db, sql: "SELECT asset_id FROM album_item WHERE album_id = ? ORDER BY position", arguments: [albumID]
             )
             let known = Set(current)
-            let full = order.filter(known.contains) + current.filter { !order.contains($0) }
+            let ordered = Set(order)
+            let full = order.filter(known.contains) + current.filter { !ordered.contains($0) }
+            let update = try db.makeStatement(sql: "UPDATE album_item SET position = ? WHERE album_id = ? AND asset_id = ?")
             for (position, id) in full.enumerated() {
-                try db.execute(
-                    sql: "UPDATE album_item SET position = ? WHERE album_id = ? AND asset_id = ?",
-                    arguments: [position, albumID, id]
-                )
+                try update.execute(arguments: [position, albumID, id])
             }
         }
     }
@@ -190,13 +191,13 @@ public extension LibraryStore {
         }
         if let search = searchCondition(query.searchText) {
             conditions.append(search.sql)
-            arguments += [search.argument]
+            arguments += search.arguments
         }
         return try Row.fetchAll(db, sql: """
-        SELECT asset.id, asset.kind FROM album_item JOIN asset ON asset.id = album_item.asset_id
+        SELECT asset.id, asset.kind, asset.folder_id FROM album_item JOIN asset ON asset.id = album_item.asset_id
         WHERE \(conditions.joined(separator: " AND "))
         ORDER BY album_item.position, asset.id
-        """, arguments: arguments).map { AssetRef(id: $0[0], kind: MediaKind(rawValue: $0[1]) ?? .photo) }
+        """, arguments: arguments).map { AssetRef(id: $0[0], kind: MediaKind(rawValue: $0[1]) ?? .photo, folderID: $0[2]) }
     }
 
     private static func ms(_ date: Date) -> Int64 {

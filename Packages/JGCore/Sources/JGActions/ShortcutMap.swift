@@ -34,6 +34,9 @@ public enum ShortcutCommand: String, CaseIterable, Codable, CodingKeyRepresentab
     case includeSubfolders
     /// View ▸ Split View on or off (D-89).
     case toggleSplitView
+    /// View ▸ as Grid, as List (D-125).
+    case asGrid
+    case asList
 
     /// The registry action with the same id, for the file commands.
     public var action: ActionID? {
@@ -75,6 +78,9 @@ public enum ShortcutCommand: String, CaseIterable, Codable, CodingKeyRepresentab
         case .newAlbum: ActionShortcut("n", .command)
         case .togglePreview: ActionShortcut("0", [.command, .option])
         case .toggleSplitView: ActionShortcut("s", [.command, .control])
+        // ⌘1 / ⌘2 as in Finder would take the viewer's zoom keys; with ⌃ they are free.
+        case .asGrid: ActionShortcut("1", [.command, .control])
+        case .asList: ActionShortcut("2", [.command, .control])
         case .showNames, .includeSubfolders: nil
         // ⌃F alone flags with the accent; ⌃F then 1–6 picks a color, ⌃F then 0 removes (the app's FlagChord).
         // The colors and Remove Flag have no shortcut of their own unless the user gives them one.

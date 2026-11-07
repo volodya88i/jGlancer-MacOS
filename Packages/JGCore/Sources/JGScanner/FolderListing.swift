@@ -9,8 +9,11 @@ public enum FolderListing {
     public static func files(
         in folder: URL, kinds: Set<MediaKind>, lister: DirectoryLister = DirectoryLister()
     ) throws -> [ScannedFile] {
+        // Each key is made once, not twice per comparison (a folder of 10 000 files: 10 000 keys, not ~270 000).
         try lister.list(folder, rootID: 0, relativePath: "").files
             .filter { kinds.contains($0.kind) }
-            .sorted { NaturalSortKey.make($0.name) < NaturalSortKey.make($1.name) }
+            .map { (key: NaturalSortKey.make($0.name), file: $0) }
+            .sorted { $0.key < $1.key }
+            .map(\.file)
     }
 }

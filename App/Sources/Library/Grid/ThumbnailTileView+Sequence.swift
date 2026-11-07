@@ -34,7 +34,7 @@ extension ThumbnailTileView {
         sequenceCount.fontSize = JGTextStyle.mono.size
         sequenceCount.alignmentMode = .left
         for layer in [sequenceBadge, sequenceGlyph, sequenceCount, sequenceArrow] {
-            layer.actions = ["contents": NSNull(), "bounds": NSNull(), "position": NSNull(), "hidden": NSNull()]
+            layer.actions = ThumbnailTileView.quietActions
         }
         sequenceBadge.addSublayer(sequenceGlyph)
         sequenceBadge.addSublayer(sequenceCount)
@@ -95,6 +95,9 @@ extension ThumbnailTileView {
     }
 
     func updateSequenceColors() {
+        // Only a sequence's head shows these layers. Other tiles skip the work: it runs on every hover, selection
+        // and arriving thumbnail, so while scrolling it drew two symbols per tile on the main thread for nothing.
+        guard content.sequenceFrames != nil else { return }
         effectiveAppearance.performAsCurrentDrawingAppearance {
             let ink = (content.sequenceUnfolded ? JGColor.accentText : JGColor.textPrimary).nsColor
             sequenceBadge.backgroundColor = JGColor.overlayScrim.nsColor.cgColor
@@ -103,17 +106,29 @@ extension ThumbnailTileView {
                 card.backgroundColor = JGColor.bgRaised.nsColor.cgColor
                 card.borderColor = JGColor.lineStrong.nsColor.cgColor
             }
-            let configuration = NSImage.SymbolConfiguration(pointSize: JGTextStyle.mono.size, weight: .medium)
-                .applying(NSImage.SymbolConfiguration(paletteColors: [ink]))
-            let symbol = NSImage(systemSymbolName: "square.stack", accessibilityDescription: nil)?.withSymbolConfiguration(configuration)
-            var rect = CGRect(origin: .zero, size: symbol?.size ?? .zero)
-            sequenceGlyph.contents = symbol?.cgImage(forProposedRect: &rect, context: nil, hints: nil)
-            let arrowName = content.sequenceUnfolded ? "chevron.left" : "chevron.right"
-            let arrowConfiguration = NSImage.SymbolConfiguration(pointSize: JGTextStyle.mono.size - 2, weight: .bold)
-                .applying(NSImage.SymbolConfiguration(paletteColors: [ink]))
-            let arrow = NSImage(systemSymbolName: arrowName, accessibilityDescription: nil)?.withSymbolConfiguration(arrowConfiguration)
-            var arrowRect = CGRect(origin: .zero, size: arrow?.size ?? .zero)
-            sequenceArrow.contents = arrow?.cgImage(forProposedRect: &arrowRect, context: nil, hints: nil)
+            sequenceGlyph.contents = Self.symbol("square.stack", pointSize: JGTextStyle.mono.size, weight: .medium, ink: ink)
+            sequenceArrow.contents = Self.symbol(
+                content.sequenceUnfolded ? "chevron.left" : "chevron.right", pointSize: JGTextStyle.mono.size - 2,
+                weight: .bold, ink: ink
+            )
         }
     }
+
+    /// An SF Symbol drawn in `ink`, made once per symbol, size and color.
+    private static func symbol(_ name: String, pointSize: CGFloat, weight: NSFont.Weight, ink: NSColor) -> CGImage? {
+        let color = ink.usingColorSpace(.sRGB) ?? ink
+        let key = "\(name)|\(pointSize)|\(weight.rawValue)|\(color.redComponent)|\(color.greenComponent)|\(color.blueComponent)"
+        if let cached = symbols[key] {
+            return cached
+        }
+        let configuration = NSImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
+            .applying(NSImage.SymbolConfiguration(paletteColors: [ink]))
+        let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?.withSymbolConfiguration(configuration)
+        var rect = CGRect(origin: .zero, size: image?.size ?? .zero)
+        let rendered = image?.cgImage(forProposedRect: &rect, context: nil, hints: nil)
+        symbols[key] = rendered
+        return rendered
+    }
+
+    private static var symbols: [String: CGImage] = [:]
 }

@@ -80,6 +80,16 @@ extension LibraryModel {
         reloadQuery()
     }
 
+    /// A click on a list column's header: the sort and its direction at once (one query).
+    func setSort(_ sort: AssetQuery.Sort, ascending: Bool) {
+        guard sort != state.sort || ascending != state.ascending else { return }
+        updateState {
+            $0.sort = sort
+            $0.ascending = ascending
+        }
+        reloadQuery()
+    }
+
     func setAscending(_ ascending: Bool) {
         updateState { $0.ascending = ascending }
         reloadQuery()
@@ -88,6 +98,16 @@ extension LibraryModel {
     func setIncludeSubfolders(_ include: Bool) {
         updateState { $0.includeSubfolders = include }
         reloadQuery()
+    }
+
+    /// Grid or list (D-125).
+    func setViewMode(_ mode: LibraryViewState.ViewMode) {
+        guard mode != state.viewMode else { return }
+        updateState { $0.viewMode = mode }
+    }
+
+    func setListRowHeight(_ height: Double) {
+        updateState { $0.listRowHeight = height }
     }
 
     func setTileSide(_ side: Double) {

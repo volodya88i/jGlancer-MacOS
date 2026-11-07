@@ -30,13 +30,14 @@ extension ThumbnailTileView {
     /// A tinted SF Symbol for tiles without a thumbnail, cached per kind and appearance.
     private nonisolated(unsafe) static var glyphs: [String: CGImage] = [:]
 
-    static func glyph(for kind: MediaKind, appearance: NSAppearance) -> CGImage? {
+    static func glyph(for kind: MediaKind, isCloudOnly: Bool = false, appearance: NSAppearance) -> CGImage? {
         let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-        let key = "\(kind.rawValue)-\(isDark)"
+        let key = "\(kind.rawValue)-\(isCloudOnly)-\(isDark)"
         if let cached = glyphs[key] {
             return cached
         }
         let name = switch kind {
+        case _ where isCloudOnly: "icloud"
         case .photo: "photo"
         case .video: "film"
         case .audio: "waveform"

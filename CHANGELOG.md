@@ -4,6 +4,30 @@ One short entry per published build of the macOS app. Versions are `major.minor.
 the patch number goes up by one for the next one; the minor number goes up for larger releases. The Windows version
 keeps its own changelog in its repository.
 
+## 0.6.2 — 2026-11-07
+A list view, animated GIFs, files kept in the cloud left in the cloud, and fixes from a full review.
+
+**New**
+- **List view**: files in Finder-style columns (name with a small preview, date modified, size, kind) with folders
+  that unfold; switch in the top bar or with ⌃⌘1 / ⌃⌘2. A double-click on a folder shows that folder.
+- Animated GIFs (and animated PNGs) play in the viewer, the preview and Quick Preview.
+- Files kept only in iCloud Drive (or Dropbox, OneDrive) show a cloud and are no longer downloaded by browsing;
+  opening one downloads it.
+- Thumbnails show the full colors of iPhone photos (they are made once again after the update).
+
+**Fixed**
+- Moving a folder to another disk checks every file of the copy, and never deletes the copy when the original
+  could only be deleted in part; a failed Replace puts the replaced file back.
+- A library that cannot be opened (no permission, a full disk) shows an error instead of being replaced by its
+  backup.
+- A folder on an external disk comes back as soon as the disk is plugged in, and shows Offline as soon as it is
+  ejected.
+- Selection in the grid shows at once; scrolling over many thumbnails takes less work.
+- The counts at the bottom of the grid are readable over any picture.
+- Searching one or two letters ignores case in Russian too.
+- Notices about file operations fade in and out.
+- TypeScript files (.ts) no longer appear as videos; a saved video frame is named "… 2.png" like other copies.
+
 ## 0.6.1 — 2026-11-04
 - Albums no longer show files that were removed as dimmed tiles that cannot be opened; a file that comes back
   returns to its albums.

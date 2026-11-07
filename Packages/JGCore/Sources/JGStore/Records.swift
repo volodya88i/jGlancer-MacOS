@@ -82,6 +82,7 @@ struct AssetRecord: Codable, FetchableRecord, MutablePersistableRecord {
     var capturedAt: Int64?
     var rating: Int = 0
     var flag: Int = 0
+    var cloudOnly = false
     var state: Int
     var missingSince: Int64?
     var metaState: Int
@@ -103,7 +104,8 @@ struct AssetRecord: Codable, FetchableRecord, MutablePersistableRecord {
             capturedAt: capturedAt.map(Date.init(millisecondsSince1970:)),
             state: AssetState(rawValue: state) ?? .present,
             metadataState: MetadataState(rawValue: metaState) ?? .pending,
-            flag: AssetFlag(rawValue: flag) ?? .none
+            flag: AssetFlag(rawValue: flag) ?? .none,
+            isCloudOnly: cloudOnly
         )
     }
 

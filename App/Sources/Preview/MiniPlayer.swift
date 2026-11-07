@@ -37,11 +37,25 @@ struct MiniPlayer: View {
     @State private var tagsURL: URL?
 
     var body: some View {
-        switch asset.kind {
-        case .photo: photo
-        case .video: video
-        case .audio: audio
+        if preview.isCloudOnly, asset.kind != .photo || preview.picture == nil {
+            cloudMessage
+        } else {
+            switch asset.kind {
+            case .photo: photo
+            case .video: video
+            case .audio: audio
+            }
         }
+    }
+
+    /// A file kept only in the cloud (D-124): the previews do not download it; opening it does.
+    private var cloudMessage: some View {
+        ViewerMessage(
+            symbol: "icloud.and.arrow.down",
+            text: Text("In the cloud. Open it to download.", comment: "Preview of a file kept only in iCloud Drive or another cloud")
+        ) {}
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: Photo
@@ -70,11 +84,21 @@ struct MiniPlayer: View {
     @ViewBuilder
     private var photoImage: some View {
         if let picture = preview.picture {
-            Image(decorative: picture, scale: 1)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityLabel(Text(verbatim: asset.name))
+            Group {
+                if let url = preview.animatedURL {
+                    // A GIF or animated PNG plays (D-124).
+                    AnimatedPicture(url: url, still: picture)
+                        .aspectRatio(CGSize(width: picture.width, height: picture.height), contentMode: .fit)
+                        .accessibilityElement()
+                        .accessibilityAddTraits(.isImage)
+                } else {
+                    Image(decorative: picture, scale: 1)
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .accessibilityLabel(Text(verbatim: asset.name))
         } else {
             placeholder("photo")
         }

@@ -60,11 +60,18 @@ extension LibraryStore {
             let wasMissing = record.state == AssetState.missing.rawValue
             if sameContent, !wasMissing {
                 let inode = file.inode.map(Int64.init(bitPattern:))
-                if record.inode != inode {
+                let cloudChanged = record.cloudOnly != file.isCloudOnly
+                if record.inode != inode || cloudChanged {
                     record.inode = inode
+                    record.cloudOnly = file.isCloudOnly
                     try record.update(db)
                 }
-                result.unchanged += 1
+                // Downloaded or sent back to the cloud: the grid and the details reading must hear of it.
+                if cloudChanged {
+                    result.updated += 1
+                } else {
+                    result.unchanged += 1
+                }
                 continue
             }
             if !sameContent {
@@ -120,7 +127,7 @@ extension LibraryStore {
                     id: nil, folderId: folder.id, name: file.name, nameKey: NaturalSortKey.make(file.name),
                     kind: file.kind.rawValue, uti: file.typeIdentifier, size: file.size,
                     mtime: file.modifiedAt.millisecondsSince1970, birthTime: file.createdAt?.millisecondsSince1970,
-                    inode: file.inode.map(Int64.init(bitPattern:)), state: AssetState.present.rawValue,
+                    inode: file.inode.map(Int64.init(bitPattern:)), cloudOnly: file.isCloudOnly, state: AssetState.present.rawValue,
                     metaState: MetadataState.pending.rawValue, indexedAt: now
                 )
                 try record.insert(db)
@@ -150,6 +157,7 @@ extension LibraryStore {
         record.mtime = file.modifiedAt.millisecondsSince1970
         record.birthTime = file.createdAt?.millisecondsSince1970
         record.inode = file.inode.map(Int64.init(bitPattern:))
+        record.cloudOnly = file.isCloudOnly
         record.state = AssetState.present.rawValue
         record.missingSince = nil
         record.indexedAt = now

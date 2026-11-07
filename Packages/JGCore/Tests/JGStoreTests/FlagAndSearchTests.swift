@@ -49,6 +49,10 @@ struct FlagAndSearchTests {
         // Short text uses LIKE, with % and _ taken literally.
         #expect(try await names(store, AssetQuery(search: "%_")) == ["50%_off.png"])
         #expect(try await names(store, AssetQuery(search: "99")) == ["IMG_99.jpg"])
+        // Short text ignores case beyond ASCII too, as the trigram search does.
+        #expect(try await names(store, AssetQuery(search: "от")) == ["IMG_1234 Отпуск.jpg"])
+        #expect(try await names(store, AssetQuery(search: "ОТ")) == ["IMG_1234 Отпуск.jpg"])
+        #expect(try await names(store, AssetQuery(search: "g_")) == ["IMG_1234 Отпуск.jpg", "IMG_99.jpg"])
         #expect(try await names(store, AssetQuery(search: "  ")).count == 4)
         // Quotes in the text do not break the query.
         #expect(try await names(store, AssetQuery(search: "a\"b")).isEmpty)

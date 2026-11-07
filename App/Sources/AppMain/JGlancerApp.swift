@@ -61,6 +61,8 @@ struct MainView: View {
     /// The library's size while no viewer covers it: under a viewer it keeps it, so resizing the window lays out
     /// only the viewer (D-112).
     @State private var librarySize: CGSize?
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.reduceMotionOverride) private var reduceMotionOverride
     let appModel: AppModel
 
     private func libraryView(_ library: LibraryModel) -> some View {
@@ -91,6 +93,33 @@ struct MainView: View {
 
     private func addFolder(_ folder: URL) {
         Task { await appModel.addFolderFromViewer(folder) }
+    }
+
+    /// The file operations' toast: fades in and out (docs/DESIGN.md §9; at once with Reduce Motion). A running
+    /// batch updates the same toast, so its progress bar moves instead of the toast being made again.
+    private var toastView: some View {
+        ZStack {
+            if let fileOps = appModel.fileOps, let toast = fileOps.toast {
+                JGToast(
+                    Text(verbatim: toast.message),
+                    actionTitle: toast.canUndo ? Text("Undo", comment: "Toast: undoes the file operation")
+                        : toast.reveal != nil ? Text("Show in Finder", comment: "Sidebar folder menu") : nil,
+                    action: toast.canUndo ? { fileOps.undo() }
+                        : toast.reveal.map { url in { NSWorkspace.shared.activateFileViewerSelecting([url]) } },
+                    progress: toast.progress,
+                    stop: toast.progress != nil
+                        ? (Text("Stop", comment: "Toast: stops a running file operation"), { fileOps.stop() })
+                        : nil
+                )
+                .padding(.bottom, JGSpacing.xl)
+                .transition(.opacity)
+                .id(toast.id)
+            }
+        }
+        .animation(
+            systemReduceMotion || reduceMotionOverride ? nil : .easeOut(duration: JGMetrics.fadeDuration),
+            value: appModel.fileOps?.toast?.id
+        )
     }
 
     var body: some View {
@@ -146,24 +175,7 @@ struct MainView: View {
                     .padding(.top, JGMetrics.barHeight + JGSpacing.s)
             }
         }
-        .overlay(alignment: .bottom) {
-            if let fileOps = appModel.fileOps, let toast = fileOps.toast {
-                JGToast(
-                    Text(verbatim: toast.message),
-                    actionTitle: toast.canUndo ? Text("Undo", comment: "Toast: undoes the file operation")
-                        : toast.reveal != nil ? Text("Show in Finder", comment: "Sidebar folder menu") : nil,
-                    action: toast.canUndo ? { fileOps.undo() }
-                        : toast.reveal.map { url in { NSWorkspace.shared.activateFileViewerSelecting([url]) } },
-                    progress: toast.progress,
-                    stop: toast.progress != nil
-                        ? (Text("Stop", comment: "Toast: stops a running file operation"), { fileOps.stop() })
-                        : nil
-                )
-                .padding(.bottom, JGSpacing.xl)
-                .transition(.opacity)
-                .id(toast.id)
-            }
-        }
+        .overlay(alignment: .bottom) { toastView }
         .sheet(item: Binding(get: { appModel.fileOps?.renameRequest }, set: { appModel.fileOps?.renameRequest = $0 })) { request in
             if let fileOps = appModel.fileOps {
                 RenameSheet(fileOps: fileOps, url: request.url)
@@ -294,10 +306,28 @@ private struct ViewMenuItems: View {
     var body: some View {
         if let main = appModel.library, let library = appModel.activeLibrary {
             let shortcuts = appModel.shortcuts
+            Toggle(isOn: Binding(get: { library.state.viewMode == .grid }, set: {
+                if $0 {
+                    library.setViewMode(.grid)
+                }
+            })) {
+                Text("as Grid", comment: "View menu: thumbnails in a grid")
+            }
+            .keyboardShortcut(shortcuts.keyboardShortcut(for: .asGrid))
+            Toggle(isOn: Binding(get: { library.state.viewMode == .list }, set: {
+                if $0 {
+                    library.setViewMode(.list)
+                }
+            })) {
+                Text("as List", comment: "View menu: files in a Finder-style list")
+            }
+            .keyboardShortcut(shortcuts.keyboardShortcut(for: .asList))
+            Divider()
             Toggle(isOn: Binding(get: { library.state.showNames }, set: { library.setShowNames($0) })) {
                 Text("Show Names", comment: "View menu: names under thumbnails")
             }
             .keyboardShortcut(shortcuts.keyboardShortcut(for: .showNames))
+            .disabled(library.state.viewMode == .list)
             Toggle(isOn: Binding(get: { library.state.includeSubfolders }, set: { library.setIncludeSubfolders($0) })) {
                 Text("Include Subfolders")
             }

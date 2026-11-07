@@ -29,12 +29,14 @@ public struct Asset: Hashable, Sendable, Identifiable {
     public let state: AssetState
     public let metadataState: MetadataState
     public let flag: AssetFlag
+    /// The file's content is only in the cloud (`CloudFile`): nothing reads it until it is opened (D-124).
+    public let isCloudOnly: Bool
 
     public init(
         id: Int64, folderID: Int64, name: String, url: URL, kind: MediaKind, typeIdentifier: String?, size: Int64,
         modifiedAt: Date, createdAt: Date?, width: Int?, height: Int?, orientation: Int?, duration: Double?,
         frameRate: Double?, codec: String?, capturedAt: Date?, state: AssetState, metadataState: MetadataState,
-        flag: AssetFlag = .none
+        flag: AssetFlag = .none, isCloudOnly: Bool = false
     ) {
         self.id = id
         self.folderID = folderID
@@ -55,6 +57,7 @@ public struct Asset: Hashable, Sendable, Identifiable {
         self.state = state
         self.metadataState = metadataState
         self.flag = flag
+        self.isCloudOnly = isCloudOnly
     }
 }
 
@@ -64,9 +67,12 @@ public struct Asset: Hashable, Sendable, Identifiable {
 public struct AssetRef: Hashable, Sendable, Identifiable {
     public let id: Int64
     public let kind: MediaKind
+    /// The folder holding the file (the list view groups files by folder, D-125).
+    public let folderID: Int64
 
-    public init(id: Int64, kind: MediaKind) {
+    public init(id: Int64, kind: MediaKind, folderID: Int64 = 0) {
         self.id = id
         self.kind = kind
+        self.folderID = folderID
     }
 }

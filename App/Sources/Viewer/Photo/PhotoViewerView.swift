@@ -55,6 +55,11 @@ struct PhotoViewerView: View {
                     symbol: "photo",
                     text: Text("Can't open this photo.", comment: "Viewer state for a corrupt or unsupported image")
                 ) {}
+            } else if model.isDownloading {
+                ViewerMessage(
+                    symbol: "icloud.and.arrow.down",
+                    text: Text("Downloading…", comment: "Viewer state: a photo kept only in the cloud comes down to be shown")
+                ) {}
             }
             VStack(spacing: 0) {
                 ViewerTopBar(

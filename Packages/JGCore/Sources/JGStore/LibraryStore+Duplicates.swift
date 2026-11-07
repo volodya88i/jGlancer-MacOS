@@ -41,7 +41,7 @@ public extension LibraryStore {
                 lastKey = key
             }
             let pending = try Int.fetchOne(
-                db, sql: "SELECT COUNT(*) FROM asset WHERE state = 0 AND quick_hash IS NULL AND meta_state = 0"
+                db, sql: "SELECT COUNT(*) FROM asset WHERE state = 0 AND quick_hash IS NULL AND meta_state = 0 AND cloud_only = 0"
             ) ?? 0
             return DuplicateCandidates(groups: groups.filter { $0.count > 1 }, pending: pending)
         }

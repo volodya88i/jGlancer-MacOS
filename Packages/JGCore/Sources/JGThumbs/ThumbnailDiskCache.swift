@@ -67,6 +67,34 @@ public final class ThumbnailDiskCache: Sendable {
             """)
         }
         registerWaveformMigration(&migrator)
+        migrator.registerMigration("v3-display-p3") { db in
+            // Thumbnails were sRGB before; they are made again in Display P3 as they are needed. Dropping the table is
+            // instant where deleting row by row (the byte-counting trigger) is not.
+            try db.execute(sql: """
+            DROP TABLE thumb;
+            CREATE TABLE thumb (
+              asset_id INTEGER NOT NULL,
+              mtime INTEGER NOT NULL,
+              bucket INTEGER NOT NULL,
+              width INTEGER NOT NULL,
+              height INTEGER NOT NULL,
+              data BLOB NOT NULL,
+              last_used INTEGER NOT NULL,
+              PRIMARY KEY (asset_id, mtime, bucket)
+            );
+            CREATE INDEX thumb_last_used ON thumb(last_used);
+            UPDATE usage SET bytes = 0;
+            CREATE TRIGGER thumb_added AFTER INSERT ON thumb BEGIN
+              UPDATE usage SET bytes = bytes + length(NEW.data);
+            END;
+            CREATE TRIGGER thumb_removed AFTER DELETE ON thumb BEGIN
+              UPDATE usage SET bytes = bytes - length(OLD.data);
+            END;
+            CREATE TRIGGER thumb_replaced AFTER UPDATE OF data ON thumb BEGIN
+              UPDATE usage SET bytes = bytes - length(OLD.data) + length(NEW.data);
+            END;
+            """)
+        }
         return migrator
     }
 

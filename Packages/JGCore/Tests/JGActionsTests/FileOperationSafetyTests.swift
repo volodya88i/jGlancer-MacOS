@@ -19,6 +19,8 @@ final class TestFileSystem: FileSystem, @unchecked Sendable {
     var corruptCopies = false
     /// Deleting anything under this folder fails (a source that cannot be removed).
     var failRemoveUnder: URL?
+    /// Deleting a folder removes one of its files, then fails (a locked file part-way through).
+    var failRemovingFoldersPartway = false
 
     init(base: URL) throws {
         self.base = base
@@ -59,6 +61,10 @@ final class TestFileSystem: FileSystem, @unchecked Sendable {
 
     func remove(_ url: URL) throws {
         if let folder = failRemoveUnder, url.path.hasPrefix(folder.path) {
+            throw CocoaError(.fileWriteNoPermission)
+        }
+        if failRemovingFoldersPartway, let first = itemsBelow(url)?.first(where: { !$0.hasSuffix("/") }) {
+            try FileManager.default.removeItem(at: url.appendingPathComponent(first))
             throw CocoaError(.fileWriteNoPermission)
         }
         try FileManager.default.removeItem(at: url)
@@ -173,6 +179,45 @@ struct FileOperationSafetyTests {
         #expect(result.failures == files("a.jpg"))
         #expect(disk.names(source) == ["a.jpg", "b.jpg", "c.jpg"])
         #expect(disk.names(disk.otherVolume).isEmpty)
+    }
+
+    @Test func aFolderMovesToAnotherVolumeWhole() async throws {
+        try directory.write("src/album/one.jpg", "one")
+        try directory.write("src/album/deeper/two.jpg", "two")
+        let queue = FileOperationQueue(fileSystem: disk)
+        let result = await queue.perform(.move([source.appendingPathComponent("album")], to: disk.otherVolume))
+        #expect(result.completed == 1)
+        let moved = disk.otherVolume.appendingPathComponent("album")
+        #expect(disk.itemsBelow(moved) == ["deeper/", "deeper/two.jpg", "one.jpg"])
+        #expect(disk.contents(moved.appendingPathComponent("deeper/two.jpg")) == "two")
+        #expect(!disk.exists(source.appendingPathComponent("album")))
+    }
+
+    @Test func aFolderHalfDeletedOnTheOldVolumeKeepsItsCopy() async throws {
+        try directory.write("src/album/one.jpg", "one")
+        try directory.write("src/album/two.jpg", "two")
+        disk.failRemovingFoldersPartway = true
+        let folder = source.appendingPathComponent("album")
+        let queue = FileOperationQueue(fileSystem: disk)
+        let result = await queue.perform(.move([folder], to: disk.otherVolume))
+        #expect(result.failures == [folder])
+        // One file is gone from the source: the copy on the other volume is the only whole one and must stay.
+        #expect(disk.names(folder) == ["two.jpg"])
+        let copy = disk.otherVolume.appendingPathComponent("album")
+        #expect(disk.names(copy) == ["one.jpg", "two.jpg"])
+        #expect(disk.contents(copy.appendingPathComponent("one.jpg")) == "one")
+    }
+
+    @Test func aFailedReplaceBringsTheReplacedFileBack() async throws {
+        try directory.write("dst/a.jpg", "old a")
+        disk.failMoveNumber = 1
+        let queue = FileOperationQueue(fileSystem: disk)
+        let result = await queue.perform(.move(files("a.jpg"), to: destination), conflicts: .replace)
+        #expect(result.failures == files("a.jpg"))
+        #expect(result.undo.isEmpty)
+        #expect(disk.contents(destination.appendingPathComponent("a.jpg")) == "old a")
+        #expect(disk.contents(source.appendingPathComponent("a.jpg")) == "content of a.jpg")
+        #expect(disk.names(disk.trashFolder).isEmpty)
     }
 
     @Test func nameCollisionsFollowThePolicy() async throws {

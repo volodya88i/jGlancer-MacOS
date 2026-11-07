@@ -92,6 +92,9 @@ enum ThumbnailCodec {
         return CGImageDestinationFinalize(destination) ? data as Data : nil
     }
 
+    /// The color space of every thumbnail.
+    static let displaySpace = CGColorSpace(name: CGColorSpace.displayP3) ?? CGColorSpaceCreateDeviceRGB()
+
     /// Decodes immediately so the main thread never decodes when the image is shown.
     static func decode(_ data: Data) -> CGImage? {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
@@ -99,15 +102,17 @@ enum ThumbnailCodec {
             .flatMap(displayReady)
     }
 
-    /// Redraws `image` into a plain 32-bit BGRA bitmap (premultiplied, sRGB), the format Core Animation
+    /// Redraws `image` into a plain 32-bit BGRA bitmap (premultiplied, Display P3), the format Core Animation
     /// uploads without converting. Video frames (IOSurface-backed YUV) and odd ImageIO formats would
-    /// otherwise be converted on the main thread when the tile is committed (dropped frames).
+    /// otherwise be converted on the main thread when the tile is committed (dropped frames). Display P3 keeps the
+    /// colors of wide-gamut photos (every iPhone photo) as the viewer shows them; sRGB ones fit in it exactly, and
+    /// the bitmap costs the same.
     static func displayReady(_ image: CGImage) -> CGImage? {
         let width = image.width
         let height = image.height
         guard width > 0, height > 0, let context = CGContext(
             data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
-            space: CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB(),
+            space: displaySpace,
             bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
         ) else { return image }
         context.interpolationQuality = .none

@@ -142,6 +142,8 @@ final class LibraryModel {
         case fullScreen
     }
 
+    /// Folders unfolded in the list view in this session (D-125).
+    @ObservationIgnored var listExpanded: Set<Int64> = []
     /// Increments when the grid should take keyboard focus and show the focused item (back from the viewer).
     private(set) var focusRequest = 0
     /// Search (docs/FEATURES.md §12): the text, whether it covers the whole library instead of the folder or album
@@ -202,6 +204,7 @@ final class LibraryModel {
     // MARK: Startup
 
     func start() async {
+        connectIndexer()
         Task { [weak self] in
             guard let self else { return }
             do {
@@ -335,12 +338,6 @@ final class LibraryModel {
     }
 
     // MARK: Viewer
-
-    /// Opens the viewer of an item of the grid.
-    func open(_ assetID: Int64) {
-        guard order.index(of: assetID) != nil else { return }
-        onOpenAsset?(assetID)
-    }
 
     /// Selects `assetID` (if shown) and focuses the grid on it.
     func reveal(_ assetID: Int64) {

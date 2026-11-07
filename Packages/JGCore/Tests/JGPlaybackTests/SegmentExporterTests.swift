@@ -181,6 +181,6 @@ struct SegmentExporterTests {
         let first = try VideoFrame.save(image, nextTo: movie, at: 0.5)
         let second = try VideoFrame.save(image, nextTo: movie, at: 0.5)
         #expect(first.lastPathComponent == "Clip 00-00.500.png")
-        #expect(second.lastPathComponent == "Clip 00-00.500 (2).png")
+        #expect(second.lastPathComponent == "Clip 00-00.500 2.png")
     }
 }

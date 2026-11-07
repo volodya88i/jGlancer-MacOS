@@ -19,6 +19,27 @@ public protocol FileSystem: Sendable {
     func createDirectory(_ url: URL) throws
     func size(of url: URL) -> Int64?
     func quickHash(of url: URL) -> Data?
+    /// Every item below a folder (hidden ones included) as paths relative to it, folders ending in "/", sorted;
+    /// nil when `url` is not a folder. Lets a copied folder be checked item by item.
+    func itemsBelow(_ url: URL) -> [String]?
+}
+
+public extension FileSystem {
+    func itemsBelow(_ url: URL) -> [String]? {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue,
+              let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: [.isDirectoryKey])
+        else { return nil }
+        let base = url.standardizedFileURL.path
+        var items: [String] = []
+        for case let item as URL in enumerator {
+            let path = item.standardizedFileURL.path
+            guard path.hasPrefix(base + "/") else { continue }
+            let isFolder = (try? item.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
+            items.append(String(path.dropFirst(base.count + 1)) + (isFolder ? "/" : ""))
+        }
+        return items.sorted()
+    }
 }
 
 /// The real file system: `FileManager` and the user's Trash.

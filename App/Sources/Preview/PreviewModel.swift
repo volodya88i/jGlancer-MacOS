@@ -22,6 +22,12 @@ final class PreviewModel {
     private(set) var selectionCount = 0
     /// Photo: the best image so far (cached thumbnail, then a decode at preview size).
     var picture: CGImage?
+    /// Photo: the file, while it is a GIF or PNG with several frames to play (D-124); nil while the viewer covers
+    /// the previews, so nothing animates unseen.
+    private(set) var animatedURL: URL?
+    /// The file's content is only in the cloud: the previews read nothing of it (that would download it) and say so;
+    /// a thumbnail made before it left still shows (D-124).
+    private(set) var isCloudOnly = false
     /// Audio: cover art, if the file has one.
     private(set) var cover: CGImage?
     /// The cover behind the previews' audio (the blurred backdrop): it changes only once the next song's cover is
@@ -97,6 +103,7 @@ final class PreviewModel {
     /// A viewer opened: the previews let go of the player (stopping it unless the viewer now plays in it).
     func suspend(viewerPlays: Bool) {
         isSuspended = true
+        animatedURL = nil
         loadTask?.cancel()
         if ownsPlayback, !viewerPlays {
             playback.stop()
@@ -171,6 +178,8 @@ final class PreviewModel {
         endSequence()
         asset = nil
         picture = nil
+        animatedURL = nil
+        isCloudOnly = false
         cover = nil
         backdropCover = nil
         waveform = nil
@@ -184,8 +193,14 @@ final class PreviewModel {
         endSequence()
         self.asset = asset
         picture = nil
+        animatedURL = nil
         cover = nil
         waveform = nil
+        isCloudOnly = CloudFile.isDataless(atPath: asset.url.path)
+        if isCloudOnly {
+            await showCloudFile(asset)
+            return
+        }
         switch asset.kind {
         case .photo:
             backdropCover = nil
@@ -208,6 +223,23 @@ final class PreviewModel {
         }
     }
 
+    /// A file kept only in the cloud: its player stops; a photo's thumbnail made before it left shows, nothing is read.
+    private func showCloudFile(_ asset: Asset) async {
+        backdropCover = nil
+        if ownsPlayback {
+            playback.stop()
+            ownsPlayback = false
+        }
+        guard asset.kind == .photo else { return }
+        for bucket in [ThumbnailBucket.large, .medium] {
+            if let stored = await thumbnailService(for: asset).storedThumbnail(for: request(asset, bucket)) {
+                guard !Task.isCancelled, self.asset == asset else { return }
+                picture = stored
+                return
+            }
+        }
+    }
+
     private func showPhoto(_ asset: Asset) async {
         for bucket in [ThumbnailBucket.large, .medium] {
             if let cached = thumbnailService(for: asset).cachedThumbnail(for: request(asset, bucket)), let image = cached {
@@ -216,14 +248,17 @@ final class PreviewModel {
             }
         }
         let url = asset.url
-        let decoded = await Task.detached(priority: .userInitiated) {
-            PhotoDecoder.image(at: url, maxPixelSize: Self.photoPixels)
+        let (decoded, isAnimated) = await Task.detached(priority: .userInitiated) {
+            (PhotoDecoder.image(at: url, maxPixelSize: Self.photoPixels), AnimatedImage.isAnimated(at: url))
         }.value
         guard !Task.isCancelled, self.asset == asset else { return }
         headPicture = decoded
         // A sequence: the first frame's decode shows only while the first frame does.
         if let decoded, sequence?.index ?? 0 == 0 {
             picture = decoded
+        }
+        if isAnimated, sequence == nil, decoded != nil {
+            animatedURL = url
         }
     }
 

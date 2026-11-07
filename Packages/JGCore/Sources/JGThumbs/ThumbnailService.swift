@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import JGModel
 import os
 
 /// Produces thumbnails for the grid, filmstrip and previews (docs/ARCHITECTURE.md §6).
@@ -128,13 +129,21 @@ public actor ThumbnailService {
         let limiter = limiter
         let generator = generator
         let signposter = signposter
-        return Task(priority: priority == .visible ? .userInitiated : .utility) {
+        // Detached: decoding, the redraw for display and encoding for the disk cache run in parallel on the global
+        // pool. A plain `Task` here would inherit this actor and do all of them one at a time on it, in line with
+        // every request's bookkeeping.
+        return Task.detached(priority: priority == .visible ? .userInitiated : .utility) {
             if let stored = try? await disk?.data(for: key) {
                 let image = stored.isEmpty ? nil : ThumbnailCodec.decode(stored)
-                if self.keepsInMemory(key) {
+                if await self.keepsInMemory(key) {
                     memory.insert(image, for: key)
                 }
                 return image
+            }
+            // A file kept only in the cloud is not downloaded for a thumbnail (D-124). Nothing is remembered: once
+            // the file is downloaded, the next request makes its thumbnail.
+            if CloudFile.isDataless(atPath: request.url.path) {
+                return nil
             }
             guard let slot = await limiter.acquire(priority: priority, tag: key) else { return nil }
             let state = signposter.beginInterval("thumb.generate")
@@ -143,7 +152,7 @@ public actor ThumbnailService {
             signposter.endInterval("thumb.generate", state)
             await limiter.release(slot)
             guard !Task.isCancelled else { return nil }
-            if self.keepsInMemory(key) {
+            if await self.keepsInMemory(key) {
                 memory.insert(image, for: key)
             }
             let preserveAlpha = ThumbnailCodec.preservesAlpha(typeIdentifier: request.typeIdentifier)

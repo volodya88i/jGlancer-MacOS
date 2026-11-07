@@ -27,7 +27,8 @@ public enum VideoFrame {
         return video.deletingPathExtension().lastPathComponent + " " + stamp + ".png"
     }
 
-    /// Writes `image` as a PNG next to `video`; never over a file ("… (2).png", "… (3).png"). Returns where it went.
+    /// Writes `image` as a PNG next to `video`; never over a file ("… 2.png", "… 3.png", as Finder and the app's other
+    /// exports name copies). Returns where it went.
     @discardableResult
     public static func save(_ image: CGImage, nextTo video: URL, at seconds: Double) throws -> URL {
         let data = NSMutableData()
@@ -36,14 +37,7 @@ public enum VideoFrame {
         }
         CGImageDestinationAddImage(destination, image, nil)
         guard CGImageDestinationFinalize(destination) else { throw CocoaError(.fileWriteUnknown) }
-        let wanted = video.deletingLastPathComponent().appendingPathComponent(fileName(for: video, at: seconds))
-        let base = wanted.deletingPathExtension().lastPathComponent
-        var target = wanted
-        var number = 2
-        while FileManager.default.fileExists(atPath: target.path) {
-            target = wanted.deletingLastPathComponent().appendingPathComponent("\(base) (\(number)).png")
-            number += 1
-        }
+        let target = SegmentExporter.vacant(video.deletingLastPathComponent().appendingPathComponent(fileName(for: video, at: seconds)))
         try (data as Data).write(to: target, options: .withoutOverwriting)
         return target
     }

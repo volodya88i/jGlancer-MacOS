@@ -9,13 +9,27 @@ struct MigrationAndRootTests {
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("library.sqlite")
         let first = try LibraryStore.open(at: url)
-        #expect(try await first.appliedMigrations() == ["v1-library", "v2-albums", "v3-search", "v4-audio-analysis"])
+        #expect(try await first.appliedMigrations() == [
+            "v1-library",
+            "v2-albums",
+            "v3-search",
+            "v4-audio-analysis",
+            "v5-no-typescript",
+            "v6-cloud-only",
+        ])
         let tables = try await first.writer.read { db in
             try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
         }
         #expect(Set(tables).isSuperset(of: ["root_folder", "folder", "asset"]))
         let second = try LibraryStore.open(at: url)
-        #expect(try await second.appliedMigrations() == ["v1-library", "v2-albums", "v3-search", "v4-audio-analysis"])
+        #expect(try await second.appliedMigrations() == [
+            "v1-library",
+            "v2-albums",
+            "v3-search",
+            "v4-audio-analysis",
+            "v5-no-typescript",
+            "v6-cloud-only",
+        ])
         let mode = try await second.writer.read { db in try String.fetchOne(db, sql: "PRAGMA journal_mode") }
         #expect(mode == "wal")
     }

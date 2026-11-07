@@ -13,18 +13,22 @@ struct StatusBarView: View {
                 let selected = model.selection.selected.count
                 if selected > 0 {
                     Text("\(selected) of \(count) selected", comment: "Status bar; first number selected, second shown")
-                    Text(verbatim: "·").foregroundStyle(JGColor.textTertiary)
+                    Text(verbatim: "·").foregroundStyle(JGColor.textSecondary)
                     Text(verbatim: ByteCountFormatter.string(fromByteCount: model.selectedBytes, countStyle: .file))
                 } else if model.isLoaded, !model.roots.isEmpty {
                     Text("\(count) items", comment: "Status bar: number of files shown")
-                    Text(verbatim: "·").foregroundStyle(JGColor.textTertiary)
+                    Text(verbatim: "·").foregroundStyle(JGColor.textSecondary)
                     Text(verbatim: ByteCountFormatter.string(fromByteCount: model.totalBytes, countStyle: .file))
                 }
             }
-            .foregroundStyle(JGColor.textSecondary)
+            // The bubble floats over thumbnails: its words are primary text (readable over any picture, D-124).
+            .foregroundStyle(JGColor.textPrimary)
             if let problem = model.problem {
-                problemText(problem)
+                Image(systemName: "exclamationmark.circle.fill")
                     .foregroundStyle(JGColor.danger)
+                    .accessibilityHidden(true)
+                problemText(problem)
+                    .foregroundStyle(JGColor.textPrimary)
                 Button {
                     model.problem = nil
                 } label: {
@@ -40,7 +44,7 @@ struct StatusBarView: View {
                     case .readingDetails: Text("Reading details…", comment: "Status bar: reading dimensions, durations, dates")
                     }
                 }
-                .foregroundStyle(JGColor.textTertiary)
+                .foregroundStyle(JGColor.textSecondary)
             }
         }
         .jgTextStyle(.mono)
@@ -48,7 +52,7 @@ struct StatusBarView: View {
         .fixedSize()
         .padding(.horizontal, JGSpacing.m)
         .frame(height: JGMetrics.statusBubbleHeight)
-        .jgBarBackground(JGColor.bgRaised, in: Capsule())
+        .jgBarBackground(JGColor.bgRaised, in: Capsule(), tintOpacity: JGMetrics.statusBubbleTintOpacity)
         .overlay { Capsule().strokeBorder(JGColor.lineHair, lineWidth: JGMetrics.outlineWidth) }
         .opacity(hasContent ? 1 : 0)
     }

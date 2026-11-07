@@ -32,9 +32,24 @@ extension LibraryModel {
         inlineRenameRequest = (id, (inlineRenameRequest?.serial ?? 0) + 1)
     }
 
+    /// Opens the viewer on an item of the grid or the list.
+    func open(_ assetID: Int64) {
+        guard order.index(of: assetID) != nil else { return }
+        onOpenAsset?(assetID)
+    }
+
     /// Files were moved, renamed or trashed by the app: views drop their cached rows.
     func filesChanged() {
         rowsVersion += 1
+    }
+
+    /// Changes the watcher finds on disk (an edit in another app, a download from the cloud) refresh the cached rows
+    /// of this pane and of a split view's second pane.
+    func connectIndexer() {
+        indexer.onFilesChanged = { [weak self] in
+            self?.filesChanged()
+            self?.follower?.filesChanged()
+        }
     }
 
     /// Where a library folder is on disk.

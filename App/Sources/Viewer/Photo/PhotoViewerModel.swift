@@ -49,6 +49,8 @@ final class PhotoViewerModel {
         let isFullResolution: Bool
         /// The grid thumbnail standing in until the screen-size decode arrives.
         var isPlaceholder = false
+        /// A GIF or PNG with several frames: the canvas plays it (D-124).
+        var isAnimated = false
     }
 
     private(set) var entries: [Entry]
@@ -65,6 +67,8 @@ final class PhotoViewerModel {
     @ObservationIgnored private var rotationTask: Task<Void, Never>?
     /// True when the current photo could not be decoded.
     private(set) var failed = false
+    /// True while the current photo's content comes down from the cloud to be shown (D-124).
+    private(set) var isDownloading = false
     /// Folder of a file opened from outside the library, offered for adding (nil inside the library).
     private(set) var folderToOffer: URL?
     var isHUDVisible = true
@@ -129,6 +133,13 @@ final class PhotoViewerModel {
         refresh()
     }
 
+    /// The current photo's file while it should animate: a GIF or PNG with several frames, its own decode on screen
+    /// (not a thumbnail standing in), not turned.
+    var animatedURL: URL? {
+        guard let shownPicture, shownPicture.isAnimated, !shownPicture.isPlaceholder, quarterTurns == 0 else { return nil }
+        return currentPhoto?.url
+    }
+
     /// Turns the view by quarter turns (positive: clockwise), for viewing only.
     func rotate(by turns: Int) {
         quarterTurns = ((quarterTurns + turns) % 4 + 4) % 4
@@ -151,30 +162,6 @@ final class PhotoViewerModel {
                 image: rotated, fullSize: size, isFullResolution: picture.isFullResolution, isPlaceholder: picture.isPlaceholder
             )
         }
-    }
-
-    /// `image` turned clockwise by `quarterTurns` × 90°.
-    nonisolated static func rotated(_ image: CGImage, quarterTurns: Int) -> CGImage? {
-        let odd = !quarterTurns.isMultiple(of: 2)
-        let width = odd ? image.height : image.width
-        let height = odd ? image.width : image.height
-        guard let context = CGContext(
-            data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
-            space: image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-        ) else { return nil }
-        context.translateBy(x: CGFloat(width) / 2, y: CGFloat(height) / 2)
-        context.rotate(by: -CGFloat(quarterTurns) * .pi / 2)
-        context.draw(
-            image,
-            in: CGRect(
-                x: -CGFloat(image.width) / 2,
-                y: -CGFloat(image.height) / 2,
-                width: CGFloat(image.width),
-                height: CGFloat(image.height)
-            )
-        )
-        return context.makeImage()
     }
 
     /// Drops the current photo (it went to the Trash) and shows the next one, or the previous at the end.
@@ -209,6 +196,7 @@ final class PhotoViewerModel {
     /// Shows the best available picture for the current photo and keeps ±2 neighbors decoding.
     private func refresh() {
         failed = false
+        isDownloading = false
         fullTask?.cancel()
         fullTask = nil
         let window = Pager.window(around: index, count: entries.count).map { entries[$0] }
@@ -253,22 +241,32 @@ final class PhotoViewerModel {
         guard let photo = photo(for: entry) else { return }
         let url = photo.url
         let pixels = screenPixels
-        let gate = priority == .userInitiated ? decodeGate : nil
+        let isShown = priority == .userInitiated
+        let gate = isShown ? decodeGate : nil
+        // Opening a photo kept only in the cloud downloads it; its neighbors are not downloaded ahead (D-124).
+        if isShown, CloudFile.isDataless(atPath: url.path) {
+            isDownloading = true
+        }
         decodeTasks[entry] = Task { [weak self] in
             await gate?.hold()
-            let result = await Task.detached(priority: priority) { () -> Picture? in
-                guard let size = PhotoDecoder.displaySize(of: url),
+            let result = await Self.offMain(priority: priority) { () -> Picture? in
+                guard isShown || !CloudFile.isDataless(atPath: url.path),
+                      let size = PhotoDecoder.displaySize(of: url), !Task.isCancelled,
                       let image = PhotoDecoder.image(at: url, maxPixelSize: pixels)
                 else { return nil }
                 return Picture(
                     image: image, fullSize: size,
-                    isFullResolution: CGFloat(image.width) >= size.width && CGFloat(image.height) >= size.height
+                    isFullResolution: CGFloat(image.width) >= size.width && CGFloat(image.height) >= size.height,
+                    isAnimated: AnimatedImage.isAnimated(at: url)
                 )
-            }.value
+            }
             await gate?.release()
             guard let self, !Task.isCancelled else { return }
             decodeTasks[entry] = nil
             let isCurrent = entries.indices.contains(index) && entries[index] == entry
+            if isCurrent {
+                isDownloading = false
+            }
             if let result {
                 decoded[entry] = result
                 if isCurrent {
@@ -286,9 +284,9 @@ final class PhotoViewerModel {
         let entry = entries[index]
         let url = photo.url
         fullTask = Task { [weak self] in
-            let image = await Task.detached(priority: .userInitiated) { PhotoDecoder.fullResolution(at: url) }.value
+            let image = await Self.offMain(priority: .userInitiated) { PhotoDecoder.fullResolution(at: url) }
             guard let self, !Task.isCancelled, let image, entries.indices.contains(index), entries[index] == entry else { return }
-            self.picture = Picture(image: image, fullSize: picture.fullSize, isFullResolution: true)
+            self.picture = Picture(image: image, fullSize: picture.fullSize, isFullResolution: true, isAnimated: picture.isAnimated)
         }
     }
 

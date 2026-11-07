@@ -665,6 +665,28 @@
         }
       }
     },
+    "as Grid" : {
+      "comment" : "View menu: thumbnails in a grid",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сеткой"
+          }
+        }
+      }
+    },
+    "as List" : {
+      "comment" : "View menu: files in a Finder-style list",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Списком"
+          }
+        }
+      }
+    },
     "Ascending" : {
       "localizations" : {
         "ru" : {
@@ -1408,6 +1430,17 @@
         }
       }
     },
+    "Downloading…" : {
+      "comment" : "Viewer state: a photo kept only in the cloud comes down to be shown",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка…"
+          }
+        }
+      }
+    },
     "Drag to export the file, click to save it" : {
       "comment" : "Player: the export button without a segment",
       "localizations" : {
@@ -1781,6 +1814,17 @@
         }
       }
     },
+    "Folder" : {
+      "comment" : "List view: the kind of a folder row",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Папка"
+          }
+        }
+      }
+    },
     "Folder created" : {
       "comment" : "Toast after creating a folder",
       "localizations" : {
@@ -1978,6 +2022,17 @@
         }
       }
     },
+    "Image sequence (%lld)" : {
+      "comment" : "List view: the kind of a folded image sequence; the frame count",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Секвенция (%lld)"
+          }
+        }
+      }
+    },
     "image sequence, %lld frames" : {
       "comment" : "Grid tile accessibility: a folded image sequence",
       "localizations" : {
@@ -1996,6 +2051,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Последовательности кадров"
+          }
+        }
+      }
+    },
+    "in the cloud" : {
+      "comment" : "Grid tile accessibility: the file is kept only in iCloud or another cloud",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "в облаке"
+          }
+        }
+      }
+    },
+    "In the cloud. Open it to download." : {
+      "comment" : "Preview of a file kept only in iCloud Drive or another cloud",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В облаке. Откройте, чтобы скачать."
           }
         }
       }
@@ -3254,6 +3331,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Повернуть вправо"
+          }
+        }
+      }
+    },
+    "Row Height" : {
+      "comment" : "List view: the size ruler sets the rows' height",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высота строк"
           }
         }
       }

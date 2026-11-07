@@ -43,17 +43,48 @@ struct TopBarView: View {
             if sort, model.state.albumID == nil {
                 sortMenu
             }
+            viewModeToggle
             if ruler {
-                JGSlider(
-                    value: Binding(get: { model.state.tileSide }, set: { model.setTileSide($0) }),
-                    in: JGMetrics.tileSideRange,
-                    step: JGMetrics.tileSideStep,
-                    accessibilityLabel: String(localized: "Thumbnail Size")
-                )
-                .frame(width: JGMetrics.sidebarWidth / 2)
+                sizeRuler
             }
         }
         .fixedSize()
+    }
+
+    /// Grid or list (D-125), the selected one inverted like the kind filters.
+    private var viewModeToggle: some View {
+        JGJoinedToggles([
+            JGJoinedToggles.Item(
+                id: "grid", symbol: "square.grid.2x2", label: Text("as Grid", comment: "View menu: thumbnails in a grid"),
+                isOn: model.state.viewMode == .grid
+            ) { model.setViewMode(.grid) },
+            JGJoinedToggles.Item(
+                id: "list", symbol: "list.bullet", label: Text("as List", comment: "View menu: files in a Finder-style list"),
+                isOn: model.state.viewMode == .list
+            ) { model.setViewMode(.list) },
+        ])
+    }
+
+    /// The thumbnails' size in the grid, the rows' height in the list.
+    @ViewBuilder
+    private var sizeRuler: some View {
+        if model.state.viewMode == .list {
+            JGSlider(
+                value: Binding(get: { model.state.listRowHeight }, set: { model.setListRowHeight($0) }),
+                in: JGMetrics.listRowHeightRange,
+                step: JGMetrics.listRowHeightStep,
+                accessibilityLabel: String(localized: "Row Height", comment: "List view: the size ruler sets the rows' height")
+            )
+            .frame(width: JGMetrics.sidebarWidth / 2)
+        } else {
+            JGSlider(
+                value: Binding(get: { model.state.tileSide }, set: { model.setTileSide($0) }),
+                in: JGMetrics.tileSideRange,
+                step: JGMetrics.tileSideStep,
+                accessibilityLabel: String(localized: "Thumbnail Size")
+            )
+            .frame(width: JGMetrics.sidebarWidth / 2)
+        }
     }
 
     /// Word chips or joined icons (Settings → Appearance → Kind Filters); icons also when the bar is narrow.

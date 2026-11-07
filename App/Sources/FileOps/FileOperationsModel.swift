@@ -3,6 +3,7 @@ import JGActions
 import JGDesign
 import JGStore
 import Observation
+import os
 
 /// The app's file operations (docs/FEATURES.md §7): runs them on the `FileOperationQueue`, asks about name
 /// conflicts, shows progress and results as toasts with Undo, keeps the undo / redo history (⌘Z / ⇧⌘Z) and the
@@ -179,8 +180,11 @@ final class FileOperationsModel {
         if count >= Self.progressThreshold {
             toast = Toast(message: Self.progressMessage(kind, done: 0, total: count), progress: 0)
         }
+        let throttle = ProgressThrottle()
         running = Task {
             let result = await queue.perform(operation, conflicts: policy) { progress in
+                // About 20 updates a second however fast files go, not a main-actor task per file.
+                guard throttle.admits(progress) else { return }
                 Task { @MainActor in self.showProgress(kind, progress) }
             }
             finish(result, count: count)
@@ -232,10 +236,15 @@ final class FileOperationsModel {
 
     private func showProgress(_ kind: UndoRecord.Kind, _ progress: FileProgress) {
         guard isRunning, progress.total >= Self.progressThreshold else { return }
-        toast = Toast(
-            message: Self.progressMessage(kind, done: progress.done, total: progress.total),
-            progress: Double(progress.done) / Double(max(progress.total, 1))
-        )
+        let message = Self.progressMessage(kind, done: progress.done, total: progress.total)
+        let fraction = Double(progress.done) / Double(max(progress.total, 1))
+        if toast?.progress != nil {
+            // The same toast, updated: a new one each file rebuilt the view and restarted its transition.
+            toast?.message = message
+            toast?.progress = fraction
+        } else {
+            toast = Toast(message: message, progress: fraction)
+        }
     }
 
     private func show(_ newToast: Toast) {
@@ -331,6 +340,21 @@ extension FileOperationsModel {
         case .copy: String(localized: "Copying \(done) of \(total)…", comment: "Toast while copying files")
         case .trash: String(localized: "Moving to Trash \(done) of \(total)…", comment: "Toast while trashing files")
         default: String(localized: "Moving \(done) of \(total)…", comment: "Toast while moving files")
+        }
+    }
+}
+
+/// Lets through at most one progress report per `interval`, and always the last one of a batch.
+private final class ProgressThrottle: Sendable {
+    static let interval: CFTimeInterval = 0.05
+    private let last = OSAllocatedUnfairLock<CFTimeInterval>(initialState: 0)
+
+    func admits(_ progress: FileProgress) -> Bool {
+        let now = CACurrentMediaTime()
+        return last.withLock { last in
+            guard progress.done >= progress.total || now - last >= Self.interval else { return false }
+            last = now
+            return true
         }
     }
 }

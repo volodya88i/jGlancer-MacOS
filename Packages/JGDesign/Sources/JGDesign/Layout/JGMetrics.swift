@@ -104,6 +104,15 @@ public enum JGMetrics {
     public static let gridInset: CGFloat = 16
     public static let tileSideRange: ClosedRange<Double> = 80 ... 320
     public static let tileSideStep: Double = 20
+    /// The list view's row height (D-125): the size ruler sets it while the list shows.
+    public static let listRowHeightRange: ClosedRange<Double> = 22 ... 72
+    public static let listRowHeightStep: Double = 2
+    /// Default widths of the list's columns; the name takes the rest, and the user's own widths are kept.
+    public static let listDateColumnWidth: CGFloat = 170
+    public static let listSizeColumnWidth: CGFloat = 84
+    public static let listKindColumnWidth: CGFloat = 150
+    /// Room between a list row's edges and its thumbnail, and between the thumbnail and the name.
+    public static let listThumbnailInset: CGFloat = 3
     public static let tileSideDefault: Double = 160
     /// Height reserved under a tile for its name.
     public static let tileCaptionHeight: CGFloat = 22
@@ -195,6 +204,9 @@ public enum JGMetrics {
     public static let panelGlassTintOpacity: Double = 0.62
     /// How much of a bar's color covers the content scrolling under it (D-114).
     public static let barGlassTintOpacity: Double = 0.3
+    /// The status bubble's glass (D-116, D-124): it always floats over thumbnails, so its color covers nine tenths of
+    /// them and its text stays readable over a white or a black picture (`ContrastTests`).
+    public static let statusBubbleTintOpacity: Double = 0.9
     /// How much of the media color covers what lies behind a see-through photo viewer (D-114, D-115).
     public static let behindWindowTintOpacity: Double = 0.25
     /// How much of the see-through viewer is blurred: the rest shows the desktop sharp, so the blur reads lighter
