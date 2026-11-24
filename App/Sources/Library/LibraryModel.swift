@@ -1,6 +1,5 @@
 import AppKit
 import JGActions
-import JGDesign
 import JGModel
 import JGScanner
 import JGStore
@@ -20,6 +19,9 @@ final class LibraryModel {
     private(set) var roots: [RootFolder] = [] {
         didSet { follower?.mirror(self) }
     }
+
+    /// The library folders' own icons (D-129), pictures decoded; the main pane's (the sidebar shows them).
+    var rootIcons: [Int64: FolderIconImage] = [:]
 
     /// Virtual albums in sidebar order, and the albums of each asset.
     var albums: [Album] = [] {
@@ -75,6 +77,15 @@ final class LibraryModel {
     /// The sequence folded or unfolded last, for the grid's animation.
     var lastSequenceToggle: (head: Int64, unfolded: Bool)?
     /// Settings → Library → Image Sequences.
+    /// Settings → Library → Hide files smaller than (WIN-061); 0 shows every file.
+    var minFileBytes: Int64 = 0 {
+        didSet {
+            if minFileBytes != oldValue {
+                reloadQuery()
+            }
+        }
+    }
+
     var foldsSequences = true {
         didSet {
             if foldsSequences != oldValue {
@@ -134,18 +145,16 @@ final class LibraryModel {
     /// Space, Esc, Return and F for Quick Preview; returns true when the key was used (set by the app model).
     var onQuickPreviewKey: ((QuickPreviewKey) -> Bool)?
 
-    enum QuickPreviewKey {
-        case space
-        case escape
-        case returnKey
-        /// F: full screen on and off.
-        case fullScreen
-    }
-
     /// Folders unfolded in the list view in this session (D-125).
     @ObservationIgnored var listExpanded: Set<Int64> = []
     /// Increments when the grid should take keyboard focus and show the focused item (back from the viewer).
     private(set) var focusRequest = 0
+    /// The window is narrower than the sidebar needs, so it shows as a strip whatever `state.sidebarCollapsed` says;
+    /// set by the library window. A request to show the sidebar in such a window widens it (D-128).
+    var isWindowNarrow = false
+    var sidebarShowRequest = 0
+    /// The folded sidebar sliding out over the files; made on first use (the main pane's window only).
+    @ObservationIgnored lazy var sidebarPeek = SidebarPeek()
     /// Search (docs/FEATURES.md §12): the text, whether it covers the whole library instead of the folder or album
     /// shown, and requests to focus the field (⌘F). Not saved between launches.
     var searchText = ""
@@ -163,12 +172,6 @@ final class LibraryModel {
 
     /// The latest problem to show (non-modal).
     var problem: Problem?
-
-    enum Problem: Equatable {
-        case alreadyInLibrary
-        case overlapsLibraryFolder
-        case folderUnavailable
-    }
 
     private let stateStore: ViewStateStore
     private var refsTask: Task<Void, Never>?
@@ -214,6 +217,7 @@ final class LibraryModel {
             } catch {}
         }
         startAlbums()
+        startRootIcons()
         reloadQuery()
     }
 

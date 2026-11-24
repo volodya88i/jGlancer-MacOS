@@ -1,4 +1,3 @@
-import Foundation
 import JGModel
 import JGPlayback
 

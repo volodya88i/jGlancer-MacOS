@@ -13,7 +13,23 @@ extension LibraryModel {
     }
 
     func setPreviewVisible(_ visible: Bool) {
-        updateState { $0.previewVisible = visible }
+        setModuleVisible(.preview, visible)
+    }
+
+    /// Shows or hides a side module (D-127); shown where the other one is, it takes the free place.
+    func setModuleVisible(_ module: LibraryModule, _ visible: Bool) {
+        updateState { $0.setVisible(module, visible) }
+    }
+
+    /// Moves a side module to the other place, swapping with the module there.
+    func moveModule(_ module: LibraryModule) {
+        updateState { $0.move(module) }
+    }
+
+    /// Dragging the top edge of the place under the files.
+    func setBottomHeight(_ height: Double) {
+        let clamped = min(max(height, Double(JGMetrics.bottomModuleMinHeight)), Double(JGMetrics.bottomModuleMaxHeight))
+        updateState { $0.bottomHeight = clamped.rounded() }
     }
 
     func setPreviewWidth(_ width: Double) {
@@ -22,6 +38,20 @@ extension LibraryModel {
     }
 
     /// Dragging the sidebar's edge (D-78).
+    /// The sidebar shows as a strip: folded by the user or by a narrow window.
+    var isSidebarCollapsed: Bool {
+        state.sidebarCollapsed || isWindowNarrow
+    }
+
+    /// Folds the sidebar into its strip or brings it back (D-128). Brought back in a window too narrow for it, the
+    /// window widens (`sidebarShowRequest`).
+    func setSidebarCollapsed(_ collapsed: Bool) {
+        updateState { $0.sidebarCollapsed = collapsed }
+        if !collapsed, isWindowNarrow {
+            sidebarShowRequest += 1
+        }
+    }
+
     func setSidebarWidth(_ width: Double) {
         let clamped = min(max(width, Double(JGMetrics.sidebarMinWidth)), Double(JGMetrics.sidebarMaxWidth))
         updateState { $0.sidebarWidth = clamped.rounded() }
@@ -77,5 +107,21 @@ extension LibraryModel {
             place: selection.place, assetIDs: ids, kinds: selection.kinds, count: ids.count, sample: sample,
             urls: { [store] in await ((try? store.assets(ids: ids)) ?? []).map(\.url) }
         )
+    }
+}
+
+extension LibraryModel {
+    enum QuickPreviewKey {
+        case space
+        case escape
+        case returnKey
+        /// F: full screen on and off.
+        case fullScreen
+    }
+
+    enum Problem: Equatable {
+        case alreadyInLibrary
+        case overlapsLibraryFolder
+        case folderUnavailable
     }
 }

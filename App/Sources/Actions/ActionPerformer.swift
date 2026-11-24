@@ -58,7 +58,7 @@ final class ActionPerformer {
                 await performFileAction(id, on: target)
             case .moveTo, .copyTo, .rename, .moveToTrash:
                 await performFileOperation(id, on: target)
-            case .removeFromAlbum, .setAlbumCover:
+            case .removeFromAlbum, .setAlbumCover, .setFolderIcon:
                 await performAlbumAction(id, on: target)
             case .openWith, .addToAlbum, .flag:
                 // Submenus: their items do the work.
@@ -67,7 +67,15 @@ final class ActionPerformer {
         }
     }
 
+    /// Remove from Album, Use as Album Cover, and Use as Folder Icon (the library folders' icons belong to the main
+    /// pane, whichever pane the photo is in, D-129).
     private func performAlbumAction(_ id: ActionID, on target: ActionTarget) async {
+        if id == .setFolderIcon {
+            if let first = target.assetIDs.first {
+                await appModel?.library?.setFolderIcon(fromAsset: first)
+            }
+            return
+        }
         guard let library = appModel?.activeLibrary else { return }
         if id == .removeFromAlbum {
             await library.removeFromCurrentAlbum(target.assetIDs)
@@ -215,6 +223,7 @@ final class ActionPerformer {
     private func laterTitle(for id: ActionID) -> String {
         switch id {
         case .addToAlbum, .removeFromAlbum, .setAlbumCover: albumTitle(for: id)
+        case .setFolderIcon: String(localized: "Use as Folder Icon", comment: "Action: the photo becomes its library folder's icon")
         case .flag: String(localized: "Flag", comment: "Menu of flag colors")
         case .moveTo: String(localized: "Move to…", comment: "Action")
         case .copyTo: String(localized: "Copy to…", comment: "Action")

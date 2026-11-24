@@ -143,7 +143,7 @@ extension DeveloperHooks {
         }
     }
 
-    /// -JGMiniPlayerCheck, -JGCompareCheck, -JGSplitCheck.
+    /// -JGMiniPlayerCheck, -JGCompareCheck, -JGSplitCheck, -JGSizeMapCheck.
     private static func runWindowChecks(_ appModel: AppModel, _ library: LibraryModel) async {
         if defaults.bool(forKey: "JGUpdateCheck") {
             await appModel.updates.check(manual: true)
@@ -175,6 +175,23 @@ extension DeveloperHooks {
         await runPlayerChecks(appModel, library)
         if let snapshot = defaults.string(forKey: "JGSplitCheck") {
             await SplitCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
+        }
+        await runSidebarChecks(appModel, library)
+    }
+
+    /// -JGSidebarSample, -JGSidebarMorph, -JGSizeMapCheck, -JGSidebarHitCheck.
+    private static func runSidebarChecks(_ appModel: AppModel, _ library: LibraryModel) async {
+        if defaults.bool(forKey: "JGSidebarSample") {
+            await SidebarSample.run(library)
+        }
+        if let output = defaults.string(forKey: "JGSidebarMorph"), let size = defaults.string(forKey: "JGSnapshotSize") {
+            await SidebarSample.morph(appModel, library, size: size, to: URL(fileURLWithPath: output))
+        }
+        if let snapshot = defaults.string(forKey: "JGSizeMapCheck") {
+            await SizeMapCheck.run(appModel, library: library, snapshot: URL(fileURLWithPath: snapshot))
+        }
+        if defaults.bool(forKey: "JGSidebarHitCheck") {
+            await SidebarSample.hitCheck(library)
         }
     }
 }

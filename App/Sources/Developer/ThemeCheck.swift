@@ -1,4 +1,3 @@
-import AppKit
 import Foundation
 
 /// -JGThemeCheck <png>: snapshots the window in the Black theme, then with a chosen accent, without a relaunch, so

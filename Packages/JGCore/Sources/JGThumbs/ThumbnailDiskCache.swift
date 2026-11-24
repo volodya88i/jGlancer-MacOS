@@ -1,6 +1,5 @@
 import Foundation
 import GRDB
-import JGModel
 
 /// `cache.sqlite`: rebuildable thumbnails as encoded BLOBs, capped in size with least-recently-used
 /// eviction (docs/ARCHITECTURE.md §4, §6), and waveforms (§10). Safe to delete at any time.

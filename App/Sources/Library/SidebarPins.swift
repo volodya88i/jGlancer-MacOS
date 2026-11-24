@@ -1,4 +1,3 @@
-import AppKit
 import JGDesign
 import JGModel
 import SwiftUI

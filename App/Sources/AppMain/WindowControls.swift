@@ -4,7 +4,8 @@ import SwiftUI
 
 /// The window's close, minimize and zoom buttons centred on the top bar's line (D-114), as Finder's sit on its
 /// toolbar: the title-bar strip is made as high as `JGMetrics.barHeight` and the buttons are placed in its middle,
-/// as far from the left edge as from the top (D-115).
+/// as far from the left edge as from the top (D-115). The room they take, with the same margin after the last one as
+/// before the first, goes to `WindowControlsRoom` for the bars that start beside them.
 /// AppKit lays the strip out again on a resize and on leaving full screen, so it is set after each.
 @MainActor
 final class WindowControls {
@@ -63,6 +64,27 @@ final class WindowControls {
             if button.frame.origin != origin {
                 button.setFrameOrigin(origin)
             }
+        }
+        if let zoom = window.standardWindowButton(.zoomButton) {
+            WindowControlsRoom.shared.update(zoom.frame.maxX + margin)
+        }
+    }
+}
+
+/// How far from the window's left edge its buttons reach, with the margin after the zoom button equal to the one before
+/// the close button (D-115): where a bar beside them starts (the viewer's, the files' while the sidebar is folded,
+/// D-128). Measured, since the buttons' spacing differs between macOS versions.
+@MainActor
+@Observable
+final class WindowControlsRoom {
+    static let shared = WindowControlsRoom()
+
+    private(set) var width = JGMetrics.windowControlsInset
+
+    fileprivate func update(_ measured: CGFloat) {
+        let rounded = measured.rounded()
+        if rounded > 0, rounded != width {
+            width = rounded
         }
     }
 }

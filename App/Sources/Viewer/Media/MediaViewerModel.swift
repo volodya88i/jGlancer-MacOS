@@ -169,10 +169,6 @@ final class MediaViewerModel {
         tuning.setVolume(volume)
     }
 
-    func setPreservesPitch(_ preserves: Bool) {
-        tuning.setPreservesPitch(preserves)
-    }
-
     func toggleLoop() {
         playback.loops.toggle()
     }

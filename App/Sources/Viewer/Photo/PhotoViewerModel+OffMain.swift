@@ -1,5 +1,4 @@
 import CoreGraphics
-import Foundation
 
 /// Work done off the main actor.
 extension PhotoViewerModel {

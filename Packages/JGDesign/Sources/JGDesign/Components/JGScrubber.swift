@@ -1,5 +1,4 @@
 import AppKit
-import QuartzCore
 import SwiftUI
 
 /// The playback scrubber (docs/DESIGN.md §6): a plain slider track (video) or a waveform (audio), the

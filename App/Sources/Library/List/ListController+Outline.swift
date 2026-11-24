@@ -79,6 +79,51 @@ extension ListColumn {
     }
 }
 
+// MARK: Columns
+
+extension ListController {
+    /// Name, Date Modified, Size and Kind, each sorting the library by a click on its header.
+    func addColumns() {
+        for column in ListColumn.allCases {
+            let tableColumn = NSTableColumn(identifier: column.identifier)
+            tableColumn.title = column.title
+            tableColumn.sortDescriptorPrototype = NSSortDescriptor(key: column.rawValue, ascending: true)
+            switch column {
+            case .name:
+                tableColumn.minWidth = JGMetrics.sidebarWidth
+                tableColumn.resizingMask = [.autoresizingMask, .userResizingMask]
+            case .date: tableColumn.width = JGMetrics.listDateColumnWidth
+            case .size: tableColumn.width = JGMetrics.listSizeColumnWidth
+            case .kind: tableColumn.width = JGMetrics.listKindColumnWidth
+            }
+            if column == .size {
+                tableColumn.headerCell.alignment = .right
+            }
+            outlineView.addTableColumn(tableColumn)
+            if column == .name {
+                outlineView.outlineTableColumn = tableColumn
+            }
+        }
+    }
+
+    @objc func viewportChanged() {
+        fitColumns()
+    }
+
+    /// The name takes whatever room the other columns leave (also after widths saved in a wider window), so Date,
+    /// Size and Kind never fall off the right edge.
+    func fitColumns() {
+        let available = scrollView.contentView.bounds.width
+        guard available > 0, let name = outlineView.tableColumn(withIdentifier: ListColumn.name.identifier) else { return }
+        let others = outlineView.tableColumns.filter { $0 !== name }.reduce(CGFloat(0)) { $0 + $1.width }
+        let spacing = outlineView.intercellSpacing.width * CGFloat(outlineView.numberOfColumns)
+        let width = max(name.minWidth, available - others - spacing)
+        if abs(name.width - width) > 0.5 {
+            name.width = width
+        }
+    }
+}
+
 // MARK: Sort
 
 extension ListController {
@@ -261,6 +306,13 @@ final class ListOutlineView: NSOutlineView {
     }
 
     /// The list takes the keyboard when it replaces the grid (View ▸ as List), as the grid had it.
+    /// Another screen (1× or 2×): the visible rows draw their glyphs again for it.
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        let visible = rows(in: visibleRect)
+        reloadData(forRowIndexes: IndexSet(integersIn: visible.lowerBound ..< visible.upperBound), columnIndexes: IndexSet(integer: 0))
+    }
+
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         // Not while a field is being edited (the search field keeps its typing).

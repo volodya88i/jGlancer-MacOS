@@ -1,7 +1,4 @@
-import AppKit
 import JGDesign
-import JGModel
-import JGSettings
 import SwiftUI
 
 /// Settings (⌘,; docs/FEATURES.md §14): sections listed on the left in the sidebar's style, the section on the

@@ -3,7 +3,6 @@ import Foundation
 import JGModel
 import JGPlayback
 import JGScanner
-import JGSettings
 import JGStore
 import JGThumbs
 import Observation
@@ -47,6 +46,8 @@ final class AppModel {
     var isSecondPaneActive = false
     /// The mini player at the bottom of the library window (D-88).
     @ObservationIgnored let windowPlayer = WindowPlayerModel()
+    /// The size map module's data (D-127).
+    @ObservationIgnored let sizeMap = SizeMapModel()
     /// The daily look for a newer version (D-104).
     @ObservationIgnored private(set) lazy var updates = UpdateService(store: settingsStore)
     /// Split into Stems (D-97).

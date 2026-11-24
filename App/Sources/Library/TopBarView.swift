@@ -7,6 +7,7 @@ import SwiftUI
 struct TopBarView: View {
     let model: LibraryModel
     @Environment(\.appSettings) private var appSettings
+    @Environment(\.topBarLeadingInset) private var leadingInset
 
     /// The order: video, photo, audio.
     private static let chipOrder: [MediaKind] = [.video, .photo, .audio]
@@ -21,21 +22,24 @@ struct TopBarView: View {
                 // Outside the variants below, so the field keeps its text, state and focus when they switch.
                 SearchBox(model: model)
                     .layoutPriority(2)
-                // In a narrow window the size ruler goes first, then the sort menu; nothing is clipped.
+                // In a narrow window the size ruler goes first, then the sort menu, then the chips' words, then the grid
+                // and list toggle (the View menu keeps it); nothing is clipped.
                 ViewThatFits(in: .horizontal) {
                     controls(sort: true, ruler: true)
                     controls(sort: true, ruler: false)
                     controls(sort: false, ruler: false)
                     controls(sort: false, ruler: false, compactChips: true)
+                    controls(sort: false, ruler: false, compactChips: true, viewToggle: false)
                 }
                 .layoutPriority(1)
             }
         }
-        .padding(.horizontal, JGSpacing.m)
+        .padding(.leading, leadingInset ?? JGSpacing.m)
+        .padding(.trailing, JGSpacing.m)
     }
 
     /// Filters, sort and size; hidden until the library has a folder.
-    private func controls(sort: Bool, ruler: Bool, compactChips: Bool = false) -> some View {
+    private func controls(sort: Bool, ruler: Bool, compactChips: Bool = false, viewToggle: Bool = true) -> some View {
         HStack(spacing: JGSpacing.m) {
             chips(compact: compactChips)
             FlagFilterMenu(model: model)
@@ -43,7 +47,9 @@ struct TopBarView: View {
             if sort, model.state.albumID == nil {
                 sortMenu
             }
-            viewModeToggle
+            if viewToggle {
+                viewModeToggle
+            }
             if ruler {
                 sizeRuler
             }
@@ -249,4 +255,9 @@ private struct FlagFilterMenu: View {
         case let .only(flag): flag.token
         }
     }
+}
+
+extension EnvironmentValues {
+    /// Room at the top bar's leading end for the window's buttons, when the sidebar is folded into its strip (D-128).
+    @Entry var topBarLeadingInset: CGFloat?
 }

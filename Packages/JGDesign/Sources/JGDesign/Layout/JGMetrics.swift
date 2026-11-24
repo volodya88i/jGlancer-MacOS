@@ -84,8 +84,9 @@ public enum JGMetrics {
     /// Maximum width of running body text.
     public static let readableTextWidth: CGFloat = 560
 
-    /// Main window size limits and default.
-    public static let windowMinWidth: CGFloat = 960
+    /// Main window size limits and default. Under `sidebarAutoCollapseWidth` the sidebar folds into its strip, so the
+    /// window can be as much narrower as the strip is narrower than the sidebar (D-128).
+    public static let windowMinWidth: CGFloat = sidebarAutoCollapseWidth - (sidebarMinWidth - sidebarStripWidth)
     public static let windowMinHeight: CGFloat = 600
     public static let windowDefaultWidth: CGFloat = 1280
     public static let windowDefaultHeight: CGFloat = 800
@@ -111,6 +112,8 @@ public enum JGMetrics {
     public static let listDateColumnWidth: CGFloat = 170
     public static let listSizeColumnWidth: CGFloat = 84
     public static let listKindColumnWidth: CGFloat = 150
+    /// The folder and kind glyphs of list rows without a thumbnail (owner: 13 pt symbols were too big beside the names).
+    public static let listGlyphSize: CGFloat = 11
     /// Room between a list row's edges and its thumbnail, and between the thumbnail and the name.
     public static let listThumbnailInset: CGFloat = 3
     public static let tileSideDefault: Double = 160
@@ -128,7 +131,8 @@ public enum JGMetrics {
     /// Point size of kind glyphs on tiles without a thumbnail.
     public static let tileGlyphSize: CGFloat = 28
 
-    /// Room for the window's close / minimize / zoom buttons at the top-left of full-window views.
+    /// Room for the window's close / minimize / zoom buttons at the top-left of full-window views, until the window
+    /// measures its own buttons (the app's `WindowControlsRoom`).
     public static let windowControlsInset: CGFloat = 88
     /// Seconds without pointer movement before the viewer's HUD fades.
     public static let hudIdleSeconds: Double = 2.5
@@ -156,6 +160,36 @@ public enum JGMetrics {
     public static let zoomPerPoint: Double = 0.01
     /// Width of the players' volume ruler.
     public static let volumeSliderWidth: CGFloat = 80
+    /// Quick Preview over a photo or a video (WIN-062…064): how much of `bg.base` covers the bars' light blur, how long
+    /// the bars stay after the pointer leaves the window, the upright volume slider's size, and how long its capsule
+    /// stays after the pointer leaves it.
+    public static let quickPreviewBarTintOpacity: Double = 0.6
+    public static let quickPreviewBarsHideDelay: Double = 2
+    public static let volumeBubbleWidth: CGFloat = 20
+    public static let volumeBubbleHeight: CGFloat = 88
+    public static let volumeBubbleCloseDelay: Double = 0.35
+    /// The size map (D-127): a folder's name band, the padding round its contents, the smallest rectangle that still
+    /// gets its contents laid out, and the place under the files: its default and its range.
+    public static let sizeMapHeaderHeight: CGFloat = 16
+    public static let sizeMapPadding: CGFloat = 2
+    public static let sizeMapMinSide: CGFloat = 6
+    public static let bottomModuleMinHeight: CGFloat = 160
+    public static let bottomModuleMaxHeight: CGFloat = 720
+    /// The sidebar folded into a strip (D-128): the strip's width, the window width under which it folds by itself, how
+    /// long the pointer rests on the strip before the sidebar opens over the files, and how long it stays after the
+    /// pointer leaves it.
+    public static let sidebarStripWidth: CGFloat = 44
+    public static let sidebarAutoCollapseWidth: CGFloat = 960
+    public static let sidebarPeekOpenDelay: Double = 0.2
+    public static let sidebarPeekCloseDelay: Double = 0.3
+    /// The box of a sidebar icon (a disk, a library folder's own symbol, emoji or picture, the Trash), and the spring
+    /// that unfolds and folds the sidebar (D-128, D-129).
+    public static let sidebarIconBox: CGFloat = 20
+    public static let sidebarSpringResponse: Double = 0.34
+    public static let sidebarSpringDamping: Double = 0.84
+    /// The shadow of the sidebar over the files, both themes.
+    public static let sidebarPeekShadowOpacity: Double = 0.24
+    public static let sidebarPeekShadowRadius: CGFloat = 16
     /// The audio player's key and tempo panel (D-106): its fields and moving bars, its − and + buttons.
     public static let musicFieldWidth: CGFloat = 56
     public static let musicStepWidth: CGFloat = 40

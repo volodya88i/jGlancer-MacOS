@@ -566,6 +566,17 @@
         }
       }
     },
+    "Albums have no size map: choose a folder." : {
+      "comment" : "Size map while an album is shown",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У альбомов нет карты размеров: выберите папку."
+          }
+        }
+      }
+    },
     "All Files" : {
       "comment" : "Flag filter: no filtering",
       "localizations" : {
@@ -1004,6 +1015,17 @@
         }
       }
     },
+    "Choose Photo…" : {
+      "comment" : "Folder icon: a picture file from disk",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выбрать фото…"
+          }
+        }
+      }
+    },
     "Choose…" : {
       "comment" : "Split into Stems: picks a folder",
       "localizations" : {
@@ -1055,17 +1077,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Закрыть"
-          }
-        }
-      }
-    },
-    "Codec" : {
-      "comment" : "Get Info label",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Кодек"
           }
         }
       }
@@ -1311,6 +1322,17 @@
         }
       }
     },
+    "Default" : {
+      "comment" : "Folder icon: back to the disk icon",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "По умолчанию"
+          }
+        }
+      }
+    },
     "Default Viewer" : {
       "comment" : "Settings group; shown in capitals",
       "localizations" : {
@@ -1415,6 +1437,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скрыть"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "comment" : "Closes a sheet whose changes already apply",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готово"
           }
         }
       }
@@ -1547,6 +1580,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Эффекты"
+          }
+        }
+      }
+    },
+    "Emoji" : {
+      "comment" : "Folder icon: the field that takes an emoji",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эмодзи"
+          }
+        }
+      }
+    },
+    "Emoji & Symbols" : {
+      "comment" : "Folder icon: opens the system's emoji picker",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эмодзи и символы"
           }
         }
       }
@@ -1836,6 +1891,28 @@
         }
       }
     },
+    "Folder Icon" : {
+      "comment" : "Title of the sheet that chooses a library folder's icon",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконка папки"
+          }
+        }
+      }
+    },
+    "Folder Icon…" : {
+      "comment" : "Sidebar menu of a library folder: choose its symbol, emoji or picture",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Иконка папки…"
+          }
+        }
+      }
+    },
     "Folders" : {
       "localizations" : {
         "ru" : {
@@ -1979,6 +2056,28 @@
         }
       }
     },
+    "Hidden: %@" : {
+      "comment" : "Settings → Library: a subfolder hidden from the library; its path",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыта: %@"
+          }
+        }
+      }
+    },
+    "Hide files smaller than" : {
+      "comment" : "Settings → Library: files below this size leave the library's views",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрывать файлы меньше"
+          }
+        }
+      }
+    },
     "Hide Filmstrip" : {
       "localizations" : {
         "ru" : {
@@ -1989,13 +2088,13 @@
         }
       }
     },
-    "Hide Preview" : {
-      "comment" : "Preview pane: close button",
+    "Hide from Library" : {
+      "comment" : "Sidebar folder menu: the subfolder leaves the library's views; files stay",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Скрыть просмотр"
+            "value" : "Скрыть из библиотеки"
           }
         }
       }
@@ -2007,6 +2106,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скрыть просмотр (⌥⌘0)"
+          }
+        }
+      }
+    },
+    "Hide Sidebar (⌥⌘S)" : {
+      "comment" : "Sidebar: the button that folds it into a strip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть боковую панель (⌥⌘S)"
+          }
+        }
+      }
+    },
+    "Hide Size Map (⌥⌘T)" : {
+      "comment" : "Size map: close button tooltip",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть карту размеров (⌥⌘T)"
           }
         }
       }
@@ -2120,6 +2241,28 @@
         }
       }
     },
+    "Keep on Top: Off" : {
+      "comment" : "Quick Preview: the panel is an ordinary window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поверх всех окон: выкл."
+          }
+        }
+      }
+    },
+    "Keep on Top: On" : {
+      "comment" : "Quick Preview: the panel stays above every window",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поверх всех окон: вкл."
+          }
+        }
+      }
+    },
     "Keep Pitch" : {
       "comment" : "Player: keep the pitch when the speed changes",
       "localizations" : {
@@ -2127,6 +2270,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сохранять тон"
+          }
+        }
+      }
+    },
+    "Keep Sidebar Open (⌥⌘S)" : {
+      "comment" : "Sidebar over the files: the button that docks it",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрепить боковую панель (⌥⌘S)"
           }
         }
       }
@@ -2384,6 +2538,17 @@
         }
       }
     },
+    "Move Down" : {
+      "comment" : "Side module header: puts the module under the files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить вниз"
+          }
+        }
+      }
+    },
     "Move Here" : {
       "comment" : "Move to… panel button",
       "localizations" : {
@@ -2391,6 +2556,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Переместить сюда"
+          }
+        }
+      }
+    },
+    "Move to the Right" : {
+      "comment" : "Side module header: puts the module right of the files",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переместить вправо"
           }
         }
       }
@@ -2669,6 +2845,17 @@
         }
       },
       "comment" : "Empty folder headline; ** marks the accent word"
+    },
+    "Nothing here." : {
+      "comment" : "Size map of a folder without files of the kinds shown",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здесь пусто."
+          }
+        }
+      }
     },
     "Number" : {
       "comment" : "Batch rename token: a counter",
@@ -3478,6 +3665,17 @@
         }
       }
     },
+    "Show" : {
+      "comment" : "Settings → Library: shows a hidden subfolder again",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать"
+          }
+        }
+      }
+    },
     "Show camera, codec and other details" : {
       "comment" : "Settings: extended facts in the preview pane",
       "localizations" : {
@@ -3539,6 +3737,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Показать просмотр"
+          }
+        }
+      }
+    },
+    "Show Sidebar" : {
+      "comment" : "View menu: the folders and albums on the left",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать боковую панель"
+          }
+        }
+      }
+    },
+    "Show Sidebar (⌥⌘S)" : {
+      "comment" : "Folded sidebar: the button that brings it back",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать боковую панель (⌥⌘S)"
+          }
+        }
+      }
+    },
+    "Show Size Map" : {
+      "comment" : "View menu: the folder's files as rectangles by size",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать карту размеров"
           }
         }
       }
@@ -3609,6 +3840,17 @@
       },
       "comment" : "Sort key"
     },
+    "Size Map" : {
+      "comment" : "Section label of the size map; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Карта размеров"
+          }
+        }
+      }
+    },
     "Skip" : {
       "comment" : "Name conflict: leave these files",
       "localizations" : {
@@ -3638,6 +3880,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пропущено: %lld"
+          }
+        }
+      }
+    },
+    "Small Files" : {
+      "comment" : "Settings group; shown in capitals",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мелкие файлы"
           }
         }
       }
@@ -4271,6 +4524,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сделать обложкой альбома"
+          }
+        }
+      }
+    },
+    "Use as Folder Icon" : {
+      "comment" : "Action: the photo becomes its library folder's icon",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сделать иконкой папки"
           }
         }
       }

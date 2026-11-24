@@ -10,7 +10,61 @@ extension LibraryModel {
         let created = listing.folders.filter { folder in
             createdFolders.contains(folder.relativePath.isEmpty ? root.path : root.path + "/" + folder.relativePath)
         }
-        return FolderNode.tree(from: listing.folders, withMedia: listing.withMedia.union(created.map(\.id)))
+        // Hidden subfolders and everything below them are no rows (WIN-061).
+        let hidden = Set(state.hiddenFolders)
+        let hiddenPaths = listing.folders.filter { hidden.contains($0.id) && $0.parentID != nil }.map(\.relativePath)
+        let folders = listing.folders.filter { folder in
+            !hiddenPaths.contains { folder.relativePath == $0 || folder.relativePath.hasPrefix($0 + "/") }
+        }
+        return FolderNode.tree(from: folders, withMedia: listing.withMedia.union(created.map(\.id)))
+    }
+
+    // MARK: Hidden folders (WIN-061)
+
+    /// Sidebar → Hide from Library: a subfolder (never a library folder) and everything below it leave the grid, the
+    /// list, searches, the sidebar and the pins; its files stay indexed. A pane showing it moves to its parent.
+    func hide(_ folder: Folder) {
+        guard folder.parentID != nil, !state.hiddenFolders.contains(folder.id) else { return }
+        let showsIt = state.folderID.map { shown in path(to: shown).contains { $0.id == folder.id } } ?? false
+        updateState { $0.hiddenFolders.append(folder.id) }
+        hiddenFoldersChanged(showing: showsIt ? folder.parentID : nil)
+    }
+
+    /// Settings → Library → Show: the folder is part of the views again.
+    func unhide(_ id: Int64) {
+        guard state.hiddenFolders.contains(id) else { return }
+        updateState { $0.hiddenFolders.removeAll { $0 == id } }
+        hiddenFoldersChanged(showing: nil)
+    }
+
+    private func hiddenFoldersChanged(showing parent: Int64?) {
+        refreshTrees()
+        if let parent {
+            select(folderID: parent)
+        } else {
+            reloadQuery()
+        }
+        follower?.followHiddenFolders(state.hiddenFolders)
+    }
+
+    /// The split view's second pane takes the main pane's hidden folders.
+    func followHiddenFolders(_ ids: [Int64]) {
+        guard isFollower, ids != state.hiddenFolders else { return }
+        updateState { $0.hiddenFolders = ids }
+        reloadQuery()
+    }
+
+    /// The hidden folders, named from their library folder down ("Downloads › Icons"), for Settings.
+    var hiddenFolderNames: [(id: Int64, name: String)] {
+        state.hiddenFolders.map { id in
+            for root in roots {
+                if let folder = listings[root.id]?.folders.first(where: { $0.id == id }) {
+                    let parts = [(root.path as NSString).lastPathComponent] + folder.relativePath.split(separator: "/").map(String.init)
+                    return (id, parts.joined(separator: " › "))
+                }
+            }
+            return (id, "…")
+        }
     }
 
     /// Asks for a name (a free one next to the taken ones is offered) and makes the folder through the undoable

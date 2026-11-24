@@ -49,7 +49,7 @@ struct ViewerTopBar<Trailing: View>: View {
             Spacer(minLength: JGSpacing.m)
             trailing
         }
-        .padding(.leading, JGMetrics.windowControlsInset)
+        .padding(.leading, WindowControlsRoom.shared.width)
         .padding(.trailing, JGSpacing.m)
         .frame(height: JGMetrics.barHeight)
         .background { Color.clear.contentShape(Rectangle()).titleBarDoubleClick() }
@@ -64,6 +64,8 @@ struct ViewerIconButton: View {
     let symbol: String
     let label: Text
     var isOn = false
+    /// The tooltip, when it says more than the label.
+    var help: Text?
     let action: () -> Void
 
     var body: some View {
@@ -77,7 +79,7 @@ struct ViewerIconButton: View {
         .buttonStyle(.plain)
         // Space and Return keep their player meaning; they never press a focused button (D-77).
         .focusable(false)
-        .help(label)
+        .help(help ?? label)
         .accessibilityLabel(label)
         .accessibilityAddTraits(isOn ? .isSelected : [])
     }

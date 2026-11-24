@@ -12,7 +12,7 @@ extension LibraryModel {
         }
         return AssetQuery(
             scope: scope, kinds: state.kinds, sort: state.sort, ascending: state.ascending, flagFilter: state.flagFilter,
-            search: search.isEmpty ? nil : search
+            search: search.isEmpty ? nil : search, hiddenFolders: Set(state.hiddenFolders), minSize: minFileBytes
         )
     }
 

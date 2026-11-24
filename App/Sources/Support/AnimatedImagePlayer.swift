@@ -1,5 +1,4 @@
 import Accessibility
-import AppKit
 import ImageIO
 
 /// Plays an animated GIF or PNG (D-124) with ImageIO's own frame timing and loop count: each frame arrives on the main

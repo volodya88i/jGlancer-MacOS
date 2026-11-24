@@ -87,6 +87,7 @@ final class PhotoViewerModel {
     private var decoded: [Entry: Picture] = [:]
     private var decodeTasks: [Entry: Task<Void, Never>] = [:]
     private var fullTask: Task<Void, Never>?
+    @ObservationIgnored var standInTask: Task<Void, Never>?
     private var navigationStart: (date: Date, state: OSSignpostIntervalState)?
     private let signposter = OSSignposter(subsystem: "jGlancer.app", category: "viewer")
     /// The library's thumbnails, or a memory-only service for files outside the library (filmstrip).
@@ -211,10 +212,9 @@ final class PhotoViewerModel {
         if let current, let ready = decoded[current] {
             show(ready)
         } else {
-            picture = placeholder(for: current)
-            if picture == nil, let current {
-                loadPlaceholder(for: current)
-            }
+            // Most photos decode within the stand-in delay: they open sharp instead of turning sharp.
+            picture = nil
+            scheduleStandIn(for: current)
         }
         for (order, entry) in window.enumerated() where decoded[entry] == nil && decodeTasks[entry] == nil {
             decode(entry, priority: order == 0 ? .userInitiated : .utility)

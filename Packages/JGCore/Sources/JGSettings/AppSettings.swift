@@ -60,6 +60,10 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var videoWaveformStyle: WaveformStyle = .timeline
     /// View → Show Status Bar: the counts under the files (D-110).
     public var showsStatusBar = true
+    /// Settings → Library → Hide files smaller than, in kilobytes (WIN-061); 0 is off.
+    public var minFileKilobytes = 0
+    /// Quick Preview's pin (WIN-069): above every window, also while another app is active; off, an ordinary window.
+    public var quickPreviewOnTop = true
     /// The preview pane also lists camera, exposure, codecs and rates (always in Get Info).
     public var previewDetails = false
 
@@ -103,6 +107,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         videoWaveformStyle = (try? container.decodeIfPresent(WaveformStyle.self, forKey: .videoWaveformStyle))
             ?? defaults.videoWaveformStyle
         showsStatusBar = try container.decodeIfPresent(Bool.self, forKey: .showsStatusBar) ?? defaults.showsStatusBar
+        minFileKilobytes = try container.decodeIfPresent(Int.self, forKey: .minFileKilobytes) ?? defaults.minFileKilobytes
+        quickPreviewOnTop = try container.decodeIfPresent(Bool.self, forKey: .quickPreviewOnTop) ?? defaults.quickPreviewOnTop
         previewDetails = try container.decodeIfPresent(Bool.self, forKey: .previewDetails) ?? defaults.previewDetails
         checksForUpdates = try container.decodeIfPresent(Bool.self, forKey: .checksForUpdates) ?? defaults.checksForUpdates
         lastUpdateCheck = try? container.decodeIfPresent(Date.self, forKey: .lastUpdateCheck)

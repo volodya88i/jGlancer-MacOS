@@ -1,5 +1,4 @@
 import CoreGraphics
-import Foundation
 import JGModel
 import JGThumbs
 import QuartzCore

@@ -4,6 +4,32 @@ One short entry per published build of the macOS app. Versions are `major.minor.
 the patch number goes up by one for the next one; the minor number goes up for larger releases. The Windows version
 keeps its own changelog in its repository.
 
+## 0.6.3 — 2026-11-24
+A size map, a sidebar that folds into a strip of icons, folder icons, and photos and videos over the whole Quick
+Preview.
+
+**New**
+- **Size map** (View ▸ Show Size Map, ⌥⌘T): the folder's photos, videos and songs as rectangles by size, like
+  WizTree, under the files or on the right; it swaps places with the preview.
+- **Folding sidebar**: the sidebar folds into a narrow strip with the library folders, the albums and the Trash as
+  icons (the button at its top, or View ▸ Show Sidebar, ⌥⌘S), and by itself when the window is narrow; resting the
+  pointer on the strip opens it over the files. The window can now be narrower.
+- **Folder icons**: a library folder can show its own symbol, emoji or photo (right-click the folder ▸ Folder Icon…,
+  or a photo ▸ Use as Folder Icon).
+- Sidebar → Hide from Library for a subfolder you do not want to see, and Settings → Library → Hide files smaller
+  than (icons in Downloads, say); nothing is deleted.
+- Quick Preview shows photos and videos over the whole window with translucent bars that fade, a volume slider
+  in a small bubble, and a pin to keep it above other windows.
+
+**Improved**
+- Photos open sharp instead of first showing their blurry thumbnail.
+- Space plays and pauses the open player wherever the keyboard focus is.
+- Smaller folder and audio icons in the list; its columns always fit the window.
+- The top bars beside the window's buttons leave as much room after them as before them.
+
+**Fixed**
+- In a narrow window the files no longer push the preview past the window's edge.
+
 ## 0.6.2 — 2026-11-07
 A list view, animated GIFs, files kept in the cloud left in the cloud, and fixes from a full review.
 

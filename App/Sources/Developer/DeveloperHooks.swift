@@ -1,10 +1,8 @@
 import AppKit
 import JGActions
-import JGDesign
 import JGModel
 import JGScanner
 import JGSettings
-import SwiftUI
 
 /// Launch-argument hooks for benchmarks and visual checks; inert without the arguments.
 ///
@@ -14,6 +12,9 @@ import SwiftUI
 /// - `-JGPreset performance|beauty`, `-JGKindFilters labels|icons`, `-JGPreviewDetails YES`: settings for the run.
 /// - `-JGTileSide <points>`, `-JGSelect <count>`: tile size and a selection of the first items.
 /// - `-JGViewMode grid|list` (`-JGListExpand YES`: every folder row unfolded): the library's view (D-125).
+/// - `-JGSizeMap bottom|right`: shows the size map there (D-127).
+/// - `-JGSidebar docked|collapsed|peek`: the sidebar docked, folded into its strip, or out over the files (D-128).
+/// - `-JGSidebarSample YES` (`-JGRootIcon <emoji | sf:symbol | /path>`): two albums and the first folder's icon (D-129).
 /// - `-JGWindowWidth <points>`: the main window's width. `-JGSearch <text>` (`-JGSearchEverywhere YES`): a search.
 /// - `-JGOpen <path>`: opens a file or folder as if from Finder.
 /// - `-JGServiceLaunch <file>`: a launch by Finder ▸ Services ▸ Quick Preview (see `ServiceLaunchCheck`).
@@ -22,6 +23,8 @@ import SwiftUI
 /// - `-JGPlaybackState YES`: logs the player's state after `-JGOpen`.
 /// - `-JGMute YES`: mutes the player (silent snapshot and benchmark runs).
 /// - `-JGSnapshot <file.png>`: renders the main window to a PNG, then quits.
+/// - `-JGSnapshotSize <W>x<H>`: the snapshot draws the main window's content offscreen at that size (a window tiled to
+///   half the screen keeps its size against `-JGWindowWidth`).
 /// - `-JGPrintMenu YES`: prints the context menu of the viewer's file or the selection to stderr.
 /// - `-JGFileOpsCheck <folder>`: photos only, select all, Move to the folder, Undo; logs each step, then quits.
 ///   Use only on copies of test media.
@@ -46,6 +49,7 @@ import SwiftUI
 /// - `-JGThemeCheck <png>`: the Black theme, a chosen accent and Light, live, a snapshot of each.
 /// - `-JGUpdateCheck YES` (`-JGUpdateInstalled <x.y.z>`): the update check at once, as Check Now does (logged).
 /// - `-JGSplitCheck <png>`: split view side by side and stacked (a snapshot of each), then off (logged).
+/// - `-JGSizeMapCheck <png>`: the size map moved between its places with a selection, and across folders (logged).
 /// - `-JGPinDeepest YES`: pins the deepest folder of the first root.
 /// - `-JGNewFolderCheck <name>`: makes an empty folder in the first root and logs the sidebar's subfolders.
 /// - `-JGAddingCheck <folder>` (`-JGAddingSnapshot <png>`): adds a folder and logs its first scan's progress.
@@ -118,24 +122,7 @@ enum DeveloperHooks {
         if defaults.bool(forKey: "JGQuickPreview") {
             await openQuickPreview(appModel)
         }
-        await snapshotAndQuit()
-    }
-
-    /// `-JGSnapshot`: the main window (and `-JGSnapshotPanel`: a visible panel) to PNG, then quits.
-    private static func snapshotAndQuit() async {
-        if let output = defaults.string(forKey: "JGSnapshot") {
-            let delay = defaults.double(forKey: "JGSnapshotDelay")
-            try? await Task.sleep(for: .seconds(delay > 0 ? delay : 2))
-            if let panelOutput = defaults.string(forKey: "JGSnapshotPanel"),
-               let panel = NSApp.windows.first(where: { $0 is NSPanel && $0.isVisible })
-            {
-                snapshot(panel, to: URL(fileURLWithPath: panelOutput))
-            }
-            if let window = mainWindow {
-                snapshot(window, to: URL(fileURLWithPath: output))
-            }
-            NSApp.terminate(nil)
-        }
+        await snapshotAndQuit(appModel)
     }
 
     /// `-JGPlaybackState YES` with `-JGOpen <video or audio>`: the player's state twice, 0.5 s and 1.5 s after opening.
@@ -184,7 +171,7 @@ enum DeveloperHooks {
         }
         if appModel.startupError != nil {
             hasRun = true
-            await snapshotAndQuit()
+            await snapshotAndQuit(appModel)
             return true
         }
         if appModel.isViewerOnly, appModel.library == nil {
@@ -194,7 +181,7 @@ enum DeveloperHooks {
             if defaults.bool(forKey: "JGViewerOnlyLibrary") {
                 await ViewerOnlyCheck.run(appModel)
             }
-            await snapshotAndQuit()
+            await snapshotAndQuit(appModel)
             return true
         }
         return false
@@ -355,8 +342,42 @@ enum DeveloperHooks {
 }
 
 extension DeveloperHooks {
+    /// `-JGSnapshot`: the main window (and `-JGSnapshotPanel`: a visible panel) to PNG, then quits; with
+    /// `-JGSnapshotSize WxH` the window's content drawn offscreen at that size instead.
+    static func snapshotAndQuit(_ appModel: AppModel) async {
+        if let output = defaults.string(forKey: "JGSnapshot") {
+            let delay = defaults.double(forKey: "JGSnapshotDelay")
+            try? await Task.sleep(for: .seconds(delay > 0 ? delay : 2))
+            if let panelOutput = defaults.string(forKey: "JGSnapshotPanel"),
+               let panel = NSApp.windows.first(where: { $0 is NSPanel && $0.isVisible })
+            {
+                snapshot(panel, to: URL(fileURLWithPath: panelOutput))
+            }
+            if let size = defaults.string(forKey: "JGSnapshotSize") {
+                await OffscreenSnapshot.run(appModel, size: size, to: URL(fileURLWithPath: output))
+            } else if let window = mainWindow {
+                snapshot(window, to: URL(fileURLWithPath: output))
+            }
+            NSApp.terminate(nil)
+        }
+    }
+
     /// `-JGViewMode grid|list`, with `-JGListExpand YES` every folder row unfolded (D-125).
     static func applyViewMode(_ library: LibraryModel) {
+        // `-JGSidebar docked|collapsed|peek`: the sidebar, its strip, or the strip with the sidebar out over the files.
+        if let sidebar = defaults.string(forKey: "JGSidebar") {
+            library.setSidebarCollapsed(sidebar != "docked")
+            if sidebar == "peek" {
+                library.sidebarPeek.open()
+            }
+        }
+        // `-JGSizeMap bottom|right`: the size map shown in that place (D-127).
+        if let slot = defaults.string(forKey: "JGSizeMap").flatMap(ModuleSlot.init(rawValue:)) {
+            library.setModuleVisible(.sizeMap, true)
+            if library.state.slot(of: .sizeMap) != slot {
+                library.moveModule(.sizeMap)
+            }
+        }
         guard let mode = defaults.string(forKey: "JGViewMode").flatMap(LibraryViewState.ViewMode.init(rawValue:)) else { return }
         if defaults.bool(forKey: "JGListExpand") {
             library.listExpanded = Set(library.trees.values.flatMap { folderIDs(in: $0) })

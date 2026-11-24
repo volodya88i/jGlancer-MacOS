@@ -1,5 +1,4 @@
 import AppKit
-import JGDesign
 import SwiftUI
 
 /// Zoom commands of the photo view (⌘0 fit, ⌘9 fill, ⌘1 actual size, ⌘+ / ⌘−).

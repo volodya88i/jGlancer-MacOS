@@ -108,6 +108,28 @@ final class MediaSurfaceView: NSView {
         if takesKeyboardFocus {
             window?.makeFirstResponder(self)
         }
+        watchSpace()
+    }
+
+    /// Space plays and pauses wherever the keyboard focus is in the player's window (a menu button, a slider, the
+    /// window itself), not only on the picture (WIN-061); a field being typed in keeps its spaces.
+    private var spaceMonitor: Any?
+
+    private func watchSpace() {
+        if let spaceMonitor {
+            NSEvent.removeMonitor(spaceMonitor)
+        }
+        spaceMonitor = nil
+        guard takesKeyboardFocus, window != nil else { return }
+        spaceMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self, let window, event.window === window, event.keyCode == 49,
+                  event.modifierFlags.isDisjoint(with: [.command, .control, .option, .shift]),
+                  window.firstResponder !== self, !(window.firstResponder is NSText)
+            else { return event }
+            onActivity?()
+            onCommand?(.togglePlay)
+            return nil
+        }
     }
 
     override func mouseDown(with event: NSEvent) {

@@ -1,4 +1,3 @@
-import Darwin
 import Foundation
 
 /// Canonical file-system paths, as FSEvents reports them.

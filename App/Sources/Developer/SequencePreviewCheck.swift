@@ -1,4 +1,3 @@
-import AppKit
 import Foundation
 
 /// -JGSequencePreviewCheck <png> (a folder with an image sequence): selects the folded sequence, drags its preview

@@ -44,6 +44,11 @@ public struct AssetQuery: Hashable, Sendable {
     public var flagFilter: FlagFilter?
     /// Text the file name must contain (case-insensitive); nil or blank matches every file.
     public var search: String?
+    /// Folders hidden from the library's views (WIN-061): their files and everything below them are left out of every
+    /// scope but albums. They stay indexed.
+    public var hiddenFolders: Set<Int64>
+    /// Files smaller than this many bytes are left out everywhere (Settings → Library; 0 shows every file).
+    public var minSize: Int64
 
     public init(
         scope: Scope = .library,
@@ -51,7 +56,9 @@ public struct AssetQuery: Hashable, Sendable {
         sort: Sort = .name,
         ascending: Bool = true,
         flagFilter: FlagFilter? = nil,
-        search: String? = nil
+        search: String? = nil,
+        hiddenFolders: Set<Int64> = [],
+        minSize: Int64 = 0
     ) {
         self.scope = scope
         self.kinds = kinds
@@ -59,6 +66,8 @@ public struct AssetQuery: Hashable, Sendable {
         self.ascending = ascending
         self.flagFilter = flagFilter
         self.search = search
+        self.hiddenFolders = hiddenFolders
+        self.minSize = minSize
     }
 
     /// The search text trimmed; nil when there is nothing to search for.

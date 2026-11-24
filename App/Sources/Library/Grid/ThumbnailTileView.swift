@@ -198,6 +198,12 @@ final class ThumbnailTileView: NSView {
 
     // MARK: Appearance
 
+    /// Another screen (1× or 2×): the glyph is drawn again for it.
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        updateTextAndGlyph()
+    }
+
     override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         updateColors()
@@ -237,7 +243,10 @@ final class ThumbnailTileView: NSView {
         let showsGlyph = image == nil && !isLoading
         glyphLayer.isHidden = !showsGlyph
         if showsGlyph {
-            glyphLayer.contents = Self.glyph(for: content.kind, isCloudOnly: content.isCloudOnly, appearance: effectiveAppearance)
+            glyphLayer.contents = Self.glyph(
+                for: content.kind, isCloudOnly: content.isCloudOnly, appearance: effectiveAppearance,
+                scale: window?.backingScaleFactor ?? 2
+            )
         }
         let flagName = content.flag == .none ? nil : content.flag.title
         updateSequenceText()

@@ -16,6 +16,8 @@ public enum ActionID: String, CaseIterable, Sendable {
     case addToAlbum
     case removeFromAlbum
     case setAlbumCover
+    /// A photo as its library folder's icon (D-129).
+    case setFolderIcon
     case moveTo
     case copyTo
     case rename
@@ -99,7 +101,7 @@ public enum ActionRegistry {
     /// Menu sections in order (docs/FEATURES.md §8); the destructive action is last and alone.
     public static let sections: [[ActionID]] = [
         [.open, .quickPreview, .playInMiniPlayer, .compare, .splitStems, .openWith, .editInPrimaryApp],
-        [.addToAlbum, .removeFromAlbum, .setAlbumCover, .moveTo, .copyTo, .rename],
+        [.addToAlbum, .removeFromAlbum, .setAlbumCover, .setFolderIcon, .moveTo, .copyTo, .rename],
         [.flag],
         [.getInfo, .revealInFinder, .copyPath, .copy],
         [.moveToTrash],
@@ -140,6 +142,9 @@ public enum ActionRegistry {
             return openWithAvailability(id, selection, features, primaryAppKinds)
         case .addToAlbum, .removeFromAlbum, .setAlbumCover:
             return albumAvailability(id, selection, features)
+        case .setFolderIcon:
+            // One photo, in the library (its folder's icon); the viewer has no folder at hand.
+            return selection.place != .viewer && selection.kinds == [.photo] && selection.fileCount == 1 ? .enabled : .hidden
         case .moveTo, .copyTo, .moveToTrash, .rename:
             guard features.contains(.fileOperations) else { return .hidden }
             // A viewer copies and trashes its file; moving and renaming happen in the library.

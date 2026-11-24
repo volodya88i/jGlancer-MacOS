@@ -60,12 +60,4 @@ public enum ThumbnailPriority: Int, Comparable, Sendable {
     public static func < (lhs: ThumbnailPriority, rhs: ThumbnailPriority) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
-
-    var qos: DispatchQoS.QoSClass {
-        switch self {
-        case .visible: .userInitiated
-        case .nearby: .utility
-        case .background: .background
-        }
-    }
 }

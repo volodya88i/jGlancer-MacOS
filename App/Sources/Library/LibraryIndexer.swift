@@ -2,7 +2,6 @@ import AppKit
 import Foundation
 import JGModel
 import JGScanner
-import JGStore
 import Observation
 
 /// Keeps the library in sync in the background: one FSEvents watch per root (which also runs the first

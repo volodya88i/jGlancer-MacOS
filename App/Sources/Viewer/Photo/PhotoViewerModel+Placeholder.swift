@@ -3,6 +3,27 @@ import JGThumbs
 
 /// The thumbnail that stands in while the photo decodes (D-82).
 extension PhotoViewerModel {
+    /// How long a photo that is not decoded yet shows nothing before the grid's thumbnail stands in (WIN-061): most
+    /// decode sooner, so they open sharp instead of turning sharp in front of the user.
+    static let standInDelay: Duration = .milliseconds(150)
+
+    /// The stand-in for `entry`, after `standInDelay`, if its decode has not arrived by then.
+    func scheduleStandIn(for entry: Entry?) {
+        standInTask?.cancel()
+        guard let entry else { return }
+        standInTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.standInDelay)
+            guard let self, !Task.isCancelled, picture == nil, entries.indices.contains(index), entries[index] == entry else {
+                return
+            }
+            if let ready = placeholder(for: entry) {
+                standIn(ready)
+            } else {
+                loadPlaceholder(for: entry)
+            }
+        }
+    }
+
     /// The grid's cached thumbnail, shown (scaled up) until the screen-size decode arrives.
     func placeholder(for entry: Entry?) -> Picture? {
         guard let entry, let photo = photo(for: entry), let assetID = photo.assetID, let modifiedAt = photo.modifiedAt,

@@ -54,6 +54,26 @@ public extension LibraryStore {
         }
     }
 
+    /// The files `query` shows with their folder, size, kind and name, for the size map (D-127); none for albums.
+    func sizeEntries(for query: AssetQuery) async throws -> [SizeEntry] {
+        if case .album = query.scope {
+            return []
+        }
+        guard let filter = Self.filter(for: query) else { return [] }
+        return try await writer.read { db in
+            let rows = try Row.fetchCursor(db, sql: """
+            SELECT asset.id, asset.folder_id, asset.size, asset.kind, asset.name FROM asset WHERE \(filter.sql)
+            """, arguments: filter.arguments)
+            var entries: [SizeEntry] = []
+            while let row = try rows.next() {
+                entries.append(SizeEntry(
+                    id: row[0], folderID: row[1], size: row[2], kind: MediaKind(rawValue: row[3]) ?? .photo, name: row[4]
+                ))
+            }
+            return entries
+        }
+    }
+
     /// Number and total size in bytes of the assets matching `query`.
     func totals(for query: AssetQuery) async throws -> (assets: Int, bytes: Int64) {
         try await writer.read { db in
@@ -209,7 +229,26 @@ extension LibraryStore {
             conditions.append(search.sql)
             arguments += search.arguments
         }
+        conditions += viewConditions(query, includingHidden: true)
         return (conditions.joined(separator: " AND "), arguments)
+    }
+
+    /// The library's view filters (WIN-061): no file below `minSize`; none in a hidden folder or below it (albums
+    /// show their files wherever they are). Ids are integers, written into the SQL.
+    static func viewConditions(_ query: AssetQuery, includingHidden: Bool) -> [String] {
+        var conditions: [String] = []
+        if query.minSize > 0 {
+            conditions.append("asset.size >= \(query.minSize)")
+        }
+        if includingHidden, !query.hiddenFolders.isEmpty {
+            let ids = query.hiddenFolders.sorted().map(String.init).joined(separator: ",")
+            conditions.append("""
+            asset.folder_id NOT IN (
+              SELECT f.id FROM folder f JOIN folder h ON h.id IN (\(ids)) AND f.root_id = h.root_id
+              WHERE f.id = h.id OR (f.rel_path >= h.rel_path || '/' AND f.rel_path < h.rel_path || '0'))
+            """)
+        }
+        return conditions
     }
 
     static func flagCondition(_ filter: AssetQuery.FlagFilter?) -> String? {

@@ -12,8 +12,8 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
-    MARKETING_VERSION: "0.6.2" # major.minor.patch: patch +1 after each public release, minor for larger releases (D-121)
-    CURRENT_PROJECT_VERSION: "7"
+    MARKETING_VERSION: "0.6.3" # major.minor.patch: patch +1 after each public release, minor for larger releases (D-121)
+    CURRENT_PROJECT_VERSION: "8"
     ENABLE_HARDENED_RUNTIME: YES
     # Local builds are ad-hoc signed ("Sign to Run Locally"); Developer ID signing arrives with release prep (Phase 13).
     CODE_SIGN_STYLE: Manual

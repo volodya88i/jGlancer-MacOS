@@ -4,16 +4,25 @@ import JGModel
 import SwiftUI
 
 /// Library folders as a tree (docs/FEATURES.md §1). Custom rows keep the design's look; ↑/↓ move,
-/// ←/→ collapse and expand, like an outline view.
+/// ←/→ collapse and expand, like an outline view. Compact, it is the folded sidebar's strip (D-128): the library folders,
+/// the albums and the Trash as icons in the same rows, so unfolding moves the icons to their places and brings the
+/// names in.
 struct SidebarView: View {
     /// The main pane: roots, trees, albums, pins and changes.
     let model: LibraryModel
     /// The pane a click shows a folder or album in: the active one of a split view (D-89).
     var target: LibraryModel?
+    /// The fold button in the top row (D-128): Hide on the docked sidebar, Keep Open on the one over the files.
+    var toggleRole = SidebarToggleButton.Role.hide
+    /// The strip: icons only, no subfolders, pins or section names.
+    var compact = false
     @State private var rootToRemove: RootFolder?
+    /// The library folder whose icon is being chosen (D-129).
+    @State private var iconRoot: RootFolder?
     /// The folder row under a drag of files.
     @State private var dropTarget: Int64?
     @FocusState private var isFocused: Bool
+    @Environment(\.sidebarRowWidth) private var rowWidth
 
     private var pane: LibraryModel {
         target ?? model
@@ -30,35 +39,19 @@ struct SidebarView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // The window controls sit here, level with the top bar.
-            Color.clear.frame(height: JGMetrics.barHeight)
-                .contentShape(Rectangle())
-                .titleBarDoubleClick()
-            SidebarPins(model: model, target: pane)
-            HStack {
-                JGSectionHeader(Text("Folders", comment: "Sidebar section label; shown in capitals"))
-                Spacer()
-                Button {
-                    Task { await model.addFolders(FolderPicker.chooseFolders()) }
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: JGTextStyle.body.size))
-                        .foregroundStyle(JGColor.textSecondary)
-                        .frame(width: JGMetrics.controlHeightCompact, height: JGMetrics.controlHeightCompact)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .help(Text("Add Folder…"))
-                .accessibilityLabel(Text("Add Folder…"))
+            topRow
+            if !compact {
+                SidebarPins(model: model, target: pane)
+                    .transition(.opacity)
             }
-            .padding(.leading, JGSpacing.m)
-            .padding(.trailing, JGSpacing.xs)
+            foldersHeader
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(rows) { row in
                         rowView(row)
+                            .transition(.opacity)
                     }
-                    SidebarAlbums(model: model, target: pane) { albumID in
+                    SidebarAlbums(model: model, target: pane, compact: compact) { albumID in
                         model.onExportAlbum?(albumID)
                     }
                     .padding(.top, JGSpacing.m)
@@ -66,16 +59,22 @@ struct SidebarView: View {
                 .padding(.horizontal, JGSpacing.xs)
                 .padding(.bottom, JGSpacing.m)
             }
+            .scrollIndicators(compact ? .never : .automatic)
+            // As wide as what shows: the panel's content is laid out at the unfolded width (D-128), and a scroll view
+            // left that wide on the strip would take the pointer over the files beside it.
+            .frame(width: compact ? JGMetrics.sidebarStripWidth : rowWidth + 2 * JGSpacing.xs, alignment: .leading)
             .focusable()
             .focused($isFocused)
             .focusEffectDisabled()
             .onMoveCommand(perform: moveSelection)
             JGHairline()
-            TrashRow(model: model)
-                .padding(.horizontal, JGSpacing.xs)
+            TrashRow(model: model, compact: compact)
                 .frame(height: JGMetrics.statusBarHeight)
         }
         .background(JGColor.bgPanel)
+        .sheet(item: $iconRoot) { root in
+            FolderIconPicker(model: model, root: root)
+        }
         .confirmationDialog(
             removalTitle,
             isPresented: Binding(get: { rootToRemove != nil }, set: {
@@ -107,7 +106,7 @@ struct SidebarView: View {
         var rows: [Row] = []
         func visit(_ node: FolderNode, depth: Int, root: RootFolder?) {
             rows.append(Row(node: node, depth: depth, root: root))
-            if model.expandedFolders.contains(node.id) {
+            if !compact, model.expandedFolders.contains(node.id) {
                 for child in node.children ?? [] {
                     visit(child, depth: depth + 1, root: nil)
                 }
@@ -126,7 +125,9 @@ struct SidebarView: View {
         FolderRowView(
             name: row.node.folder.name,
             depth: row.depth,
+            icon: row.root.flatMap { model.rootIcons[$0.id] },
             isRoot: row.root != nil,
+            compact: compact,
             hasChildren: row.node.children != nil,
             isExpanded: model.expandedFolders.contains(row.id),
             isSelected: pane.state.folderID == row.id && pane.state.albumID == nil,
@@ -187,6 +188,13 @@ struct SidebarView: View {
                 Text("Pin to Sidebar", comment: "Sidebar folder menu: adds the folder to the pinned ones")
             }
         }
+        if let root = row.root {
+            Button {
+                iconRoot = root
+            } label: {
+                Text("Folder Icon…", comment: "Sidebar menu of a library folder: choose its symbol, emoji or picture")
+            }
+        }
         Divider()
         if let root = row.root {
             Button {
@@ -195,6 +203,11 @@ struct SidebarView: View {
                 Text("Remove from Library", comment: "Context menu item; files are not touched")
             }
         } else {
+            Button {
+                model.hide(row.node.folder)
+            } label: {
+                Text("Hide from Library", comment: "Sidebar folder menu: the subfolder leaves the library's views; files stay")
+            }
             Button {
                 model.trash(row.node.folder)
             } label: {
@@ -234,100 +247,61 @@ struct SidebarView: View {
     }
 }
 
-/// One sidebar row: disclosure chevron, folder or disk icon, name, offline mark.
-private struct FolderRowView: View {
-    let name: String
-    let depth: Int
-    let isRoot: Bool
-    let hasChildren: Bool
-    let isExpanded: Bool
-    let isSelected: Bool
-    let isOffline: Bool
-    let isDropTarget: Bool
-    let toggle: () -> Void
+// MARK: The top rows
 
-    var body: some View {
-        HStack(spacing: JGSpacing.xxs) {
-            disclosure
-            Image(systemName: isRoot ? "externaldrive" : "folder")
-                .font(.system(size: JGTextStyle.body.size))
-                .foregroundStyle(isSelected ? JGColor.textPrimary : JGColor.textSecondary)
-            Text(verbatim: name)
-                .jgTextStyle(.body)
-                .foregroundStyle(isOffline ? JGColor.textTertiary : (isSelected ? JGColor.textPrimary : JGColor.textSecondary))
-                .lineLimit(1)
-                .truncationMode(.middle)
-            if isOffline {
-                Text("Offline", comment: "A library folder whose disk is not available")
-                    .jgTextStyle(.label)
-                    .foregroundStyle(JGColor.textTertiary)
-            }
-            Spacer(minLength: 0)
+extension SidebarView {
+    /// The window's buttons sit here, level with the top bar, with the fold button at the end of the row. On the strip
+    /// the row looks like the top bar running on (its glass and its hairline).
+    private var topRow: some View {
+        VStack(spacing: 0) {
+            Color.clear.frame(height: JGMetrics.barHeight)
+            JGHairline().opacity(compact ? 1 : 0)
         }
-        .padding(.leading, CGFloat(depth) * JGSpacing.s)
-        .padding(.horizontal, JGSpacing.xs)
-        .frame(height: JGMetrics.controlHeightCompact)
-        .background(isSelected ? JGColor.bgRaised : JGColor.bgPanel, in: JGShape(.small))
-        .jgDropMark(isDropTarget, in: JGShape(.small))
-        .contentShape(JGShape(.small))
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : [.isButton])
+        .background {
+            ZStack {
+                Rectangle().fill(JGColor.bgBase)
+                Color.clear.jgBarBackground(JGColor.bgBase)
+            }
+            .opacity(compact ? 1 : 0)
+        }
+        .contentShape(Rectangle())
+        .titleBarDoubleClick()
+        .overlay(alignment: .topTrailing) {
+            SidebarToggleButton(role: toggleRole) { model.setSidebarCollapsed(toggleRole == .hide) }
+                .frame(height: JGMetrics.barHeight)
+                .padding(.trailing, JGSpacing.xs)
+                .sidebarLabelOpacity(compact)
+                .allowsHitTesting(!compact)
+        }
     }
 
-    private var disclosure: some View {
-        Group {
-            if hasChildren {
-                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                    .onTapGesture(perform: toggle)
-                    .accessibilityLabel(isExpanded ? Text("Collapse") : Text("Expand"))
-            } else {
-                Color.clear
-            }
-        }
-        .font(.system(size: JGTextStyle.mono.size, weight: .semibold))
-        .foregroundStyle(JGColor.textTertiary)
-        .frame(width: JGSpacing.m)
-    }
-}
-
-/// The Trash at the bottom of the sidebar: drop tiles (or files from Finder) on it to move them to the Trash
-/// (undoable); a click shows the Trash in Finder.
-private struct TrashRow: View {
-    let model: LibraryModel
-    @State private var isTargeted = false
-
-    var body: some View {
-        Button {
-            NSWorkspace.shared.open(URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(".Trash", isDirectory: true))
-        } label: {
-            HStack(spacing: JGSpacing.xxs) {
-                Image(systemName: isTargeted ? "trash.fill" : "trash")
-                    .font(.system(size: JGTextStyle.body.size))
-                    .foregroundStyle(isTargeted ? JGColor.textPrimary : JGColor.textSecondary)
-                    .frame(width: JGSpacing.m + JGSpacing.xs)
-                Text("Trash", comment: "Sidebar: the system Trash")
-                    .jgTextStyle(.body)
-                    .foregroundStyle(isTargeted ? JGColor.textPrimary : JGColor.textSecondary)
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, JGSpacing.xs)
-            .frame(height: JGMetrics.controlHeightCompact)
-            .background(isTargeted ? JGColor.bgRaised : JGColor.bgPanel, in: JGShape(.small))
-            .overlay {
-                if isTargeted {
-                    JGShape(.small).strokeBorder(JGColor.danger, lineWidth: JGMetrics.selectionEdgeWidth)
+    /// FOLDERS and its +; on the strip the Show Sidebar button stands in the same row.
+    private var foldersHeader: some View {
+        ZStack(alignment: .leading) {
+            SidebarToggleButton(role: .show) { model.setSidebarCollapsed(false) }
+                .frame(width: JGMetrics.sidebarStripWidth)
+                .sidebarStripOpacity(compact)
+            HStack {
+                JGSectionHeader(Text("Folders", comment: "Sidebar section label; shown in capitals"))
+                Spacer()
+                Button {
+                    Task { await model.addFolders(FolderPicker.chooseFolders()) }
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: JGTextStyle.body.size))
+                        .foregroundStyle(JGColor.textSecondary)
+                        .frame(width: JGMetrics.controlHeightCompact, height: JGMetrics.controlHeightCompact)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .help(Text("Add Folder…"))
+                .accessibilityLabel(Text("Add Folder…"))
             }
-            .contentShape(JGShape(.small))
+            .padding(.leading, JGSpacing.m)
+            .padding(.trailing, JGSpacing.xs)
+            .sidebarLabelOpacity(compact)
+            .allowsHitTesting(!compact)
         }
-        .buttonStyle(.plain)
-        .help(Text("Show the Trash in Finder; drop files here to move them to the Trash", comment: "Sidebar Trash tooltip"))
-        .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
-            Task {
-                let urls = await FolderPicker.urls(from: providers)
-                model.onTrashFiles?(urls)
-            }
-            return true
-        }
+        .frame(height: JGMetrics.controlHeightCompact)
     }
 }

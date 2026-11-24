@@ -1,5 +1,4 @@
 import Accelerate
-import Foundation
 
 /// Finds a song's tempo (D-106, W-107): the strength of note onsets over time, then the beat period that repeats best
 /// in it, leaning toward moderate tempos; half or double the true tempo remains possible. Takes 8 kHz mono samples.

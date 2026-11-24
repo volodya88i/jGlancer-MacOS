@@ -1,5 +1,4 @@
 import Darwin
-import Foundation
 
 /// Files kept only in the cloud: iCloud Drive with Optimize Mac Storage, or another File Provider (Dropbox, OneDrive,
 /// Google Drive). Their content is not on this Mac, and reading any of it makes the system download the whole file.

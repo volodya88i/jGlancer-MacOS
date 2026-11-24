@@ -1,7 +1,5 @@
 import CoreGraphics
-import Foundation
 import JGModel
-import JGStore
 import JGThumbs
 import Observation
 

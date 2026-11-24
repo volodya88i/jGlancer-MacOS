@@ -1,5 +1,3 @@
-import Foundation
-
 /// Playing a folded image sequence in the previews (W-86): frames advance at `framesPerSecond` from the frame shown
 /// and stop at the last. A frame whose picture is not ready is skipped instead of slowing the clock.
 public struct SequencePlayback: Equatable, Sendable {

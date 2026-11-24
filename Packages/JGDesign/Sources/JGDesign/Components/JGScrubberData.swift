@@ -1,4 +1,3 @@
-import AppKit
 import Foundation
 
 /// Peaks of a waveform in -1…1, one pair per bucket across the whole duration (`JGScrubber`'s audio style).

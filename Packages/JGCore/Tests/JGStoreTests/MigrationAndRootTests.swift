@@ -16,6 +16,7 @@ struct MigrationAndRootTests {
             "v4-audio-analysis",
             "v5-no-typescript",
             "v6-cloud-only",
+            "v7-root-icons",
         ])
         let tables = try await first.writer.read { db in
             try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
@@ -29,6 +30,7 @@ struct MigrationAndRootTests {
             "v4-audio-analysis",
             "v5-no-typescript",
             "v6-cloud-only",
+            "v7-root-icons",
         ])
         let mode = try await second.writer.read { db in try String.fetchOne(db, sql: "PRAGMA journal_mode") }
         #expect(mode == "wal")
@@ -60,6 +62,21 @@ struct MigrationAndRootTests {
         try await store.removeRoot(id: first.id)
         #expect(try await store.idsByName().keys.sorted() == ["2.jpg"])
         #expect(try await store.folders(rootID: first.id).isEmpty)
+    }
+
+    @Test func rootIconsAreSetReplacedClearedAndGoWithTheirRoot() async throws {
+        let store = try LibraryStore.inMemory()
+        let first = try await store.addRoot(path: "/a")
+        let second = try await store.addRoot(path: "/b")
+        try await store.setRootIcon(.symbol("music.note"), for: first.id)
+        try await store.setRootIcon(.picture(Data([1, 2, 3])), for: second.id)
+        #expect(try await store.rootIcons() == [first.id: .symbol("music.note"), second.id: .picture(Data([1, 2, 3]))])
+        try await store.setRootIcon(.emoji("🎸"), for: first.id)
+        #expect(try await store.rootIcons()[first.id] == .emoji("🎸"))
+        try await store.setRootIcon(nil, for: first.id)
+        #expect(try await store.rootIcons()[first.id] == nil)
+        try await store.removeRoot(id: second.id)
+        #expect(try await store.rootIcons().isEmpty)
     }
 
     @Test func eventStateIsPersisted() async throws {

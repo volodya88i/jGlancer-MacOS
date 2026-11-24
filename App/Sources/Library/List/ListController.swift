@@ -1,8 +1,6 @@
 import AppKit
 import JGDesign
 import JGModel
-import JGThumbs
-import UniformTypeIdentifiers
 
 /// Drives the library's list view (D-125): a Finder-style outline of the folder shown, rows loaded lazily for what is
 /// on screen, small thumbnails, the library's selection and sort kept in step both ways.
@@ -58,30 +56,18 @@ final class ListController: NSObject {
         outlineView.setDraggingSourceOperationMask(.copy, forLocal: false)
         outlineView.setDraggingSourceOperationMask([.move, .copy], forLocal: true)
         outlineView.setAccessibilityLabel(String(localized: "Library", comment: "Accessibility label of the thumbnail grid"))
-        for column in ListColumn.allCases {
-            let tableColumn = NSTableColumn(identifier: column.identifier)
-            tableColumn.title = column.title
-            tableColumn.sortDescriptorPrototype = NSSortDescriptor(key: column.rawValue, ascending: true)
-            switch column {
-            case .name:
-                tableColumn.minWidth = JGMetrics.sidebarWidth
-                tableColumn.resizingMask = [.autoresizingMask, .userResizingMask]
-            case .date: tableColumn.width = JGMetrics.listDateColumnWidth
-            case .size: tableColumn.width = JGMetrics.listSizeColumnWidth
-            case .kind: tableColumn.width = JGMetrics.listKindColumnWidth
-            }
-            if column == .size {
-                tableColumn.headerCell.alignment = .right
-            }
-            outlineView.addTableColumn(tableColumn)
-            if column == .name {
-                outlineView.outlineTableColumn = tableColumn
-            }
-        }
-        // The user's column widths and order, per pane.
+        addColumns()
+        // The user's column widths and order, per pane. The table also restores a sort of its own: the library's sort
+        // decides (`applySort` in `sync`), so the restored one must not reach the model.
+        isApplying = true
         outlineView.autosaveName = model.isFollower ? "LibraryList.secondPane" : "LibraryList"
         outlineView.autosaveTableColumns = true
+        isApplying = false
         scrollView.documentView = outlineView
+        scrollView.contentView.postsFrameChangedNotifications = true
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(viewportChanged), name: NSView.frameDidChangeNotification, object: scrollView.contentView
+        )
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
@@ -100,6 +86,7 @@ final class ListController: NSObject {
     /// Applies model changes; cheap when nothing relevant changed.
     func sync(shown: FolderNode?) {
         outlineView.rowHeight = CGFloat(model.state.listRowHeight)
+        fitColumns()
         applySort()
         if model.rowsVersion != lastRowsVersion {
             // Flagged, moved or renamed files keep their ids: rows are fetched again while the old ones stay drawn.

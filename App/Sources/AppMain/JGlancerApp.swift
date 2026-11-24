@@ -70,7 +70,7 @@ struct MainView: View {
             model: library, preview: appModel.preview, onOpen: { urls in Task { await appModel.open(urls) } },
             miniPlayer: appModel.windowPlayer, onShowMiniPlayerSong: appModel.showInLibrary,
             secondPane: appModel.secondPane, isSecondPaneActive: appModel.isSecondPaneActive,
-            onSplitFraction: appModel.setSplitFraction
+            onSplitFraction: appModel.setSplitFraction, sizeMap: appModel.sizeMap
         )
         .frame(width: frozenLibrarySize?.width, height: frozenLibrarySize?.height)
         .onGeometryChange(for: CGSize.self) { $0.size } action: { size in
@@ -299,7 +299,7 @@ private struct FindMenuItem: View {
     }
 }
 
-/// View ▸ Show Names, Include Subfolders (the active pane's), Show Preview, Show Status Bar, Split View.
+/// View ▸ Show Names, Include Subfolders (the active pane's), Show Sidebar, Show Preview, Show Status Bar, Split View.
 private struct ViewMenuItems: View {
     let appModel: AppModel
 
@@ -332,10 +332,20 @@ private struct ViewMenuItems: View {
                 Text("Include Subfolders")
             }
             .keyboardShortcut(shortcuts.keyboardShortcut(for: .includeSubfolders))
+            Toggle(isOn: Binding(get: { !main.isSidebarCollapsed }, set: { main.setSidebarCollapsed(!$0) })) {
+                Text("Show Sidebar", comment: "View menu: the folders and albums on the left")
+            }
+            .keyboardShortcut(shortcuts.keyboardShortcut(for: .toggleSidebar))
             Toggle(isOn: Binding(get: { main.state.previewVisible }, set: { main.setPreviewVisible($0) })) {
                 Text("Show Preview", comment: "View menu: the preview pane on the right")
             }
             .keyboardShortcut(shortcuts.keyboardShortcut(for: .togglePreview))
+            // The size map and the split view do not go together yet (D-127): each is off while the other is on.
+            Toggle(isOn: Binding(get: { main.state.sizeMapVisible }, set: { main.setModuleVisible(.sizeMap, $0) })) {
+                Text("Show Size Map", comment: "View menu: the folder's files as rectangles by size")
+            }
+            .keyboardShortcut(shortcuts.keyboardShortcut(for: .toggleSizeMap))
+            .disabled(main.state.splitMode != .off)
             Toggle(isOn: Binding(
                 get: { appModel.settingsStore.settings.showsStatusBar },
                 set: { isOn in appModel.settingsStore.update { $0.showsStatusBar = isOn } }
@@ -350,12 +360,14 @@ private struct ViewMenuItems: View {
             } label: {
                 Text("Split View", comment: "View menu: two library panes side by side")
             }
+            .disabled(main.state.sizeMapVisible)
             Button {
                 appModel.toggleSplitView()
             } label: {
                 Text("Toggle Split View", comment: "View menu: turns the split view on or off")
             }
             .keyboardShortcut(shortcuts.keyboardShortcut(for: .toggleSplitView))
+            .disabled(main.state.sizeMapVisible)
         }
     }
 }

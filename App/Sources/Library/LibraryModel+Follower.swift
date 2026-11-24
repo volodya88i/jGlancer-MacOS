@@ -12,6 +12,7 @@ extension LibraryModel {
         reducesMotion = leader.reducesMotion
         foldsSequences = leader.foldsSequences
         mirror(leader)
+        followHiddenFolders(leader.state.hiddenFolders)
         // A saved folder stays (the trees may still be loading; `mirror` drops it if it is gone).
         if state.folderID == nil, state.albumID == nil {
             updateState { $0.folderID = leader.state.folderID }

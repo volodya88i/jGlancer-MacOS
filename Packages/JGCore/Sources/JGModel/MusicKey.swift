@@ -1,5 +1,3 @@
-import Foundation
-
 /// A musical key (D-106, W-107): `tonic` is the pitch class, 0 = C … 11 = B.
 public struct MusicKey: Hashable, Sendable {
     public let tonic: Int

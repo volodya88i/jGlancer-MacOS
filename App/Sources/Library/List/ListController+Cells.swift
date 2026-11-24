@@ -18,7 +18,7 @@ extension ListController {
         switch item.row {
         case let .folder(id):
             cell.label.stringValue = outline.folders[id]?.name ?? ""
-            cell.setImage(nil, glyph: Self.glyph("folder", appearance: cell.effectiveAppearance))
+            cell.setImage(nil, glyph: glyph("folder", appearance: cell.effectiveAppearance))
         case let .asset(id):
             cell.assetID = id
             guard let asset = asset(id) else {
@@ -91,7 +91,7 @@ extension ListController {
         case .video: "film"
         case .audio: "waveform"
         }
-        let glyph = Self.glyph(symbol, appearance: cell.effectiveAppearance)
+        let glyph = glyph(symbol, appearance: cell.effectiveAppearance)
         let scale = outlineView.window?.backingScaleFactor ?? 2
         let request = ThumbnailRequest(
             assetID: asset.id, url: asset.url, kind: asset.kind, typeIdentifier: asset.typeIdentifier,
@@ -136,24 +136,15 @@ extension ListController {
         return name
     }
 
-    private static var glyphs: [String: CGImage] = [:]
-
-    static func glyph(_ symbol: String, appearance: NSAppearance) -> CGImage? {
-        let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-        let key = "\(symbol)-\(isDark)"
-        if let cached = glyphs[key] {
-            return cached
-        }
+    /// A folder, kind or cloud glyph at the list's size, for the outline's screen.
+    func glyph(_ symbol: String, appearance: NSAppearance) -> CGImage? {
         var color = NSColor.gray
         appearance.performAsCurrentDrawingAppearance {
             color = JGColor.textSecondary.nsColor.usingColorSpace(.sRGB) ?? .gray
         }
-        let configuration = NSImage.SymbolConfiguration(pointSize: JGTextStyle.body.size, weight: .regular)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [color]))
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)?.withSymbolConfiguration(configuration)
-        var rect = CGRect(origin: .zero, size: image?.size ?? .zero)
-        let rendered = image?.cgImage(forProposedRect: &rect, context: nil, hints: nil)
-        glyphs[key] = rendered
-        return rendered
+        return SymbolRaster.image(
+            symbol, pointSize: JGMetrics.listGlyphSize, weight: .regular, color: color,
+            scale: outlineView.window?.backingScaleFactor ?? 2
+        )
     }
 }

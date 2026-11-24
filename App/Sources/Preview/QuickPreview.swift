@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 import JGDesign
+import JGSettings
 import SwiftUI
 
 /// Quick Preview (docs/FEATURES.md §3, ARCHITECTURE §17): a floating panel that never takes the keyboard from the
@@ -54,11 +55,6 @@ final class QuickPreviewController: NSObject, NSWindowDelegate {
 
     var isFullScreen: Bool {
         panel?.styleMask.contains(.fullScreen) == true
-    }
-
-    /// Showing files from Finder (Services ▸ Quick Preview).
-    var isExternal: Bool {
-        panel?.isExternal == true
     }
 
     func toggleFullScreen() {
@@ -139,7 +135,8 @@ final class QuickPreviewController: NSObject, NSWindowDelegate {
         panel.contentView = NSHostingView(rootView: QuickPreviewView(
             preview: preview, onToggleFullScreen: { [weak self] in self?.toggleFullScreen() },
             onInfo: { [weak self] in self?.onInfo?() },
-            onOpenInViewer: { [weak self] in self?.onOpenInViewer?() }
+            onOpenInViewer: { [weak self] in self?.onOpenInViewer?() },
+            onKeepOnTop: { [weak panel] onTop in panel?.level = onTop ? .floating : .normal }
         ).appSettings(settings).environment(\.flagBook, flagBook))
         if !panel.setFrameUsingName(QuickPreviewPanel.frameName) {
             let size = CGSize(width: JGMetrics.quickPreviewWidth, height: JGMetrics.quickPreviewHeight)
@@ -209,56 +206,79 @@ final class QuickPreviewPanel: NSPanel {
     }
 }
 
-/// The panel's content: the file name, then the mini player at full size.
+/// The panel's content (WIN-062…069). A photo or a video fills the window, the name row and the video's bar lying over
+/// it as translucent glass that fades 2 s after the pointer leaves the window; songs, image sequences, files in the
+/// cloud and files that cannot play keep the name row above the mini player.
 struct QuickPreviewView: View {
     let preview: PreviewModel
     let onToggleFullScreen: () -> Void
     let onInfo: () -> Void
     let onOpenInViewer: () -> Void
+    /// Keep on Top changed (the controller sets the panel's level).
+    let onKeepOnTop: (Bool) -> Void
+    @Environment(\.appSettings) private var settings
+    @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
+    @Environment(\.reduceMotionOverride) private var reduceMotionOverride
+    @Environment(\.settingsStore) private var store
 
     @State private var isFullScreen = false
+    @State private var barsShown = true
+    @State private var hiding: Task<Void, Never>?
+
+    /// A photo or a video that plays: the picture fills the window.
+    private var fillsWindow: Bool {
+        guard let asset = preview.asset, !preview.isFailed, !preview.isCloudOnly, preview.sequence == nil else { return false }
+        return asset.kind == .photo || asset.kind == .video
+    }
 
     var body: some View {
-        VStack(spacing: JGSpacing.s) {
-            Text(verbatim: preview.asset?.name ?? "")
-                .jgTextStyle(.body)
-                .foregroundStyle(JGColor.textPrimary)
-                .lineLimit(1)
-                .truncationMode(.middle)
-                .frame(height: JGMetrics.controlHeightCompact)
-                .padding(.horizontal, JGMetrics.windowControlsInset)
-                .frame(maxWidth: .infinity)
-                .overlay(alignment: .trailing) {
-                    if preview.asset != nil {
-                        HStack(spacing: 0) {
-                            ViewerIconButton(
-                                symbol: "arrow.up.forward.square",
-                                label: Text("Open in Viewer", comment: "Quick Preview: opens the file in the full viewer"),
-                                action: onOpenInViewer
-                            )
-                            ViewerIconButton(symbol: "info.circle", label: Text("Get Info", comment: "Action"), action: onInfo)
+        Group {
+            if fillsWindow, let asset = preview.asset {
+                ZStack(alignment: .top) {
+                    MiniPlayer(
+                        preview: preview, asset: asset, style: .quickPreview,
+                        fullScreen: .init(isOn: isFullScreen, toggle: onToggleFullScreen), overlayBarsShown: barsShown
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    nameRow(photoFullScreen: asset.kind == .photo)
+                        .quickPreviewGlass()
+                        .opacity(barsShown ? 1 : 0)
+                        .allowsHitTesting(barsShown)
+                }
+                .background(JGColor.bgMedia)
+                .animation(reducesMotion ? nil : .easeOut(duration: JGMetrics.fadeDuration), value: barsShown)
+                .onContinuousHover { phase in
+                    switch phase {
+                    case .active: showBars()
+                    case .ended: scheduleHide()
+                    }
+                }
+                .onChange(of: asset.id, initial: true) { showBars(); scheduleHide() }
+            } else {
+                VStack(spacing: JGSpacing.s) {
+                    nameRow(photoFullScreen: false)
+                    if let asset = preview.asset {
+                        MiniPlayer(
+                            preview: preview, asset: asset, style: .quickPreview,
+                            fullScreen: .init(isOn: isFullScreen, toggle: onToggleFullScreen)
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding([.horizontal, .bottom], JGSpacing.m)
+                    }
+                }
+                .background {
+                    ZStack {
+                        Rectangle().fill(isFullScreen ? JGColor.bgMedia : JGColor.bgRaised)
+                        if preview.asset?.kind == .audio {
+                            CoverBackdropView(cover: preview.backdropCover)
                         }
                     }
                 }
-            if let asset = preview.asset {
-                MiniPlayer(
-                    preview: preview, asset: asset, style: .quickPreview,
-                    fullScreen: .init(isOn: isFullScreen, toggle: onToggleFullScreen)
-                )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .padding([.horizontal, .bottom], JGSpacing.m)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            ZStack {
-                Rectangle().fill(isFullScreen ? JGColor.bgMedia : JGColor.bgRaised)
-                if preview.asset?.kind == .audio {
-                    CoverBackdropView(cover: preview.backdropCover)
-                }
-            }
-        }
         .ignoresSafeArea()
+        .onChange(of: settings.quickPreviewOnTop, initial: true) { _, onTop in onKeepOnTop(onTop) }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { note in
             if note.object is QuickPreviewPanel {
                 isFullScreen = true
@@ -268,6 +288,35 @@ struct QuickPreviewView: View {
             if note.object is QuickPreviewPanel {
                 isFullScreen = false
             }
+        }
+    }
+
+    private func nameRow(photoFullScreen: Bool) -> some View {
+        QuickPreviewNameRow(
+            name: preview.asset?.name ?? "", assetID: preview.asset.flatMap { $0.id > 0 ? $0.id : nil },
+            keepsOnTop: settings.quickPreviewOnTop,
+            onToggleOnTop: { store?.update { $0.quickPreviewOnTop.toggle() } },
+            onOpenInViewer: onOpenInViewer, onInfo: onInfo,
+            onFullScreen: photoFullScreen ? onToggleFullScreen : nil, isFullScreen: isFullScreen
+        )
+        .opacity(preview.asset == nil ? 0 : 1)
+    }
+
+    private var reducesMotion: Bool {
+        systemReduceMotion || reduceMotionOverride
+    }
+
+    private func showBars() {
+        hiding?.cancel()
+        barsShown = true
+    }
+
+    private func scheduleHide() {
+        hiding?.cancel()
+        hiding = Task {
+            try? await Task.sleep(for: .seconds(JGMetrics.quickPreviewBarsHideDelay))
+            guard !Task.isCancelled else { return }
+            barsShown = false
         }
     }
 }

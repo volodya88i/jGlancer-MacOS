@@ -1,5 +1,4 @@
 import Accelerate
-import Foundation
 
 /// The spectrogram HTDemucs works on (D-97), computed here because the model holds only the network (as on Windows,
 /// W-85): PyTorch's `stft` / `istft` with a 4096-point periodic Hann window, hop 1024, normalized, centred with

@@ -1,6 +1,5 @@
 import AppKit
 import QuartzCore
-import SwiftUI
 
 /// The AppKit view behind `JGScrubber`.
 public final class ScrubberView: NSView {

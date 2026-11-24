@@ -1,5 +1,4 @@
 import AppKit
-import JGThumbs
 
 /// Live tile-size changes (D-93). A ruler drag changes the size many times a second: the tiles take each size as it
 /// comes (no stretching, rows centered), so they grow smoothly instead of jumping when the column count changes; the

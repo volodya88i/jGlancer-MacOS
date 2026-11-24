@@ -31,7 +31,17 @@ fi
 
 echo "== Packing $DMG"
 rm -f "$DMG"
-hdiutil create -volname "$APP_NAME" -srcfolder "$STAGE" -format UDZO -fs HFS+ "$DMG" > /dev/null
+# `hdiutil create` is deprecated from macOS 27; `diskutil image` makes an APFS volume, which every supported macOS
+# (14+) mounts. Older build Macs keep hdiutil.
+if diskutil image create from --help > /dev/null 2>&1; then
+  # Its progress line has no line break: shown only when it fails.
+  if ! PACK_LOG="$(diskutil image create from --format UDZO --volumeName "$APP_NAME" "$STAGE" "$DMG" 2>&1)"; then
+    echo "$PACK_LOG"
+    exit 1
+  fi
+else
+  hdiutil create -volname "$APP_NAME" -srcfolder "$STAGE" -format UDZO -fs HFS+ "$DMG" > /dev/null
+fi
 rm -rf "$STAGE"
 
 if [ -n "${SIGN_IDENTITY:-}" ]; then

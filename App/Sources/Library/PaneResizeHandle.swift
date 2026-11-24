@@ -6,19 +6,21 @@ import SwiftUI
 /// cursor on hover; the pane clamps and saves the width.
 struct PaneResizeHandle: View {
     let width: Double
-    /// True when dragging toward the leading edge widens the pane (a pane on the right).
+    /// True when dragging toward the leading edge widens the pane (a pane on the right), or toward the top heightens it.
     let growsTowardLeading: Bool
+    /// The top edge of a pane under the files: dragged up and down, `width` is its height (D-127).
+    var isVertical = false
     let set: (Double) -> Void
     @State private var startWidth: Double?
 
     var body: some View {
         Rectangle()
             .fill(Color.clear)
-            .frame(width: JGMetrics.resizeHandleWidth)
+            .frame(width: isVertical ? nil : JGMetrics.resizeHandleWidth, height: isVertical ? JGMetrics.resizeHandleWidth : nil)
             .contentShape(Rectangle())
             .onHover { inside in
                 if inside {
-                    NSCursor.resizeLeftRight.push()
+                    (isVertical ? NSCursor.resizeUpDown : NSCursor.resizeLeftRight).push()
                 } else {
                     NSCursor.pop()
                 }
@@ -28,7 +30,8 @@ struct PaneResizeHandle: View {
                     .onChanged { drag in
                         let start = startWidth ?? width
                         startWidth = start
-                        set(start + (growsTowardLeading ? -1 : 1) * drag.translation.width)
+                        let travel = isVertical ? drag.translation.height : drag.translation.width
+                        set(start + (growsTowardLeading ? -1 : 1) * travel)
                     }
                     .onEnded { _ in startWidth = nil }
             )

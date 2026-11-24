@@ -176,6 +176,7 @@ struct FolderTreeAndFilterTests {
         state.selectedIDs = [1, 2]
         state.previewVisible = false
         state.previewWidth = 420
+        state.sidebarCollapsed = true
         let decoded = try JSONDecoder().decode(LibraryViewState.self, from: JSONEncoder().encode(state))
         #expect(decoded == state)
         let partial = try JSONDecoder().decode(LibraryViewState.self, from: Data(#"{"sort":"bogus","kinds":[]}"#.utf8))
@@ -184,6 +185,7 @@ struct FolderTreeAndFilterTests {
         let older = try JSONDecoder().decode(LibraryViewState.self, from: Data(#"{"folderID":3,"tileSide":200}"#.utf8))
         #expect(older.folderID == 3)
         #expect(older.previewVisible)
+        #expect(!older.sidebarCollapsed)
         #expect(older.previewWidth == LibraryViewState().previewWidth)
     }
 

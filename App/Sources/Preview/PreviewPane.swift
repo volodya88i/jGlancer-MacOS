@@ -1,4 +1,3 @@
-import AppKit
 import JGDesign
 import JGModel
 import JGSettings
@@ -11,6 +10,8 @@ struct PreviewPane: View {
     let library: LibraryModel
     /// The pane whose selection is shown: the active one of a split view (D-89).
     var pane: LibraryModel?
+    /// Right of the files, or under them (D-127).
+    var slot: ModuleSlot = .right
     @Environment(\.appSettings) private var settings
     @Environment(\.settingsStore) private var settingsStore
 
@@ -21,7 +22,7 @@ struct PreviewPane: View {
                 JGSectionHeader(Text("Preview", comment: "Section label of the preview pane; shown in capitals"))
                 Spacer()
                 detailsButton
-                closeButton
+                ModuleHeaderButtons(module: .preview, slot: slot, library: library)
             }
             .frame(height: JGMetrics.barHeight)
             .background { Color.clear.contentShape(Rectangle()).titleBarDoubleClick() }
@@ -37,9 +38,6 @@ struct PreviewPane: View {
                     CoverBackdropView(cover: preview.backdropCover)
                 }
             }
-        }
-        .overlay(alignment: .leading) {
-            PaneResizeHandle(width: library.state.previewWidth, growsTowardLeading: true, set: library.setPreviewWidth)
         }
     }
 
@@ -61,19 +59,6 @@ struct PreviewPane: View {
     }
 
     /// Hides the pane (View ▸ Show Preview, ⌥⌘0, brings it back).
-    private var closeButton: some View {
-        Button { library.setPreviewVisible(false) } label: {
-            Image(systemName: "xmark")
-                .font(.system(size: JGTextStyle.mono.size, weight: .semibold))
-                .foregroundStyle(JGColor.textSecondary)
-                .frame(width: JGMetrics.controlHeightCompact, height: JGMetrics.controlHeightCompact)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .help(Text("Hide Preview (⌥⌘0)", comment: "Preview pane: close button tooltip"))
-        .accessibilityLabel(Text("Hide Preview", comment: "Preview pane: close button"))
-    }
-
     @ViewBuilder
     private var content: some View {
         if preview.selectionCount > 1 {

@@ -1,3 +1,4 @@
+import AppKit
 import JGModel
 
 /// Split view (D-89, W-66): two panes, side by side or stacked. The second follows the main pane's roots, trees and
@@ -15,6 +16,11 @@ extension AppModel {
 
     func setSplitMode(_ mode: LibraryViewState.SplitMode) {
         guard let library else { return }
+        // Not with the size map shown (D-127).
+        guard mode == .off || !library.state.sizeMapVisible else {
+            NSSound.beep()
+            return
+        }
         library.updateState {
             $0.splitMode = mode
             if mode != .off {

@@ -106,29 +106,16 @@ extension ThumbnailTileView {
                 card.backgroundColor = JGColor.bgRaised.nsColor.cgColor
                 card.borderColor = JGColor.lineStrong.nsColor.cgColor
             }
-            sequenceGlyph.contents = Self.symbol("square.stack", pointSize: JGTextStyle.mono.size, weight: .medium, ink: ink)
-            sequenceArrow.contents = Self.symbol(
+            sequenceGlyph.contents = symbol("square.stack", pointSize: JGTextStyle.mono.size, weight: .medium, ink: ink)
+            sequenceArrow.contents = symbol(
                 content.sequenceUnfolded ? "chevron.left" : "chevron.right", pointSize: JGTextStyle.mono.size - 2,
                 weight: .bold, ink: ink
             )
         }
     }
 
-    /// An SF Symbol drawn in `ink`, made once per symbol, size and color.
-    private static func symbol(_ name: String, pointSize: CGFloat, weight: NSFont.Weight, ink: NSColor) -> CGImage? {
-        let color = ink.usingColorSpace(.sRGB) ?? ink
-        let key = "\(name)|\(pointSize)|\(weight.rawValue)|\(color.redComponent)|\(color.greenComponent)|\(color.blueComponent)"
-        if let cached = symbols[key] {
-            return cached
-        }
-        let configuration = NSImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [ink]))
-        let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?.withSymbolConfiguration(configuration)
-        var rect = CGRect(origin: .zero, size: image?.size ?? .zero)
-        let rendered = image?.cgImage(forProposedRect: &rect, context: nil, hints: nil)
-        symbols[key] = rendered
-        return rendered
+    /// An SF Symbol drawn in `ink` at the screen's scale (`SymbolRaster`).
+    private func symbol(_ name: String, pointSize: CGFloat, weight: NSFont.Weight, ink: NSColor) -> CGImage? {
+        SymbolRaster.image(name, pointSize: pointSize, weight: weight, color: ink, scale: window?.backingScaleFactor ?? 2)
     }
-
-    private static var symbols: [String: CGImage] = [:]
 }

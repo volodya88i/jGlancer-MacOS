@@ -48,9 +48,4 @@ final class PlayheadMotion {
             link = nil
         }
     }
-
-    func stop() {
-        link?.invalidate()
-        link = nil
-    }
 }

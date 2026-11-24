@@ -1,7 +1,6 @@
 import AppKit
 import JGDesign
 import JGModel
-import JGStore
 import JGThumbs
 
 /// Drives the library grid: data source, visible-range prefetch of rows and thumbnails with

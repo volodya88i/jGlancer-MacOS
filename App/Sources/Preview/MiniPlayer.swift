@@ -31,6 +31,9 @@ struct MiniPlayer: View {
     let asset: Asset
     let style: Style
     var fullScreen: FullScreen?
+    /// Quick Preview over a photo or a video (WIN-062): the picture fills the view and the video's one bar lies over
+    /// its bottom, shown while `overlayBarsShown`; nil for the regular layout.
+    var overlayBarsShown: Bool?
     @Environment(\.appSettings) private var settings
     /// The song's tags from the shared cache, before its player has loaded (D-110).
     @State private var tags: MediaInfo?
@@ -63,7 +66,9 @@ struct MiniPlayer: View {
     /// Quick Preview puts the full-screen button under the photo, where the video has its controls.
     @ViewBuilder
     private var photo: some View {
-        if let sequence = preview.sequence {
+        if overlayBarsShown != nil {
+            photoImage
+        } else if let sequence = preview.sequence {
             VStack(spacing: JGSpacing.xs) {
                 photoImage
                 sequenceControls(sequence)
@@ -133,39 +138,6 @@ struct MiniPlayer: View {
                 }
             }
         }
-    }
-
-    // MARK: Video
-
-    private var video: some View {
-        VStack(spacing: JGSpacing.xs) {
-            if preview.isFailed {
-                failure
-            } else {
-                MediaSurface(
-                    player: preview.playback.player, sampleLayer: preview.playback.matroskaLayer, accessibilityLabel: asset.name,
-                    takesKeyboardFocus: false,
-                    onCommand: { _ in }, onActivity: {}
-                )
-                .aspectRatio(videoAspect, contentMode: .fit)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
-                .onTapGesture { preview.togglePlayPause() }
-            }
-            PlaybackScrubber(playback: preview.playback, liveTime: preview.liveTime, isObserving: true)
-                .frame(height: JGMetrics.controlHeightCompact)
-            controls
-        }
-    }
-
-    private var videoAspect: CGFloat {
-        if let size = preview.playback.info?.videoSize, size.height > 0 {
-            return size.width / size.height
-        }
-        if let width = asset.width, let height = asset.height, height > 0 {
-            return CGFloat(width) / CGFloat(height)
-        }
-        return 16 / 9
     }
 
     // MARK: Audio
@@ -242,7 +214,7 @@ struct MiniPlayer: View {
 
     // MARK: Shared
 
-    private var controls: some View {
+    var controls: some View {
         HStack(spacing: JGSpacing.xxs) {
             ViewerIconButton(
                 symbol: preview.playback.isPlaying ? "pause.fill" : "play.fill",
@@ -274,7 +246,7 @@ struct MiniPlayer: View {
         )
     }
 
-    private var failure: some View {
+    var failure: some View {
         ViewerMessage(
             symbol: asset.kind == .video ? "film" : "waveform",
             text: Text("Can't play this file.", comment: "Player state for an unsupported or damaged file")

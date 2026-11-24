@@ -6,7 +6,9 @@ SQLite through GRDB, Apple's media frameworks). Also for Windows:
 
 ## Features
 
-- A library of your folders with a fast, virtualized grid of thumbnails; albums, flags, search, duplicates, split view.
+- A library of your folders as a fast, virtualized grid of thumbnails or a Finder-style list; albums, flags, search,
+  duplicates, split view, and a size map of a folder (nested rectangles by size).
+- A sidebar that folds into a strip of icons, with your own symbol, emoji or photo for each library folder.
 - Photo viewer with zoom, filmstrip and side-by-side compare; image sequences fold into one stack.
 - Video and audio players: waveform, segment selection and export, MKV playback, frame capture, speed with kept pitch.
 - Quick Preview with Space, also from Finder's Services; a mini player for music with media keys.

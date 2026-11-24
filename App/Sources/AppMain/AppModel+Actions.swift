@@ -17,6 +17,7 @@ extension AppModel {
             pane.reducesMotion = reducesMotion
             pane.animatesGrid = settings.animatesGrid && !reducesMotion
             pane.foldsSequences = settings.foldsSequences
+            pane.minFileBytes = Int64(settings.minFileKilobytes) * 1024
         }
     }
 

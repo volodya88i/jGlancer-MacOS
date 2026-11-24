@@ -10,6 +10,7 @@ struct ShortcutMapTests {
         #expect(map.shortcut(for: .togglePreview) == ActionShortcut("0", [.command, .option]))
         #expect(map.shortcut(for: .showNames) == nil)
         #expect(map.shortcut(for: .toggleSplitView) == ActionShortcut("s", [.command, .control]))
+        #expect(map.shortcut(for: .toggleSidebar) == ActionShortcut("s", [.command, .option]))
         // Defaults never clash with each other or with reserved keys.
         let defaults = ShortcutCommand.allCases.compactMap(\.defaultShortcut)
         #expect(Set(defaults).count == defaults.count)

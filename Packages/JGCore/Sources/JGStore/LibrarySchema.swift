@@ -132,6 +132,17 @@ enum LibrarySchema {
             // Files kept only in the cloud (D-124): not read for details or thumbnails until downloaded.
             try db.execute(sql: "ALTER TABLE asset ADD COLUMN cloud_only INTEGER NOT NULL DEFAULT 0")
         }
+        migrator.registerMigration("v7-root-icons") { db in
+            // A library folder's own icon (D-129): a symbol's or an emoji's text, or a small picture.
+            try db.execute(sql: """
+            CREATE TABLE root_icon (
+              root_id INTEGER PRIMARY KEY REFERENCES root_folder(id) ON DELETE CASCADE,
+              kind TEXT NOT NULL,
+              value TEXT NOT NULL DEFAULT '',
+              picture BLOB
+            );
+            """)
+        }
         return migrator
     }
 }

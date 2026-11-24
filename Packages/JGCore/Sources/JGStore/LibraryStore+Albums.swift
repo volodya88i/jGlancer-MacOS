@@ -193,6 +193,7 @@ public extension LibraryStore {
             conditions.append(search.sql)
             arguments += search.arguments
         }
+        conditions += viewConditions(query, includingHidden: false)
         return try Row.fetchAll(db, sql: """
         SELECT asset.id, asset.kind, asset.folder_id FROM album_item JOIN asset ON asset.id = album_item.asset_id
         WHERE \(conditions.joined(separator: " AND "))

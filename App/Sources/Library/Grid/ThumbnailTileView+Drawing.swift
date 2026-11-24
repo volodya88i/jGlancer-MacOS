@@ -27,15 +27,8 @@ extension ThumbnailTileView {
         return CGRect(x: rect.midX - fitted.width / 2, y: rect.midY - fitted.height / 2, width: fitted.width, height: fitted.height)
     }
 
-    /// A tinted SF Symbol for tiles without a thumbnail, cached per kind and appearance.
-    private nonisolated(unsafe) static var glyphs: [String: CGImage] = [:]
-
-    static func glyph(for kind: MediaKind, isCloudOnly: Bool = false, appearance: NSAppearance) -> CGImage? {
-        let isDark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-        let key = "\(kind.rawValue)-\(isCloudOnly)-\(isDark)"
-        if let cached = glyphs[key] {
-            return cached
-        }
+    /// A tinted SF Symbol for tiles without a thumbnail, at the screen's scale (`SymbolRaster`).
+    static func glyph(for kind: MediaKind, isCloudOnly: Bool = false, appearance: NSAppearance, scale: CGFloat) -> CGImage? {
         let name = switch kind {
         case _ where isCloudOnly: "icloud"
         case .photo: "photo"
@@ -46,12 +39,6 @@ extension ThumbnailTileView {
         appearance.performAsCurrentDrawingAppearance {
             color = JGColor.textTertiary.nsColor.usingColorSpace(.sRGB) ?? .gray
         }
-        let configuration = NSImage.SymbolConfiguration(pointSize: JGMetrics.tileGlyphSize, weight: .light)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [color]))
-        let image = NSImage(systemSymbolName: name, accessibilityDescription: nil)?.withSymbolConfiguration(configuration)
-        var rect = CGRect(origin: .zero, size: image?.size ?? .zero)
-        let rendered = image?.cgImage(forProposedRect: &rect, context: nil, hints: nil)
-        glyphs[key] = rendered
-        return rendered
+        return SymbolRaster.image(name, pointSize: JGMetrics.tileGlyphSize, weight: .light, color: color, scale: scale)
     }
 }

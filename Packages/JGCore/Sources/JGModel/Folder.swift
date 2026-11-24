@@ -1,5 +1,3 @@
-import Foundation
-
 /// A directory inside a root folder (the root itself has an empty `relativePath`).
 public struct Folder: Hashable, Sendable, Identifiable {
     public let id: Int64

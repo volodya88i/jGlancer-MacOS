@@ -1,6 +1,5 @@
 import Foundation
 import GRDB
-import JGModel
 
 /// Where a file-system path sits in the library.
 public struct LibraryLocation: Equatable, Sendable {

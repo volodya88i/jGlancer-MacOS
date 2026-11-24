@@ -14,7 +14,7 @@ struct ActionRegistryTests {
         let menu = ActionRegistry.menu(
             for: ActionSelection(fileCount: 1, kinds: [.photo], place: .library), features: phase6, primaryAppKinds: []
         )
-        #expect(ids(menu) == [[.open, .quickPreview, .openWith], [.getInfo, .revealInFinder, .copyPath, .copy]])
+        #expect(ids(menu) == [[.open, .quickPreview, .openWith], [.setFolderIcon], [.getInfo, .revealInFinder, .copyPath, .copy]])
     }
 
     @Test func editInPrimaryAppNeedsAPrimaryForTheOnlyKind() {
@@ -86,6 +86,20 @@ struct ActionRegistryTests {
         #expect(ActionRegistry.shortcut(for: .getInfo)?.isMenuBarEquivalent == true)
         let all = ActionRegistry.sections.joined()
         #expect(Set(all).count == ActionID.allCases.count)
+    }
+
+    @Test func onePhotoInTheLibraryCanBeItsFoldersIcon() {
+        func availability(_ count: Int, _ kinds: Set<MediaKind>, _ place: ActionSelection.Place) -> ActionAvailability {
+            ActionRegistry.availability(
+                .setFolderIcon, for: ActionSelection(fileCount: count, kinds: kinds, place: place), features: everything,
+                primaryAppKinds: []
+            )
+        }
+        #expect(availability(1, [.photo], .library) == .enabled)
+        #expect(availability(1, [.photo], .album) == .enabled)
+        #expect(availability(2, [.photo], .library) == .hidden)
+        #expect(availability(1, [.video], .library) == .hidden)
+        #expect(availability(1, [.photo], .viewer) == .hidden)
     }
 
     @Test func albumActionsAppearInAlbums() {

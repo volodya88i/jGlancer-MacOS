@@ -37,6 +37,10 @@ public enum ShortcutCommand: String, CaseIterable, Codable, CodingKeyRepresentab
     /// View ▸ as Grid, as List (D-125).
     case asGrid
     case asList
+    /// View ▸ Show Size Map (D-127).
+    case toggleSizeMap
+    /// View ▸ Show Sidebar (D-128).
+    case toggleSidebar
 
     /// The registry action with the same id, for the file commands.
     public var action: ActionID? {
@@ -81,6 +85,9 @@ public enum ShortcutCommand: String, CaseIterable, Codable, CodingKeyRepresentab
         // ⌘1 / ⌘2 as in Finder would take the viewer's zoom keys; with ⌃ they are free.
         case .asGrid: ActionShortcut("1", [.command, .control])
         case .asList: ActionShortcut("2", [.command, .control])
+        case .toggleSizeMap: ActionShortcut("t", [.command, .option])
+        // ⌃⌘S, Finder's, is the split view's here; ⌥ pairs it with the preview's ⌥⌘0 and the size map's ⌥⌘T.
+        case .toggleSidebar: ActionShortcut("s", [.command, .option])
         case .showNames, .includeSubfolders: nil
         // ⌃F alone flags with the accent; ⌃F then 1–6 picks a color, ⌃F then 0 removes (the app's FlagChord).
         // The colors and Remove Flag have no shortcut of their own unless the user gives them one.

@@ -203,11 +203,19 @@ enum ShortcutNames {
         case .find: String(localized: "Find", comment: "Menu: focuses the search field")
         case .addFolder: String(localized: "Add Folder…")
         case .newAlbum: String(localized: "New Album", comment: "Default name of a new album")
+        default: viewString(for: command)
+        }
+    }
+
+    private static func viewString(for command: ShortcutCommand) -> String {
+        switch command {
         case .togglePreview: String(localized: "Show Preview", comment: "View menu: the preview pane on the right")
         case .showNames: String(localized: "Show Names", comment: "View menu: names under thumbnails")
         case .toggleSplitView: String(localized: "Split View", comment: "View menu: two library panes side by side")
         case .asGrid: String(localized: "as Grid", comment: "View menu: thumbnails in a grid")
         case .asList: String(localized: "as List", comment: "View menu: files in a Finder-style list")
+        case .toggleSizeMap: String(localized: "Show Size Map", comment: "View menu: the folder's files as rectangles by size")
+        case .toggleSidebar: String(localized: "Show Sidebar", comment: "View menu: the folders and albums on the left")
         default: String(localized: "Include Subfolders")
         }
     }

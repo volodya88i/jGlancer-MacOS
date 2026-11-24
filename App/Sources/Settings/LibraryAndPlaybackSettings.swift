@@ -31,12 +31,45 @@ struct LibrarySettings: View {
                 }
                 .frame(height: JGMetrics.controlHeightCompact)
             }
+            ForEach(appModel.library?.hiddenFolderNames ?? [], id: \.id) { hidden in
+                HStack(spacing: JGSpacing.xs) {
+                    Image(systemName: "eye.slash")
+                        .foregroundStyle(JGColor.textSecondary)
+                    Text("Hidden: \(hidden.name)", comment: "Settings → Library: a subfolder hidden from the library; its path")
+                        .jgTextStyle(.body)
+                        .foregroundStyle(JGColor.textSecondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                    Spacer()
+                    Button {
+                        appModel.library?.unhide(hidden.id)
+                    } label: {
+                        Text("Show", comment: "Settings → Library: shows a hidden subfolder again")
+                    }
+                    .buttonStyle(.jg(.tertiary))
+                }
+                .frame(height: JGMetrics.controlHeightCompact)
+            }
             Button {
                 Task { await appModel.library?.addFolders(FolderPicker.chooseFolders()) }
             } label: {
                 Text("Add Folder…")
             }
             .buttonStyle(.jg(.secondary))
+        }
+        SettingsGroup(title: Text("Small Files", comment: "Settings group; shown in capitals")) {
+            Picker(selection: Binding(
+                get: { appModel.settingsStore.settings.minFileKilobytes },
+                set: { kilobytes in appModel.settingsStore.update { $0.minFileKilobytes = kilobytes } }
+            )) {
+                Text("Off", comment: "Settings → Library → Small Files: every file shows").tag(0)
+                ForEach([1, 10, 50, 100], id: \.self) { kilobytes in
+                    Text(verbatim: ByteCountFormatter.string(fromByteCount: Int64(kilobytes) * 1024, countStyle: .binary)).tag(kilobytes)
+                }
+            } label: {
+                Text("Hide files smaller than", comment: "Settings → Library: files below this size leave the library's views")
+            }
+            .fixedSize()
         }
         SettingsGroup(title: Text("Image Sequences", comment: "Settings group; shown in capitals")) {
             SettingsToggle(
