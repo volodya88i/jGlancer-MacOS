@@ -101,7 +101,7 @@ public struct StemModelStore: Sendable {
     /// zipped `.mlpackage`.
     public static func source(for model: StemModelInfo) -> Source {
         let (sha, bytes) = StemModelChecksums.values(of: model)
-        let base = "https://github.com/volodya88i/jGlancer-models/releases/download/\(StemModelChecksums.release)/"
+        let base = "https://github.com/volodya88i/jGlancer-models/releases/download/\(StemModelChecksums.release(of: model))/"
         // A constant, valid URL.
         let url = URL(string: base + model.name + "-coreml.zip") ?? URL(fileURLWithPath: "/")
         return Source(url: url, sha256: sha, bytes: bytes)

@@ -201,11 +201,13 @@ private struct StemModelRow: View {
     let model: StemModelInfo
 
     private var name: String {
-        switch (model.mode, model.isFull) {
+        switch (model.network, model.isFull) {
         case (.four, true): String(localized: "4 stems, Full", comment: "Settings: a stem model")
         case (.six, true): String(localized: "6 stems, Full", comment: "Settings: a stem model")
         case (.four, false): String(localized: "4 stems, Compact", comment: "Settings: a stem model")
         case (.six, false): String(localized: "6 stems, Compact", comment: "Settings: a stem model")
+        case (.vocals, true): String(localized: "2 stems, High Quality, Full", comment: "Settings: the RoFormer stem model")
+        case (.vocals, false): String(localized: "2 stems, High Quality, Compact", comment: "Settings: the RoFormer stem model")
         }
     }
 

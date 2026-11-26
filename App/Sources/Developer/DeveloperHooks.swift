@@ -45,7 +45,8 @@ import JGSettings
 /// - `-JGDuplicatesCheck <png>`: Find Duplicates (snapshot, logged), then Move to Trash with the Trash only logged.
 /// - `-JGQuickPreviewOpenCheck YES` (with `-JGSelect 1`): Quick Preview's level, then Open in Viewer (logged).
 /// - `-JGSequencePreviewCheck <png>`: the preview's frame timeline of a folded sequence (drag, play, unfold; logged).
-/// - `-JGStemCheck <png>` with `-JGStemModels <folder>`: Split into Stems on the first song (logged; never undone).
+/// - `-JGStemCheck <png>` with `-JGStemModels <folder>` (and `-JGStemMode two|four|six`, `-JGStemHighQuality YES`):
+///   Split into Stems on the first song (logged; never undone).
 /// - `-JGThemeCheck <png>`: the Black theme, a chosen accent and Light, live, a snapshot of each.
 /// - `-JGUpdateCheck YES` (`-JGUpdateInstalled <x.y.z>`): the update check at once, as Check Now does (logged).
 /// - `-JGSplitCheck <png>`: split view side by side and stacked (a snapshot of each), then off (logged).

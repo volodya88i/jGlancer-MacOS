@@ -24,6 +24,29 @@ private final class Identity: StemSeparator {
     }
 }
 
+/// Source n is the piece times `shares[n]`.
+private final class Scaled: StemSeparator {
+    let shares: [Float]
+    let segmentFrames: Int
+
+    var sources: Int {
+        shares.count
+    }
+
+    init(_ shares: [Float], segment: Int) {
+        self.shares = shares
+        segmentFrames = segment
+    }
+
+    func separate(_ input: UnsafeBufferPointer<Float>, into output: UnsafeMutableBufferPointer<Float>) {
+        for (source, share) in shares.enumerated() {
+            for pos in input.indices {
+                output[source * input.count + pos] = input[pos] * share
+            }
+        }
+    }
+}
+
 private final class Collect: StemSink {
     var left: [Float] = []
     var right: [Float] = []
@@ -57,7 +80,10 @@ struct StemSplitterTests {
         let vocals = Collect()
         let bass = Collect()
         var progress: [Double] = []
-        try StemSplitter.split(left: left, right: right, separator: separator, sinks: [3: vocals, 1: bass]) { progress.append($0) }
+        try StemSplitter.split(
+            left: left, right: right, separator: separator,
+            outputs: [StemOutput(.source(3), to: vocals), StemOutput(.source(1), to: bass)]
+        ) { progress.append($0) }
         #expect(vocals.left.count == frames)
         #expect(bass.right.count == frames)
         for pos in 0 ..< frames {
@@ -75,7 +101,8 @@ struct StemSplitterTests {
         var stop = false
         #expect(throws: StemSplitCancelled.self) {
             try StemSplitter.split(
-                left: left, right: right, separator: separator, sinks: [0: Collect()], progress: { _ in stop = true },
+                left: left, right: right, separator: separator, outputs: [StemOutput(.source(0), to: Collect())],
+                progress: { _ in stop = true },
                 isCancelled: { stop }
             )
         }
@@ -173,5 +200,78 @@ struct StemChoiceTests {
         #expect(abs(sample(6) - 1) < 1e-6)
         #expect(abs(sample(7) + 1) < 1e-6)
         #expect(abs(sample(8) - 0.125) < 1e-6)
+    }
+}
+
+struct StemTwoStemTests {
+    @Test func theInstrumentalIsTheSongLessTheVocals() throws {
+        let (left, right) = song(4321)
+        let vocals = Collect()
+        let instrumental = Collect()
+        try StemSplitter.split(
+            left: left, right: right, separator: Scaled([0.1, 0.2, 0.3, 0.4], segment: 1000),
+            outputs: [StemOutput(.songWithout(3), to: instrumental), StemOutput(.source(3), to: vocals)]
+        )
+        let (mean, _) = StemSplitter.normalization(left, right, left.count)
+        #expect(instrumental.left.count == left.count)
+        for pos in left.indices {
+            // The vocals: 0.4 of the normalized song, scaled back as Demucs does.
+            #expect(abs(vocals.left[pos] - (0.4 * (left[pos] - mean) + mean)) < 1e-5)
+            #expect(abs(instrumental.left[pos] + vocals.left[pos] - left[pos]) < 1e-5)
+            #expect(abs(instrumental.right[pos] + vocals.right[pos] - right[pos]) < 1e-5)
+        }
+    }
+
+    @Test func twoStemsAreTheVocalsAndTheInstrumentalOfTheFourStemNetwork() {
+        #expect(StemModelInfo.shown(.two) == [.vocals, .instrumental])
+        #expect(StemModelInfo.model(for: StemMode.two.network) == .four)
+        #expect(StemModelInfo.model(for: StemMode.two.network, full: false) == .fourCompact)
+        #expect(StemModelInfo.model(for: StemMode.six.network) == .six)
+        #expect(StemModelInfo.four.part(of: .instrumental) == .songWithout(3))
+        #expect(StemModelInfo.four.part(of: .vocals) == .source(3))
+        #expect(StemModelInfo.four.part(of: .drums) == .source(0))
+        #expect(StemModelInfo.four.part(of: .guitar) == nil)
+        #expect(StemModelInfo.six.part(of: .piano) == .source(5))
+        #expect(StemModelInfo.six.part(of: .instrumental) == .songWithout(3))
+        #expect(StemNaming.fileName(for: URL(fileURLWithPath: "/Music/Lekarstvo.mp3"), stem: .instrumental)
+            == "Lekarstvo - Instrumental.wav")
+    }
+
+    @Test func switchingToTwoStemsKeepsTheVocalsTickAndTicksTheInstrumental() throws {
+        let two = StemChoice(mode: .two)
+        #expect(two.stems == [.vocals, .instrumental])
+        let onlyVocals = StemChoice().with(.drums, ticked: false).with(.bass, ticked: false).with(.other, ticked: false)
+        #expect(onlyVocals.with(mode: .two).stems == [.vocals, .instrumental])
+        let onlyInstrumental = two.with(.vocals, ticked: false)
+        #expect(onlyInstrumental.stems == [.instrumental])
+        #expect(onlyInstrumental.with(.instrumental, ticked: false) == onlyInstrumental)
+        #expect(onlyInstrumental.with(mode: .four).stems == [.drums, .bass, .other])
+        // A choice saved before 2 stems existed still reads, and a 2-stem one comes back as it was.
+        let saved = Data(#"{"mode":"six","ticked":["Vocals","Guitar"]}"#.utf8)
+        #expect(try JSONDecoder().decode(StemChoice.self, from: saved).stems == [.vocals, .guitar])
+        let again = try JSONDecoder().decode(StemChoice.self, from: JSONEncoder().encode(onlyInstrumental))
+        #expect(again == onlyInstrumental)
+    }
+
+    @Test func aTwoStemJobWritesTheVocalsAndTheInstrumental() throws {
+        let folder = try TemporaryDirectory()
+        let (left, right) = song(5000)
+        let job = StemJob(
+            song: folder.url.appendingPathComponent("Lekarstvo.mp3"), model: .four, stems: StemModelInfo.shown(.two),
+            folder: folder.url.appendingPathComponent("Lekarstvo split"), makesFolder: true
+        )
+        let files = try StemJobRunner.write(
+            job, song: (left, right), separator: Scaled([0.1, 0.2, 0.3, 0.4], segment: 1000),
+            progress: { _ in }, isCancelled: { false }
+        )
+        #expect(files.map(\.lastPathComponent) == ["Lekarstvo - Vocals.wav", "Lekarstvo - Instrumental.wav"])
+        let (vocalsLeft, vocalsRight) = try StemAudioDecoder.decode(files[0], sampleRate: 44100)
+        let (restLeft, restRight) = try StemAudioDecoder.decode(files[1], sampleRate: 44100)
+        #expect(vocalsLeft.count == left.count)
+        #expect(restRight.count == right.count)
+        for pos in 0 ..< min(left.count, vocalsLeft.count, restLeft.count, vocalsRight.count, restRight.count) {
+            #expect(abs(vocalsLeft[pos] + restLeft[pos] - left[pos]) < 1e-5)
+            #expect(abs(vocalsRight[pos] + restRight[pos] - right[pos]) < 1e-5)
+        }
     }
 }

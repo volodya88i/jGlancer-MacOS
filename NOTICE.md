@@ -8,5 +8,6 @@ License as published by the Free Software Foundation, version 3 of the License. 
 will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE. See the [LICENSE](LICENSE) file.
 
-Third-party software: GRDB.swift (MIT) is built into the app; the Demucs models (MIT), downloaded when you ask for
-them, come from <https://github.com/volodya88i/jGlancer-models>. Their licences are in `App/Resources/Licenses`.
+Third-party software: GRDB.swift (MIT) is built into the app; the Demucs and Mel-Band RoFormer models (MIT), downloaded
+when you ask for them, come from <https://github.com/volodya88i/jGlancer-models>. Their licences are in
+`App/Resources/Licenses`.

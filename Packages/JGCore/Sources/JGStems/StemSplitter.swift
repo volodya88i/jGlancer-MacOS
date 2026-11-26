@@ -5,13 +5,52 @@ import Foundation
 public protocol StemSeparator: AnyObject {
     var sources: Int { get }
     var segmentFrames: Int { get }
+    /// The share of a piece that overlaps the next: Demucs a quarter, RoFormer half.
+    var overlap: Double { get }
+    /// Whether the network takes the audio normalized by its mono mix (Demucs) or as it is (RoFormer).
+    var normalizes: Bool { get }
     /// `input`: 2 × `segmentFrames` samples; `output`: sources × 2 × `segmentFrames` samples.
     func separate(_ input: UnsafeBufferPointer<Float>, into output: UnsafeMutableBufferPointer<Float>) throws
+}
+
+public extension StemSeparator {
+    var overlap: Double {
+        0.25
+    }
+
+    var normalizes: Bool {
+        true
+    }
 }
 
 /// Where one stem's audio goes, in order, as it is finished (a WAV file being written).
 public protocol StemSink: AnyObject {
     func write(left: ArraySlice<Float>, right: ArraySlice<Float>) throws
+}
+
+/// A stem the splitter writes, and where it goes.
+public struct StemOutput {
+    /// What the stem is made of: one of the network's sources, or the song less one (the instrumental is the song less
+    /// the vocals, so the two add up to the song exactly; measured as clean as adding the other three sources, D-130).
+    public enum Part: Equatable, Sendable {
+        case source(Int)
+        case songWithout(Int)
+
+        /// The network's source the part takes.
+        public var source: Int {
+            switch self {
+            case let .source(index), let .songWithout(index): index
+            }
+        }
+    }
+
+    public let part: Part
+    public let sink: StemSink
+
+    public init(_ part: Part, to sink: StemSink) {
+        self.part = part
+        self.sink = sink
+    }
 }
 
 /// One piece of the song the network runs on.
@@ -23,17 +62,15 @@ public struct StemSegment: Equatable, Sendable {
 /// The split was stopped.
 public struct StemSplitCancelled: Error {}
 
-/// Splits a song as Demucs' own `apply_model` does (D-97, as Windows W-85): the audio is normalized by its mono mix,
-/// cut into pieces of the model's length overlapping by a quarter, each piece run through the network (a short last
-/// piece gets the audio around it as context, zeros past the ends) and joined with triangular cross-fades. Finished
-/// audio goes to the sinks as each piece completes, so a long song never holds its stems in memory at once.
+/// Splits a song as Demucs' own `apply_model` does (D-97, as Windows W-85): the audio is normalized by its mono mix
+/// (when the network wants it), cut into pieces of the model's length overlapping as the network wants (Demucs by a
+/// quarter), each piece run through the network (a short last piece gets the audio around it as context, zeros past
+/// the ends) and joined with triangular cross-fades. Finished audio goes to the sinks as each piece completes, so a
+/// long song never holds its stems in memory at once.
 public enum StemSplitter {
-    /// The share of a piece that overlaps the next.
-    public static let overlap = 0.25
-
     /// The pieces of a song of `frames` frames.
-    public static func plan(frames: Int, segment: Int) -> [StemSegment] {
-        precondition(segment > 0)
+    public static func plan(frames: Int, segment: Int, overlap: Double = 0.25) -> [StemSegment] {
+        precondition(segment > 0 && overlap < 1)
         let stride = Int((1 - overlap) * Double(segment))
         return Swift.stride(from: 0, to: frames, by: stride).map { StemSegment(offset: $0, length: min(segment, frames - $0)) }
     }
@@ -46,19 +83,19 @@ public enum StemSplitter {
         return raw.map { $0 / top }
     }
 
-    /// Splits `left` / `right` (at the model's sample rate) and writes the sources named by `sinks` (source index →
-    /// sink). `progress` gets the share done after each piece; `isCancelled` is checked between pieces.
+    /// Splits `left` / `right` (at the model's sample rate) and writes `outputs`. `progress` gets the share done after
+    /// each piece; `isCancelled` is checked between pieces.
     public static func split(
-        left: [Float], right: [Float], separator: StemSeparator, sinks: [Int: StemSink],
+        left: [Float], right: [Float], separator: StemSeparator, outputs: [StemOutput],
         progress: ((Double) -> Void)? = nil, isCancelled: () -> Bool = { false }
     ) throws {
         let frames = min(left.count, right.count)
         let segment = separator.segmentFrames
-        let (mean, deviation) = normalization(left, right, frames)
-        let plan = plan(frames: frames, segment: segment)
+        let (mean, deviation) = separator.normalizes ? normalization(left, right, frames) : (0, 1)
+        let plan = plan(frames: frames, segment: segment, overlap: separator.overlap)
         var input = [Float](repeating: 0, count: 2 * segment)
         var output = [Float](repeating: 0, count: separator.sources * 2 * segment)
-        var joiner = Joiner(sinks: sinks, segment: segment, mean: mean, deviation: deviation)
+        var joiner = Joiner(outputs: outputs, segment: segment, mean: mean, deviation: deviation)
         var start = 0
         for (index, piece) in plan.enumerated() {
             if isCancelled() {
@@ -82,17 +119,17 @@ public enum StemSplitter {
             joiner.add(output, length: piece.length, pad: pad, at: piece.offset - start)
             // Everything before the next piece is final.
             let next = index + 1 < plan.count ? plan[index + 1].offset : frames
-            try joiner.flush(next - start)
+            try joiner.flush(next - start, song: left, right, at: start)
             start = next
             progress?(Double(index + 1) / Double(plan.count))
         }
     }
 
-    /// Sums the pieces with their cross-fade weights and hands finished audio to the sinks.
+    /// Sums the pieces with their cross-fade weights and hands finished audio to the outputs.
     private struct Joiner {
-        /// The sinks in a fixed order, and per sink the weighted sums from the first frame not written yet.
+        let outputs: [StemOutput]
+        /// The sources the outputs take, and per source the weighted sums from the first frame not written yet.
         let order: [Int]
-        let sinks: [Int: StemSink]
         let segment: Int
         let weights: [Float]
         let mean: Float
@@ -101,9 +138,9 @@ public enum StemSplitter {
         var sumsRight: [[Float]]
         var weightSums: [Float]
 
-        init(sinks: [Int: StemSink], segment: Int, mean: Float, deviation: Float) {
-            order = sinks.keys.sorted()
-            self.sinks = sinks
+        init(outputs: [StemOutput], segment: Int, mean: Float, deviation: Float) {
+            self.outputs = outputs
+            order = Set(outputs.map(\.part.source)).sorted()
             self.segment = segment
             weights = StemSplitter.weights(segment)
             self.mean = mean
@@ -133,8 +170,9 @@ public enum StemSplitter {
             }
         }
 
-        /// Writes the first `done` frames (final now) and moves the sums along.
-        mutating func flush(_ done: Int) throws {
+        /// Writes the first `done` frames (final now; the song's from frame `start`) and moves the sums along.
+        mutating func flush(_ done: Int, song left: [Float], _ right: [Float], at start: Int) throws {
+            var finished: [Int: (left: [Float], right: [Float])] = [:]
             for (slot, source) in order.enumerated() {
                 var outLeft = [Float](repeating: 0, count: done)
                 var outRight = [Float](repeating: 0, count: done)
@@ -142,11 +180,22 @@ public enum StemSplitter {
                     outLeft[pos] = sumsLeft[slot][pos] / weightSums[pos] * deviation + mean
                     outRight[pos] = sumsRight[slot][pos] / weightSums[pos] * deviation + mean
                 }
-                try sinks[source]?.write(left: outLeft[...], right: outRight[...])
+                finished[source] = (outLeft, outRight)
                 StemSplitter.slide(&sumsLeft[slot], by: done)
                 StemSplitter.slide(&sumsRight[slot], by: done)
             }
             StemSplitter.slide(&weightSums, by: done)
+            for output in outputs {
+                guard let audio = finished[output.part.source] else { continue }
+                switch output.part {
+                case .source:
+                    try output.sink.write(left: audio.left[...], right: audio.right[...])
+                case .songWithout:
+                    let restLeft = (0 ..< done).map { left[start + $0] - audio.left[$0] }
+                    let restRight = (0 ..< done).map { right[start + $0] - audio.right[$0] }
+                    try output.sink.write(left: restLeft[...], right: restRight[...])
+                }
+            }
         }
     }
 

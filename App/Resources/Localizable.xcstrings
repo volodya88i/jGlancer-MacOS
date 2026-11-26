@@ -313,6 +313,39 @@
         }
       }
     },
+    "2 Stems" : {
+      "comment" : "Split into Stems: vocals and the instrumental",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 дорожки"
+          }
+        }
+      }
+    },
+    "2 stems, High Quality, Compact" : {
+      "comment" : "Settings: the RoFormer stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 дорожки, высокое качество, компактная"
+          }
+        }
+      }
+    },
+    "2 stems, High Quality, Full" : {
+      "comment" : "Settings: the RoFormer stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 дорожки, высокое качество, полная"
+          }
+        }
+      }
+    },
     "4 Stems" : {
       "comment" : "Split into Stems: vocals, drums, bass, other",
       "localizations" : {
@@ -2132,6 +2165,28 @@
         }
       }
     },
+    "High Quality" : {
+      "comment" : "Split into Stems: 2 stems with the RoFormer model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Высокое качество"
+          }
+        }
+      }
+    },
+    "High Quality needs the RoFormer model (%@), downloaded once." : {
+      "comment" : "Split into Stems: model offer for 2 stems at high quality",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для высокого качества нужна модель RoFormer (%@), она скачивается один раз."
+          }
+        }
+      }
+    },
     "Icons" : {
       "comment" : "Settings: kind filters as icons",
       "localizations" : {
@@ -2218,6 +2273,17 @@
         }
       },
       "comment" : "Status bar: scanning folders"
+    },
+    "Instrumental" : {
+      "comment" : "Stem: everything but the vocals (a backing track)",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Минус"
+          }
+        }
+      }
     },
     "ISO" : {
       "comment" : "Get Info label",
@@ -4033,6 +4099,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Друг над другом"
+          }
+        }
+      }
+    },
+    "Standard Quality" : {
+      "comment" : "Split into Stems: 2 stems with the 4-stem model",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обычное качество"
           }
         }
       }

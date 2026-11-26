@@ -4,8 +4,9 @@ import JGStems
 import SwiftUI
 
 /// The Split into Stems window (D-97, as Windows W-85): where the stems go (a new "<song> split" folder next to the
-/// song, or a chosen folder), 4 or 6 stems, a tick per stem (one stays ticked). A missing model is offered for
-/// download first, with its size and Stop; nothing is downloaded without the click.
+/// song, or a chosen folder), 2 stems (vocals and the instrumental, D-130; Standard or High Quality, D-131), 4 or 6, a
+/// tick per stem (one stays ticked). A missing model is offered for download first, with its size and Stop; nothing is
+/// downloaded without the click.
 struct StemSplitSheet: View {
     let stems: StemsModel
     let songs: [URL]
@@ -22,10 +23,23 @@ struct StemSplitSheet: View {
             JGSegmented(
                 selection: Binding(get: { stems.choice.mode }, set: { stems.choice = stems.choice.with(mode: $0) }),
                 options: [
+                    (.two, Text("2 Stems", comment: "Split into Stems: vocals and the instrumental")),
                     (.four, Text("4 Stems", comment: "Split into Stems: vocals, drums, bass, other")),
                     (.six, Text("6 Stems", comment: "Split into Stems: also guitar and piano")),
                 ]
             )
+            if mode == .two {
+                JGSegmented(
+                    selection: Binding(
+                        get: { stems.choice.highQuality },
+                        set: { stems.choice = stems.choice.with(highQuality: $0) }
+                    ),
+                    options: [
+                        (false, Text("Standard Quality", comment: "Split into Stems: 2 stems with the 4-stem model")),
+                        (true, Text("High Quality", comment: "Split into Stems: 2 stems with the RoFormer model")),
+                    ]
+                )
+            }
             VStack(alignment: .leading, spacing: JGSpacing.xs) {
                 ForEach(StemModelInfo.shown(mode), id: \.self) { stem in
                     Toggle(isOn: Binding(
@@ -37,8 +51,8 @@ struct StemSplitSheet: View {
                     .toggleStyle(.jgCheckbox)
                 }
             }
-            if !stems.isInstalled(stems.model(for: mode)) {
-                StemModelOffer(stems: stems, model: stems.model(for: mode))
+            if !stems.isInstalled(stems.chosenModel) {
+                StemModelOffer(stems: stems, model: stems.chosenModel)
             }
             HStack {
                 Spacer()
@@ -53,7 +67,7 @@ struct StemSplitSheet: View {
                 }
                 .buttonStyle(.jg(.primary))
                 .keyboardShortcut(.defaultAction)
-                .disabled(!stems.choice.canSplit || !stems.isInstalled(stems.model(for: mode)))
+                .disabled(!stems.choice.canSplit || !stems.isInstalled(stems.chosenModel))
             }
         }
         .padding(JGSpacing.l)
@@ -122,6 +136,7 @@ struct StemSplitSheet: View {
         case .guitar: Text("Guitar", comment: "Stem")
         case .piano: Text("Piano", comment: "Stem")
         case .other: Text("Other", comment: "Stem: everything else")
+        case .instrumental: Text("Instrumental", comment: "Stem: everything but the vocals (a backing track)")
         }
     }
 }
@@ -132,20 +147,11 @@ struct StemModelOffer: View {
     let model: StemModelInfo
 
     var body: some View {
-        let mode = model.mode
         let total = StemModelStore.source(for: model).bytes
         let size = ByteCountFormatter.string(fromByteCount: total, countStyle: .file)
         VStack(alignment: .leading, spacing: JGSpacing.xs) {
             VStack(alignment: .leading, spacing: JGSpacing.xxs) {
-                Text(mode == .four
-                    ? String(
-                        localized: "Splitting needs the 4-stem model (\(size)), downloaded once.",
-                        comment: "Split into Stems: model offer"
-                    )
-                    : String(
-                        localized: "Splitting needs the 6-stem model (\(size)), downloaded once.",
-                        comment: "Split into Stems: model offer"
-                    ))
+                Text(offer(size))
                     .foregroundStyle(JGColor.textPrimary)
                 Text(
                     "From github.com/volodya88i/jGlancer-models. Your music never leaves this Mac.",
@@ -175,6 +181,20 @@ struct StemModelOffer: View {
         .padding(JGSpacing.s)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(JGColor.bgRaised, in: JGShape(.medium))
+    }
+
+    private func offer(_ size: String) -> String {
+        switch model.network {
+        case .four:
+            String(localized: "Splitting needs the 4-stem model (\(size)), downloaded once.", comment: "Split into Stems: model offer")
+        case .six:
+            String(localized: "Splitting needs the 6-stem model (\(size)), downloaded once.", comment: "Split into Stems: model offer")
+        case .vocals:
+            String(
+                localized: "High Quality needs the RoFormer model (\(size)), downloaded once.",
+                comment: "Split into Stems: model offer for 2 stems at high quality"
+            )
+        }
     }
 }
 

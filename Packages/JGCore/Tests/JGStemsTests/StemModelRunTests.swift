@@ -4,7 +4,8 @@ import Testing
 @testable import JGStems
 
 /// The real model end to end (developer runs only: `JG_STEM_MODELS=<folder with htdemucs.mlmodelc> swift test`).
-/// Splits a generated 20-second song and checks that the four stems add up to it and the song is untouched.
+/// Splits a generated 20-second song and checks that the four stems add up to it (the two stems exactly) and the
+/// song is untouched.
 struct StemModelRunTests {
     private static let models = ProcessInfo.processInfo.environment["JG_STEM_MODELS"].map { URL(fileURLWithPath: $0) }
 
@@ -41,5 +42,31 @@ struct StemModelRunTests {
         let error = (zip(sum, left).map { ($0 - $1) * ($0 - $1) }.reduce(0, +) / Float(left.count)).squareRoot()
         print("sum of the stems against the song: \(20 * log10(signal / max(error, 1e-12))) dB")
         #expect(error < signal * 0.1)
+    }
+
+    @Test(.enabled(if: models != nil)) func theVocalsAndTheInstrumentalAddUpToTheSong() throws {
+        let folder = try TemporaryDirectory()
+        let song = folder.url.appendingPathComponent("song.wav")
+        try MediaFactory.wav(at: song, seconds: 20, amplitude: 0.3)
+        let before = try Data(contentsOf: song)
+        let job = StemJob(
+            song: song, model: .four, stems: StemModelInfo.shown(.two),
+            folder: folder.url.appendingPathComponent("song split"), makesFolder: true
+        )
+        let files = try StemJobRunner.run(
+            job, compiledModel: #require(Self.models).appendingPathComponent("htdemucs.mlmodelc"),
+            progress: { _ in }, isCancelled: { false }
+        )
+        #expect(files.map(\.lastPathComponent) == ["song - Vocals.wav", "song - Instrumental.wav"])
+        #expect(try Data(contentsOf: song) == before)
+        let (left, right) = try StemAudioDecoder.decode(song, sampleRate: 44100)
+        let (vocalsLeft, vocalsRight) = try StemAudioDecoder.decode(files[0], sampleRate: 44100)
+        let (restLeft, restRight) = try StemAudioDecoder.decode(files[1], sampleRate: 44100)
+        #expect(vocalsLeft.count == left.count && restLeft.count == left.count)
+        var worst: Float = 0
+        for pos in 0 ..< min(left.count, vocalsLeft.count, restLeft.count) {
+            worst = max(worst, abs(vocalsLeft[pos] + restLeft[pos] - left[pos]), abs(vocalsRight[pos] + restRight[pos] - right[pos]))
+        }
+        #expect(worst < 1e-5)
     }
 }

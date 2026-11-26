@@ -12,7 +12,8 @@ SQLite through GRDB, Apple's media frameworks). Also for Windows:
 - Photo viewer with zoom, filmstrip and side-by-side compare; image sequences fold into one stack.
 - Video and audio players: waveform, segment selection and export, MKV playback, frame capture, speed with kept pitch.
 - Quick Preview with Space, also from Finder's Services; a mini player for music with media keys.
-- Split songs into stems on your own Mac (Demucs on Core ML; the model is downloaded only when you ask for it).
+- Split songs into stems on your own Mac: the vocals and the instrumental, or 4 or 6 stems (Demucs, and Mel-Band
+  RoFormer at High Quality, on Core ML; a model is downloaded only when you ask for it).
 - Dark, Black and Light themes with an accent color of your choice; English and Russian.
 
 ## Install
@@ -36,7 +37,7 @@ in two cases only:
 - **Update check.** At most once a day it asks the GitHub API for the latest release; GitHub sees your IP address and the
   app's version, nothing about your files or library. It only offers to open the release page. Turn it off in Settings →
   General.
-- **Stem model.** Downloaded from GitHub when you press Download, once.
+- **Stem models.** Downloaded from GitHub when you press Download, once for each model.
 
 ## Build from source
 
@@ -51,8 +52,8 @@ scripts/make_dmg.sh
 
 Tests touch temporary folders only; `swift scripts/make_test_media.swift` generates test media in `TestMedia/generated`.
 `scripts/make_dmg.sh` signs ad hoc; `docs/RELEASE.md` describes signing and notarization. The models come from
-`scripts/stems/convert_demucs_coreml.py`. Code comments mention internal decision numbers such as `D-85` and internal
-documents, which are not published.
+`scripts/stems/convert_demucs_coreml.py` and `scripts/stems/convert_roformer_coreml.py`. Code comments mention internal
+decision numbers such as `D-85` and internal documents, which are not published.
 
 ## Licence
 

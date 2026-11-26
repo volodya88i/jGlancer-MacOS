@@ -3,13 +3,17 @@ import Foundation
 import JGStems
 
 /// -JGStemCheck <png> with -JGStemModels <folder of compiled .mlmodelc> (and -JGDataDirectory): installs the models
-/// into the data folder, opens Split into Stems on the first song (snapshot of the sheet), splits it into 4 stems and
-/// logs the files, the time and the toast. Never undoes (that would fill the Trash).
+/// into the data folder, opens Split into Stems on the first song (snapshot of the sheet), splits it into 4 stems (or
+/// the mode given by -JGStemMode two|four|six, with -JGStemHighQuality YES for RoFormer) and logs the files, the time
+/// and the toast. Never undoes (that would fill the Trash).
 @MainActor
 enum StemCheck {
     static func run(_ appModel: AppModel, library: LibraryModel, snapshot: URL) async {
         try? await Task.sleep(for: .seconds(1))
         let stems = appModel.stems
+        if let mode = DeveloperHooks.defaults.string(forKey: "JGStemMode").flatMap(StemMode.init(rawValue:)) {
+            stems.choice = StemChoice(mode: mode, highQuality: DeveloperHooks.defaults.bool(forKey: "JGStemHighQuality"))
+        }
         if let models = DeveloperHooks.defaults.string(forKey: "JGStemModels") {
             try? FileManager.default.createDirectory(at: stems.store.folder, withIntermediateDirectories: true)
             for model in StemModelInfo.all where !stems.store.isInstalled(model) {

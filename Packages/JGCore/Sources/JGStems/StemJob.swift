@@ -30,11 +30,21 @@ public enum StemJobRunner {
         _ job: StemJob, compiledModel: URL, progress: @escaping @Sendable (Double) -> Void,
         isCancelled: @escaping @Sendable () -> Bool
     ) throws -> [URL] {
-        let (left, right) = try StemAudioDecoder.decode(job.song, sampleRate: job.model.sampleRate)
+        let song = try StemAudioDecoder.decode(job.song, sampleRate: job.model.sampleRate)
         if isCancelled() {
             throw StemSplitCancelled()
         }
-        let separator = try CoreMLStemSeparator(compiledModel: compiledModel, info: job.model)
+        let separator: StemSeparator = job.model.network == .vocals
+            ? try RoFormerStemSeparator(compiledModel: compiledModel, info: job.model)
+            : try CoreMLStemSeparator(compiledModel: compiledModel, info: job.model)
+        return try write(job, song: song, separator: separator, progress: progress, isCancelled: isCancelled)
+    }
+
+    /// Splits the decoded song with `separator` and writes the job's stems (the tests pass a stand-in network).
+    static func write(
+        _ job: StemJob, song: (left: [Float], right: [Float]), separator: StemSeparator,
+        progress: @escaping @Sendable (Double) -> Void, isCancelled: @escaping @Sendable () -> Bool
+    ) throws -> [URL] {
         let fileManager = FileManager.default
         if job.makesFolder {
             try fileManager.createDirectory(at: job.folder, withIntermediateDirectories: true)
@@ -49,17 +59,14 @@ public enum StemJobRunner {
                     partial: partial
                 ))
             }
-            var sinks: [Int: StemSink] = [:]
-            for entry in writers {
-                if let index = job.model.sources.firstIndex(of: entry.stem) {
-                    sinks[index] = entry.writer
-                }
+            let outputs = writers.compactMap { entry in
+                job.model.part(of: entry.stem).map { StemOutput($0, to: entry.writer) }
             }
             try StemSplitter.split(
-                left: left,
-                right: right,
+                left: song.left,
+                right: song.right,
                 separator: separator,
-                sinks: sinks,
+                outputs: outputs,
                 progress: progress,
                 isCancelled: isCancelled
             )

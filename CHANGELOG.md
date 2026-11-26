@@ -4,6 +4,16 @@ One short entry per published build of the macOS app. Versions are `major.minor.
 the patch number goes up by one for the next one; the minor number goes up for larger releases. The Windows version
 keeps its own changelog in its repository.
 
+## 0.6.4 — 2026-11-26
+Split a song into just the vocals and the instrumental (a backing track), at standard or high quality.
+
+**New**
+- **Split into 2 stems**: Split into Stems… can make just the vocals and the instrumental (the song without its
+  vocals, a backing track); added together they give the song back exactly. It uses the 4-stem model, so there is
+  nothing new to download.
+- **High Quality for 2 stems**: a much cleaner instrumental and vocals with the Mel-Band RoFormer model, an optional
+  download (848 MB, or 423 MB compact); it takes about 50 seconds for a 3-minute song.
+
 ## 0.6.3 — 2026-11-24
 A size map, a sidebar that folds into a strip of icons, folder icons, and photos and videos over the whole Quick
 Preview.

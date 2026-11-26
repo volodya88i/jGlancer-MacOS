@@ -70,9 +70,9 @@ final class StemsModel {
 
     // MARK: Models
 
-    /// The model a split in `mode` takes now.
-    func model(for mode: StemMode) -> StemModelInfo {
-        StemModelInfo.model(for: mode, full: usesFullModel)
+    /// The model a split with the window's choice takes now.
+    var chosenModel: StemModelInfo {
+        StemModelInfo.model(for: choice.network, full: usesFullModel)
     }
 
     func isInstalled(_ model: StemModelInfo) -> Bool {
@@ -129,7 +129,7 @@ final class StemsModel {
     /// Queues the songs with the current choice: each into a new "<song> split" folder next to it, or inside
     /// `folder` when one was chosen.
     func split(_ songs: [URL], into folder: URL?) {
-        let model = model(for: choice.mode)
+        let model = chosenModel
         for song in songs {
             let target: URL
             if let folder, songs.count == 1 {
